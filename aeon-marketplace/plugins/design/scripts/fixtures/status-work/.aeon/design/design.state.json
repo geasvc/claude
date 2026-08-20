@@ -1,0 +1,165 @@
+{
+  "schemaVersion": "1.0",
+  "project": "fixture-status-work",
+  "phase": "design",
+  "steps": [
+    {
+      "id": "init",
+      "command": "/design:init",
+      "status": "done",
+      "requires": [],
+      "artifacts": [],
+      "attempts": 1
+    },
+    {
+      "id": "overview",
+      "command": "/design:overview",
+      "status": "done",
+      "requires": [
+        "init"
+      ],
+      "artifacts": [],
+      "attempts": 1
+    },
+    {
+      "id": "function",
+      "command": "/design:function",
+      "status": "pending",
+      "requires": [
+        "overview"
+      ],
+      "artifacts": [],
+      "attempts": 0
+    },
+    {
+      "id": "nfr",
+      "command": "/design:nfr",
+      "status": "pending",
+      "requires": [
+        "function"
+      ],
+      "artifacts": [],
+      "attempts": 0
+    },
+    {
+      "id": "datamodel",
+      "command": "/design:datamodel",
+      "status": "pending",
+      "requires": [
+        "function"
+      ],
+      "artifacts": [],
+      "attempts": 0
+    },
+    {
+      "id": "interface",
+      "command": "/design:interface",
+      "status": "pending",
+      "requires": [
+        "function",
+        "datamodel"
+      ],
+      "artifacts": [],
+      "attempts": 0
+    },
+    {
+      "id": "rbac",
+      "command": "/design:rbac",
+      "status": "pending",
+      "requires": [
+        "function",
+        "datamodel"
+      ],
+      "artifacts": [],
+      "attempts": 0
+    },
+    {
+      "id": "sitemap",
+      "command": "/design:sitemap",
+      "status": "pending",
+      "requires": [
+        "function",
+        "rbac"
+      ],
+      "artifacts": [],
+      "attempts": 0
+    },
+    {
+      "id": "scenario",
+      "command": "/design:scenario",
+      "status": "pending",
+      "requires": [
+        "function",
+        "nfr",
+        "datamodel",
+        "sitemap"
+      ],
+      "artifacts": [],
+      "attempts": 0
+    },
+    {
+      "id": "change",
+      "command": "/design:change",
+      "status": "pending",
+      "requires": [
+        "init"
+      ],
+      "artifacts": [],
+      "attempts": 0
+    },
+    {
+      "id": "trace",
+      "command": "/design:trace",
+      "status": "pending",
+      "requires": [
+        "scenario"
+      ],
+      "artifacts": [],
+      "attempts": 0
+    },
+    {
+      "id": "check",
+      "command": "/design:check",
+      "status": "pending",
+      "requires": [
+        "init"
+      ],
+      "artifacts": [],
+      "attempts": 0
+    },
+    {
+      "id": "status",
+      "command": "/design:status",
+      "status": "pending",
+      "requires": [
+        "init"
+      ],
+      "artifacts": [],
+      "attempts": 0
+    },
+    {
+      "id": "export",
+      "command": "/design:export",
+      "status": "pending",
+      "requires": [
+        "scenario",
+        "sitemap",
+        "interface",
+        "nfr",
+        "rbac"
+      ],
+      "artifacts": [],
+      "attempts": 0
+    }
+  ],
+  "openQuestions": [
+    {
+      "id": "Q-STAKEHOLDERS",
+      "text": "req records no stakeholders, but §13.3 A4 and V23 require every RBAC role to originate from one.",
+      "blocks": [
+        "rbac"
+      ],
+      "raisedBy": "/design:init"
+    }
+  ]
+}

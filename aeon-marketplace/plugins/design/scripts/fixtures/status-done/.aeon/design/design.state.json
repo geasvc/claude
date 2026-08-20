@@ -1,0 +1,163 @@
+{
+  "schemaVersion": "1.0",
+  "project": "fixture-status-done",
+  "phase": "design",
+  "steps": [
+    {
+      "id": "init",
+      "command": "/design:init",
+      "status": "done",
+      "requires": [],
+      "artifacts": [],
+      "attempts": 1
+    },
+    {
+      "id": "overview",
+      "command": "/design:overview",
+      "status": "done",
+      "requires": [
+        "init"
+      ],
+      "artifacts": [],
+      "attempts": 1
+    },
+    {
+      "id": "function",
+      "command": "/design:function",
+      "status": "done",
+      "requires": [
+        "overview"
+      ],
+      "artifacts": [],
+      "attempts": 1
+    },
+    {
+      "id": "nfr",
+      "command": "/design:nfr",
+      "status": "done",
+      "requires": [
+        "function"
+      ],
+      "artifacts": [],
+      "attempts": 1
+    },
+    {
+      "id": "datamodel",
+      "command": "/design:datamodel",
+      "status": "done",
+      "requires": [
+        "function"
+      ],
+      "artifacts": [],
+      "attempts": 1
+    },
+    {
+      "id": "interface",
+      "command": "/design:interface",
+      "status": "done",
+      "requires": [
+        "function",
+        "datamodel"
+      ],
+      "artifacts": [],
+      "attempts": 1
+    },
+    {
+      "id": "rbac",
+      "command": "/design:rbac",
+      "status": "done",
+      "requires": [
+        "function",
+        "datamodel"
+      ],
+      "artifacts": [],
+      "attempts": 1
+    },
+    {
+      "id": "sitemap",
+      "command": "/design:sitemap",
+      "status": "done",
+      "requires": [
+        "function",
+        "rbac"
+      ],
+      "artifacts": [],
+      "attempts": 1
+    },
+    {
+      "id": "scenario",
+      "command": "/design:scenario",
+      "status": "done",
+      "requires": [
+        "function",
+        "nfr",
+        "datamodel",
+        "sitemap"
+      ],
+      "artifacts": [],
+      "attempts": 1
+    },
+    {
+      "id": "change",
+      "command": "/design:change",
+      "status": "done",
+      "requires": [
+        "init"
+      ],
+      "artifacts": [],
+      "attempts": 1
+    },
+    {
+      "id": "trace",
+      "command": "/design:trace",
+      "status": "done",
+      "requires": [
+        "scenario"
+      ],
+      "artifacts": [],
+      "attempts": 1
+    },
+    {
+      "id": "check",
+      "command": "/design:check",
+      "status": "done",
+      "requires": [
+        "init"
+      ],
+      "artifacts": [],
+      "attempts": 1
+    },
+    {
+      "id": "status",
+      "command": "/design:status",
+      "status": "done",
+      "requires": [
+        "init"
+      ],
+      "artifacts": [],
+      "attempts": 1
+    },
+    {
+      "id": "export",
+      "command": "/design:export",
+      "status": "done",
+      "requires": [
+        "scenario",
+        "sitemap",
+        "interface",
+        "nfr",
+        "rbac"
+      ],
+      "artifacts": [],
+      "attempts": 1
+    }
+  ],
+  "openQuestions": [
+    {
+      "id": "Q-COLOURS",
+      "text": "คำถามที่ไม่บล็อกอะไร ใช้พิสูจน์ว่า blocks ว่างไม่กันไม่ให้จบ",
+      "blocks": [],
+      "raisedBy": "/design:overview"
+    }
+  ]
+}

@@ -30,8 +30,8 @@
     {
       "name": "design",
       "source": "./plugins/design",
-      "description": "Phase 2 (Design) worker — IN PROGRESS at v0.4.0: `help`, `init`, `overview` and `function` work; the other eleven commands in the design specification are declared-not-built and labelled as such in commands/help.md, so invoking one produces nothing rather than a guess. Turns the requirement spine produced by `req` into two renderings of one truth: a Thai narrative document a client can sign, and structured JSON downstream plugin agents act on without asking a clarifying question. Reads req through scripts/req-contract.mjs, the single place that knows the shape of req output, and HALTS with exit 2 naming the path it looked for when a mandatory input is absent or malformed rather than inferring it. Business rules are REFERENCED as req BR-xxx@vN, never re-minted as a design-owned id, because two ids for one rule drift apart the moment /req:change moves a version. The trace graph is derived from the artifacts rather than hand-written, split by author into trace.design.json so a regeneration can never eat another plugin edges. Judgement stays with the owner and arithmetic stays with the scripts: a command never invents scope, a rule or a flow, it validates that they were written down and renders what they say. Generated documents are never hand-edited and carry no edit-here markers. Every command is idempotent, reads design.state.json before acting, halts when a preceding step is not done, and writes nothing without --write.",
-      "version": "0.4.0",
+      "description": "Phase 2 (Design) worker — Milestone 1 complete at v0.5.0: `help`, `init`, `overview`, `function` and `status` work; the other ten commands are declared-not-built and labelled as such in commands/help.md, so invoking one produces nothing rather than a guess. Turns the requirement spine produced by `req` into two renderings of one truth: a Thai narrative document a client can sign, and structured JSON downstream plugin agents act on without asking a clarifying question. `status` is the loop exit condition and is deterministic by construction — it refuses to return 0 while any artifact is stale or any question with a non-empty blocks[] is open, because a green light that is not true is worse than a red one, and it always names the next command even when the answer is that a person must decide. Reads req through scripts/req-contract.mjs, the single place that knows the shape of req output, and halts with exit 2 naming the path it looked for rather than inferring a missing input. Business rules are REFERENCED as req BR-xxx@vN, never re-minted, because two ids for one rule drift apart the moment /req:change moves a version. The trace graph is derived from the artifacts rather than hand-written, split by author so a regeneration cannot eat another plugin edges. Generated documents are never hand-edited and carry no edit-here markers; every command is idempotent, halts when a preceding step is not done, and writes nothing without --write.",
+      "version": "0.5.0",
       "category": "development",
       "keywords": [
         "design",
@@ -45,7 +45,8 @@
         "authorization",
         "sitemap",
         "sdd",
-        "mermaid"
+        "mermaid",
+        "agent-loop"
       ]
     }
   ]

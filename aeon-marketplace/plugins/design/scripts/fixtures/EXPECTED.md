@@ -15,6 +15,23 @@ hopes — CLAUDE.md §3.
 | `function-ok/` | `.aeon` | `functions.mjs --root .../function-ok` | exit **0** · **0 error, 0 warning** · FN 1 · UC 2 · STM 1 · notFunctional 1 · **8 trace edges** |
 | `function-bad/` | `.aeon` | `functions.mjs --root .../function-bad` | exit **1** · **8 error, 0 warning** — FU1 through FU8, each firing exactly once |
 | `context-ok/` | `.aeon` | `functions.mjs --root .../context-ok` | exit **2** — `overview` is not `done` in `design.state.json` |
+| `status-work/` | `.aeon` | `status.mjs --root .../status-work` | exit **1** — work remains and `function` is runnable |
+| `status-blocked/` | `.aeon` | `status.mjs --root .../status-blocked` | exit **2** — `overview` has `attempts: 4`, tripping the §8.2 loop guard, and every other step waits on it |
+| `status-done/` | `.aeon` | `status.mjs --root .../status-done` | exit **0** — the only state that may return 0 |
+| `status-stale/` | `.aeon` | `status.mjs --root .../status-stale` | exit **1** — every step says `done` except one marked `stale` |
+| `status-question/` | `.aeon` | `status.mjs --root .../status-question` | exit **2** — every step says `done`, but a question with a non-empty `blocks[]` is open |
+
+The last two exist to defend the two rules that make exit 0 harder than counting steps:
+§9.2 rule 6 (no 0 while an artifact is stale) and §19.3 (no 0 while a blocking question is open).
+If someone later simplifies `status.mjs` into "all steps done means 0", `status-stale/` and
+`status-question/` go red immediately — which is the whole point of keeping them. A green light that
+is not true is worse than a red one, because a red light makes people look and a false green makes
+them ship.
+
+`status-blocked/` is the only fixture asserting exit **2**, and it does so for the honest reason:
+nothing is runnable. Note that `status-work/` ALSO carries a blocked step (`rbac`, waiting on
+`Q-STAKEHOLDERS`) and still exits **1** — because three other steps can run. That pair is the
+contract that exit 2 means "the loop cannot move", not "something somewhere is blocked".
 
 `function-ok/` carries two deliberate traps that a naive implementation passes and a correct one
 survives:

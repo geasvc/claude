@@ -17,9 +17,9 @@ hopes — CLAUDE.md §3.
 | `context-ok/` | `.aeon` | `functions.mjs --root .../context-ok` | exit **2** — `overview` is not `done` in `design.state.json` |
 | `status-work/` | `.aeon` | `status.mjs --root .../status-work` | exit **1** — work remains and `function` is runnable |
 | `status-blocked/` | `.aeon` | `status.mjs --root .../status-blocked` | exit **2** — `overview` has `attempts: 4`, tripping the §8.2 loop guard, and every other step waits on it |
-| `status-done/` | `.aeon` | `status.mjs --root .../status-done` | exit **0** — the only state that may return 0 |
-| `status-stale/` | `.aeon` | `status.mjs --root .../status-stale` | exit **1** — every step says `done` except one marked `stale` |
-| `status-question/` | `.aeon` | `status.mjs --root .../status-question` | exit **2** — every step says `done`, but a question with a non-empty `blocks[]` is open |
+| `status-done/` | `.aeon` | `status.mjs --root .../status-done` | exit **0** — all **10 milestone** steps `done`; the 4 diagnostics stay `pending`. The only state that may return 0 |
+| `status-stale/` | `.aeon` | `status.mjs --root .../status-stale` | exit **1** — every milestone says `done` except one marked `stale` |
+| `status-question/` | `.aeon` | `status.mjs --root .../status-question` | exit **2** — every milestone says `done`, but a question with a non-empty `blocks[]` is open |
 
 The last two exist to defend the two rules that make exit 0 harder than counting steps:
 §9.2 rule 6 (no 0 while an artifact is stale) and §19.3 (no 0 while a blocking question is open).
@@ -28,10 +28,24 @@ If someone later simplifies `status.mjs` into "all steps done means 0", `status-
 is not true is worse than a red one, because a red light makes people look and a false green makes
 them ship.
 
-`status-blocked/` is the only fixture asserting exit **2**, and it does so for the honest reason:
-nothing is runnable. Note that `status-work/` ALSO carries a blocked step (`rbac`, waiting on
-`Q-STAKEHOLDERS`) and still exits **1** — because three other steps can run. That pair is the
-contract that exit 2 means "the loop cannot move", not "something somewhere is blocked".
+**Why the three "done" fixtures leave four steps `pending`.** Ten of the fourteen steps are
+MILESTONES — they produce an artifact and they gate exit 0. The other four never do: `status`,
+`check` and `trace` are read-only and are re-run after every change, and `change` runs only when
+`req` sends a change-set, which may be never. An earlier version of `status-done/` marked all
+fourteen `done`, including `status` itself — a state the real system cannot reach, which hid the
+fact that exit 0 was unreachable and that the next-command line pointed at `/design:change` on a
+project with nothing to change. A fixture that asserts an impossible state proves nothing except
+that the fixture was written to match the code.
+
+`status-blocked/` is the fixture that asserts exit **2** for the reason **nothing is runnable**;
+`status-question/` also exits 2, but on the §19.3 rule instead. Note that `status-work/` ALSO carries
+a blocked step (`rbac`, waiting on `Q-STAKEHOLDERS`) and still exits **1** — because `function` is
+still runnable. That pair is the contract that exit 2 means "the loop cannot move", not "something
+somewhere is blocked".
+
+`status-work/` also pins the progress line: **2/10 milestone steps done**, one READY, six WAITING,
+one BLOCKED. If a later change starts counting diagnostics again, that denominator moves to 14 and
+this row goes red.
 
 `function-ok/` carries two deliberate traps that a naive implementation passes and a correct one
 survives:

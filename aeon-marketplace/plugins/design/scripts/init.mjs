@@ -23,30 +23,13 @@ import { mkdirSync, writeFileSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { parseArgs, designDirPath, statePath, resolveStateDir } from "./state-dir.mjs";
 import { readReqContract } from "./req-contract.mjs";
+import { STEPS } from "./steps.mjs";
 
 export const STATE_SCHEMA_VERSION = "1.0";
 
-/**
- * The step graph. `requires` encodes spec §13.4's hard ordering rule:
- * rbac runs AFTER function+datamodel and BEFORE sitemap, so a sitemap with no permission
- * binding cannot be produced by following this graph.
- */
-export const STEPS = [
-  { id: "init", command: "/design:init", requires: [] },
-  { id: "overview", command: "/design:overview", requires: ["init"] },
-  { id: "function", command: "/design:function", requires: ["overview"] },
-  { id: "nfr", command: "/design:nfr", requires: ["function"] },
-  { id: "datamodel", command: "/design:datamodel", requires: ["function"] },
-  { id: "interface", command: "/design:interface", requires: ["function", "datamodel"] },
-  { id: "rbac", command: "/design:rbac", requires: ["function", "datamodel"] },
-  { id: "sitemap", command: "/design:sitemap", requires: ["function", "rbac"] },
-  { id: "scenario", command: "/design:scenario", requires: ["function", "nfr", "datamodel", "sitemap"] },
-  { id: "change", command: "/design:change", requires: ["init"] },
-  { id: "trace", command: "/design:trace", requires: ["scenario"] },
-  { id: "check", command: "/design:check", requires: ["init"] },
-  { id: "status", command: "/design:status", requires: ["init"] },
-  { id: "export", command: "/design:export", requires: ["scenario", "sitemap", "interface", "nfr", "rbac"] },
-];
+// The step graph lives in steps.mjs and is NOT re-exported from here: this module runs main() on
+// load, so anything importing the catalogue through init.mjs would execute the command as a side
+// effect. Import { STEPS } from "./steps.mjs" instead.
 
 /** Subdirectories spec §5.1 puts under the design state directory. */
 export const SUBDIRS = ["modules"];
@@ -59,6 +42,7 @@ export function buildState({ existing, module, now }) {
     return {
       id: def.id,
       command: def.command,
+      kind: def.kind,
       status: was?.status ?? "pending",
       requires: def.requires,
       artifacts: was?.artifacts ?? [],

@@ -37,7 +37,21 @@ argument-hint: "[--state-dir <ชื่อ>]"
 
 **ผลลัพธ์บอกคำสั่งถัดไปเสมอ** ไม่ว่ารหัสจะเป็นอะไร — ถ้าไม่มีคำสั่งไหนรันได้ มันจะบอกว่า**คนต้องทำอะไร** แทน
 
-## สามเหตุผลที่ทำให้ `0` ยากกว่าที่คิด
+## step 14 ตัว แต่มีแค่ 10 ตัวที่นับว่า "เสร็จ"
+
+| ชนิด | ตัวไหน | นับเป็นเงื่อนไขจบไหม |
+|---|---|---|
+| `milestone` | 10 ตัวที่ผลิตไฟล์ออกมา — `init` `overview` `function` `nfr` `datamodel` `interface` `rbac` `sitemap` `scenario` `export` | ✅ ต้อง `done` ครบถึงจะได้ `0` |
+| `diagnostic` | `status` `check` `trace` — อ่านอย่างเดียว สั่งซ้ำได้ตลอด | ❌ ไม่มีวัน "เสร็จ" |
+| `on-demand` | `change` — รันเมื่อ `req` ส่งใบเปลี่ยนแปลงมา ซึ่งอาจไม่เกิดขึ้นเลย | ❌ |
+
+> ตอนแรกนับทั้ง 14 ตัวเป็นงานที่ต้องทำให้เสร็จ ผลคือ **`0` ไปไม่ถึงตลอดกาล** เพราะ `status` ต้องรอ `status` เขียนว่าตัวเองเสร็จ
+> และบรรทัด "คำสั่งถัดไป" ก็ชี้ไปที่ `/design:change` ทั้งที่ไม่มีอะไรให้เปลี่ยน · fixture `status-done` ปิดบั๊กนี้ไว้ด้วยการ
+> ทำเครื่องหมายว่า done ทั้ง 14 ตัว — **fixture ที่ยืนยันสถานะที่ระบบจริงไปไม่ถึง ไม่ได้พิสูจน์อะไรเลย**
+
+สี่ตัวที่ไม่ใช่ milestone ขึ้นในหัวข้อ **AVAILABLE ANY TIME** แยกต่างหาก · ถ้าตัวไหนชน loop guard มันยังเตือนอยู่ ไม่ได้ถูกกลืน
+
+## สองเหตุผลที่ทำให้ `0` ยากกว่าที่คิด
 
 `0` ไม่ได้แปลว่า "ทุก step เขียนว่า done" เพราะสองข้อนี้บังคับไว้ และมีเหตุผลของมัน
 
@@ -65,10 +79,10 @@ argument-hint: "[--state-dir <ชื่อ>]"
 node "${CLAUDE_PLUGIN_ROOT}/scripts/status.mjs" --root "${CLAUDE_PLUGIN_ROOT}/scripts/fixtures/status-work"      # exit 1 · มี step รันได้
 node "${CLAUDE_PLUGIN_ROOT}/scripts/status.mjs" --root "${CLAUDE_PLUGIN_ROOT}/scripts/fixtures/status-blocked"   # exit 2 · attempts 4 ชน loop guard
 node "${CLAUDE_PLUGIN_ROOT}/scripts/status.mjs" --root "${CLAUDE_PLUGIN_ROOT}/scripts/fixtures/status-done"      # exit 0 · ครบจริง
-node "${CLAUDE_PLUGIN_ROOT}/scripts/status.mjs" --root "${CLAUDE_PLUGIN_ROOT}/scripts/fixtures/status-stale"     # exit 1 · ทุก step done แต่มี stale
-node "${CLAUDE_PLUGIN_ROOT}/scripts/status.mjs" --root "${CLAUDE_PLUGIN_ROOT}/scripts/fixtures/status-question"  # exit 2 · ทุก step done แต่คำถามยังค้าง
+node "${CLAUDE_PLUGIN_ROOT}/scripts/status.mjs" --root "${CLAUDE_PLUGIN_ROOT}/scripts/fixtures/status-stale"     # exit 1 · milestone done ครบ แต่มี stale
+node "${CLAUDE_PLUGIN_ROOT}/scripts/status.mjs" --root "${CLAUDE_PLUGIN_ROOT}/scripts/fixtures/status-question"  # exit 2 · milestone done ครบ แต่คำถามยังค้าง
 ```
 
-สอง fixture ท้ายมีไว้พิสูจน์ว่า **"ทุก step done" ไม่พอที่จะได้ `0`** — ถ้าวันหนึ่งมีคนแก้สคริปต์ให้นับแค่ step สองอันนี้จะแดงทันที
+สอง fixture ท้ายมีไว้พิสูจน์ว่า **"งานเสร็จครบ" ไม่พอที่จะได้ `0`** — ถ้าวันหนึ่งมีคนแก้สคริปต์ให้นับแค่ step สองอันนี้จะแดงทันที
 
 สัญญาของแต่ละ fixture อยู่ที่ `scripts/fixtures/EXPECTED.md`

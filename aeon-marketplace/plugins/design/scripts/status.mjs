@@ -25,7 +25,8 @@
  */
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import { parseArgs, statePath, stateDirPath, designDirPath } from "./state-dir.mjs";
+import { parseArgs, statePath, stateDirPath } from "./state-dir.mjs";
+import { gatesCompletion, kindOf } from "./steps.mjs";
 
 export const MAX_ATTEMPTS = 3;
 export const TERMINAL = new Set(["done"]);
@@ -67,10 +68,16 @@ export function computePlan(state) {
   const blockingQuestions = questions.filter((q) => (q.blocks ?? []).length > 0);
   // `stale` counts as runnable: §9.2 marks an artifact stale so its own command can regenerate it.
   // Treating it as un-runnable would report BLOCKED when the fix is simply to run that command again.
-  const runnable = rows.filter((r) => ["pending", "in_progress", "stale"].includes(r.effective));
-  const remaining = rows.filter((r) => !TERMINAL.has(r.status));
+  const isRunnable = (r) => ["pending", "in_progress", "stale"].includes(r.effective);
+  // Only MILESTONE steps gate completion. status/check/trace are read-only and are never "finished";
+  // change is event-driven. Counting them as outstanding work made exit 0 unreachable and made the
+  // next-command line point at /design:change on a project with nothing to change. See steps.mjs.
+  const milestones = rows.filter(gatesCompletion);
+  const alwaysAvailable = rows.filter((r) => !gatesCompletion(r));
+  const runnable = milestones.filter(isRunnable);
+  const remaining = milestones.filter((r) => !TERMINAL.has(r.status));
 
-  return { rows, stale, questions, blockingQuestions, runnable, remaining };
+  return { rows, stale, questions, blockingQuestions, runnable, remaining, milestones, alwaysAvailable };
 }
 
 export function decide(plan) {
@@ -115,10 +122,10 @@ function main() {
   const decision = decide(plan);
   const next = nextAction(plan, decision);
 
-  const done = plan.rows.filter((r) => r.status === "done").length;
+  const done = plan.milestones.filter((r) => r.status === "done").length;
   console.log("project   : " + (state.project ?? "(unnamed)") + "   phase: " + (state.phase ?? "?"));
   console.log("state     : " + sp);
-  console.log("progress  : " + done + "/" + plan.rows.length + " steps done");
+  console.log("progress  : " + done + "/" + plan.milestones.length + " milestone steps done  (" + plan.alwaysAvailable.length + " diagnostics do not gate completion)");
 
   // §8.2 step 2: navigate via the index, never by walking every file.
   const wikiIndex = join(stateDirPath({ root, values }), "wiki", "wiki-index.json");
@@ -129,10 +136,15 @@ function main() {
     console.log("\n" + label);
     for (const r of rows) console.log("  " + r.id.padEnd(12) + (r.command ?? "").padEnd(20) + (r.why ? "— " + r.why : ""));
   };
-  show("DONE", plan.rows.filter((r) => r.status === "done"));
+  show("DONE", plan.milestones.filter((r) => r.status === "done"));
   show("READY", plan.runnable);
-  show("WAITING", plan.rows.filter((r) => r.effective === "waiting"));
-  show("BLOCKED", plan.rows.filter((r) => r.effective === "blocked"));
+  show("WAITING", plan.milestones.filter((r) => r.effective === "waiting"));
+  show("BLOCKED", plan.milestones.filter((r) => r.effective === "blocked"));
+  // Print the kind, and keep `why` ONLY when the row is genuinely blocked (loop guard or an open
+  // question) — overwriting `why` outright would swallow that warning. A "waiting" reason is dropped
+  // on purpose: `requires` is inert for these steps, so "needs scenario" under a heading that says
+  // ANY TIME would be two contradictory statements on one line.
+  show("AVAILABLE ANY TIME (never gate completion)", plan.alwaysAvailable.map((r) => ({ ...r, why: r.effective === "blocked" ? kindOf(r) + " · " + r.why : kindOf(r) })));
   show("STALE", plan.stale);
 
   if (plan.questions.length) {

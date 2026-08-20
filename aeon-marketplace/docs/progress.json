@@ -349,7 +349,13 @@
             "(ข) dirty ใช้ .notaeon จงใจแบบเดียวกับ fixture ของ req = พิสูจน์ว่าชื่อไดเรกทอรีสถานะเป็นพารามิเตอร์จริง · resolver ให้ .aeon (default) / .custom (--state-dir) / .fromenv ($AEON_STATE_DIR) และ flag ชนะ env ตามลำดับที่ประกาศไว้",
             "(ค) idempotent พิสูจน์ด้วยการรันจริงไม่ใช่การอ่านโค้ด — เขียนรอบแรก แล้วแกล้งตั้ง overview เป็น done/attempts 3/artifacts [context.json] แล้วเขียนรอบสอง ผล: overview ยัง done · attempts ยัง 3 · artifacts ยังอยู่ · steps ยัง 14 ไม่มี id ซ้ำ · openQuestions ยัง 1 ไม่ append ซ้ำ · init.attempts นับขึ้นเป็น 2 ตามที่ควร",
             "(ง) อ่านโปรเจกต์จริงได้ ไม่ใช่แค่ fixture — `readReqContract({root:aeon-miniloan})` -> ok true · schema 0.3.0 · module loan · requirements 9 · glossary 23 · changes 0",
-            "(จ) ไม่กระทบของเดิม — `node scripts/verify-design.mjs --root .` 0 error / 16 warning เท่า baseline ก่อนเริ่ม S0 ทุกตัว · req fixtures ยังนิ่ง clean exit 0 / dirty exit 1"
+            "(จ) ไม่กระทบของเดิม — `node scripts/verify-design.mjs --root .` 0 error / 16 warning เท่า baseline ก่อนเริ่ม S0 ทุกตัว · req fixtures ยังนิ่ง clean exit 0 / dirty exit 1",
+            "(ฉ) รันตามบรรทัดที่ init.md เขียนไว้จริง ไม่ใช่แค่พาธจาก repo root — ตั้ง CLAUDE_PLUGIN_ROOT=<repo>/plugins/design แล้วรันทั้ง 4 บรรทัด (ขั้น 1 กับ aeon-miniloan + บล็อกตรวจตัวสคริปต์เอง 3 บรรทัด) ได้ 0/0/2/2 ตามสัญญา = พาธในเอกสารถูก",
+            "(ช) พิสูจน์ว่ารอด clone — clone branch skill/design ใหม่ทั้งก้อนแล้วรันจากสำเนานั้น: fixture ครบ 3 ชุด (clean/dirty/empty) · exit 0/2/2 · verify-design 0 error/16 warning · ไม่มีไฟล์ CRLF สักไฟล์ · จับได้ระหว่างทางว่า git ไม่ track โฟลเดอร์ว่าง ทำให้ fixtures/empty/ หายจาก commit แรก แก้ด้วยการใส่ README ที่อธิบายว่าทำไมต้องว่าง"
+          ],
+          "not_verified": [
+            "ยังไม่ได้พิสูจน์ว่า /design:init ทำงานในฐานะ slash command จริง — design@aeon ยังไม่ถูกเปิดใช้ใน .claude/settings.json ที่ไหนเลย (ทั้ง root และ aeon-miniloan เปิดแค่ req@aeon) · ที่พิสูจน์แล้วคือระดับสคริปต์กับความถูกของพาธ ${CLAUDE_PLUGIN_ROOT} เท่านั้น · ช่องว่างเดียวกับที่ค้างมาตั้งแต่ S0 เรื่อง /design:help",
+            "D10 ยัง warn ค้างที่ design-plugin-requirements.en.md กับ .md ทั้งสองไฟล์ (ขาดวันทบทวน) ทั้งที่ S1 เพิ่งแก้ §3.1 ในสองไฟล์นั้น — เป็น warn ที่ปิดได้ ไม่ใช่ warn ถาวร แต่จงใจไม่ปิดเอง เพราะการเติมวันทบทวนแทนเจ้าของคือความผิดแบบเดียวกับที่ต้องแก้ไปแล้วใน USER-GUIDE.md"
           ]
         },
         {

@@ -70,17 +70,23 @@ req ──▶ design ──┬──▶ mockup
 
 ### 3.1 Inbound Contract (design ← req)
 
-The plugin MUST bind to contract files, never to `req`'s internal structures.
+The plugin MUST bind to a versioned, schema-bearing contract, never to another plugin's private structures.
 
-| File | Contents | Required |
-|---|---|---|
-| `requirements.json` | REQ-xxx with type, priority, acceptance criteria | Mandatory |
-| `glossary.json` | Domain terms and definitions (Ubiquitous Language) | Mandatory |
-| `stakeholders.json` | Actors and roles | Recommended |
-| `okr.json` | Objectives and Key Results (downstream test oracle) | Recommended |
-| `change-set.json` | Requirement diffs | When changes occur |
+> **Corrected 2026-08-20 (owner decision).** This section previously named five separate files. **None of them exist.** `req` v0.3.0 produces exactly one artifact — `<state-dir>/spec.json` — carrying requirements, glossary and changes as arrays inside it. Taken literally, this section would have made `/design:init` halt on 100% of real projects: the command could never have succeeded once. The intent of the original wording is preserved, because `spec.json` is **not** an internal structure — it carries a published `$id` (`schemas/spec.schema.json`) and a pinned `meta.schema_version`. A versioned, schema-bearing file is a contract.
 
-**Hard rule:** If a mandatory file is missing or malformed, the plugin MUST halt and report exactly what is absent. It MUST NOT infer the missing content and proceed.
+| Source | Section | Stands in for | Required |
+|---|---|---|---|
+| `<state-dir>/spec.json` | `requirements[]` | `requirements.json` | Mandatory |
+| ↳ same file | `glossary[]` | `glossary.json` | Mandatory |
+| ↳ same file | `changes[]` | `change-set.json` | When changes occur |
+| **no producer** | — | `stakeholders.json` | See below |
+| **no producer** | — | `okr.json` | See below |
+
+`req` has no stakeholder concept and no OKR concept at all. The design plugin MUST NOT invent either. §13.3 A4 and V23 require every RBAC role to originate from a stakeholder recorded by req, so the absence becomes an **error at `/design:rbac`**, not at init. `/design:init` records it as `Q-STAKEHOLDERS` with `blocks: ["rbac"]` so it surfaces before that command rather than during it.
+
+**Hard rule:** If a mandatory input is missing or malformed, the plugin MUST halt and report exactly what is absent, **naming the path it looked for**. It MUST NOT infer the missing content and proceed.
+
+**The seam:** exactly one module — `plugins/design/scripts/req-contract.mjs` — knows this shape. If `req` ever does emit the five separate files, only that module changes.
 
 ### 3.2 Outbound Contract (design → downstream)
 

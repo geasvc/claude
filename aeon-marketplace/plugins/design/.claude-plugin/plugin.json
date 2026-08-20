@@ -1,7 +1,7 @@
 {
   "name": "design",
-  "version": "0.1.0",
-  "description": "Phase 2 (Design) worker — SKELETON ONLY at v0.1.0: the sole working command is `help`, and the other fourteen in the design specification are declared-not-built, each labelled as such in commands/help.md so nobody invokes a command that does not exist and gets a guess instead. Turns the requirement spine produced by `req` into two renderings of one truth: a Thai narrative document a client can sign, and structured JSON downstream plugin agents act on without asking a clarifying question. Binds to req through contract files (requirements.json, glossary.json) and MUST halt naming the missing path rather than infer when one is absent. Ownership is per file, never per folder: no JSON file is written by two plugins even for disjoint fields, because regeneration rewrites the whole file and the other party's data disappears silently — so the trace graph is split by author (trace.design.json) and joined at read time by ID. Every artifact carries an ID that traces up to a REQ, every command reads design.state.json before acting and updates it on completion, and completion is decided by a script's exit code, never by a model declaring itself done.",
+  "version": "0.2.0",
+  "description": "Phase 2 (Design) worker — IN PROGRESS at v0.2.0: `help` and `init` work; the other thirteen commands in the design specification are declared-not-built and labelled as such in commands/help.md, so invoking one produces nothing rather than a guess. Turns the requirement spine produced by `req` into two renderings of one truth: a Thai narrative document a client can sign, and structured JSON downstream plugin agents act on without asking a clarifying question. Reads req through scripts/req-contract.mjs, the single place that knows the shape of req output, and HALTS with exit 2 naming the path it looked for when a mandatory input is absent or malformed rather than inferring it. Ownership is per file, never per folder: no JSON file is written by two plugins even for disjoint fields, because regeneration rewrites the whole file and the other party data disappears silently — so the trace graph is split by author and joined at read time by ID. Every command is idempotent, reads design.state.json before acting, updates it on completion, and writes nothing without --write.",
   "author": {
     "name": "Mounchon"
   },
@@ -15,8 +15,7 @@
     "rbac",
     "authorization",
     "sitemap",
-    "sdd",
-    "skeleton"
+    "sdd"
   ],
   "permissions": {
     "allow": [

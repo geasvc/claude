@@ -75,17 +75,23 @@ req ──▶ design ──┬──▶ mockup
 
 ### 3.1 Inbound Contract (design ← req)
 
-design plugin **ต้องไม่** ผูกกับโครงสร้างภายในของ req plugin โดยตรง แต่ผูกกับ **contract file** ที่ req รับรองว่าจะคงรูปแบบไว้
+design plugin **ต้องไม่** ผูกกับไส้ในของ plugin อื่นโดยตรง แต่ผูกกับ **สัญญาที่มี schema และเลขเวอร์ชันกำกับ**
 
-| ไฟล์ | เนื้อหา | จำเป็น |
-|---|---|---|
-| `requirements.json` | รายการ REQ-xxx พร้อม type, priority, acceptance criteria | บังคับ |
-| `glossary.json` | ศัพท์เฉพาะ + คำนิยาม (Ubiquitous Language) | บังคับ |
-| `stakeholders.json` | ผู้เกี่ยวข้อง + บทบาท | ควรมี |
-| `okr.json` | Objective + Key Results (ใช้เป็น test oracle ปลายทาง) | ควรมี |
-| `change-set.json` | รายการ diff เมื่อ requirement เปลี่ยน | เมื่อมีการเปลี่ยน |
+> **แก้เมื่อ 2026-08-20 (เจ้าของเคาะ)** — เดิมหัวข้อนี้ระบุไฟล์แยกกันห้าไฟล์ **ซึ่งไม่มีอยู่จริงสักไฟล์เดียว** `req` v0.3.0 ผลิตของออกมาชิ้นเดียวคือ `<state-dir>/spec.json` โดยเก็บ requirements · glossary · changes เป็น array อยู่ข้างใน ถ้ายึดตามตัวอักษรเดิม `/design:init` จะหยุดทุกโปรเจกต์จริง 100% — ไม่มีทางสำเร็จได้แม้แต่ครั้งเดียว เจตนาเดิมยังอยู่ครบ เพราะ `spec.json` **ไม่ใช่ไส้ใน** มันมี `$id` ประกาศไว้ (`schemas/spec.schema.json`) และมี `meta.schema_version` ตรึงเวอร์ชัน — ไฟล์ที่มี schema และเลขเวอร์ชันคือสัญญา
 
-**กติกา:** ถ้าไฟล์บังคับไม่ครบ → design plugin ต้องหยุดและรายงานว่าขาดอะไร **ห้ามเดาแล้วสร้างต่อ**
+| ต้นทาง | ส่วนที่อ่าน | ใช้แทนไฟล์ | จำเป็น |
+|---|---|---|---|
+| `<state-dir>/spec.json` | `requirements[]` | `requirements.json` | บังคับ |
+| ↳ ไฟล์เดียวกัน | `glossary[]` | `glossary.json` | บังคับ |
+| ↳ ไฟล์เดียวกัน | `changes[]` | `change-set.json` | เมื่อมีการเปลี่ยน |
+| **ไม่มีคนผลิต** | — | `stakeholders.json` | ดูข้างล่าง |
+| **ไม่มีคนผลิต** | — | `okr.json` | ดูข้างล่าง |
+
+`req` **ไม่มีแนวคิด stakeholder และ OKR เลย** และ design **ห้ามคิดขึ้นเอง** เพราะ §13.3 A4 กับ V23 บังคับว่า role ทุกตัวใน rbac ต้องมาจาก stakeholder ที่ req บันทึกไว้ → การขาดนี้จึงกลายเป็น **error ตอน `/design:rbac`** ไม่ใช่ตอน init · `/design:init` บันทึกไว้เป็น `Q-STAKEHOLDERS` ที่ `blocks: ["rbac"]` ให้แล้ว เพื่อให้เห็นก่อนถึงคำสั่งนั้น ไม่ใช่ไปเจอตอนนั้น
+
+**กติกา:** ถ้าของบังคับไม่ครบหรือผิดรูป → design ต้องหยุดและรายงานว่าขาดอะไร **พร้อมบอกพาธที่มันหา** · **ห้ามเดาแล้วสร้างต่อ**
+
+**รอยต่อ:** มีโมดูลเดียวที่รู้จักรูปร่างนี้คือ `plugins/design/scripts/req-contract.mjs` ถ้าวันหนึ่ง `req` ปล่อยไฟล์แยกห้าไฟล์ออกมาจริง แก้ที่โมดูลนั้นที่เดียว
 
 ### 3.2 Outbound Contract (design → downstream)
 

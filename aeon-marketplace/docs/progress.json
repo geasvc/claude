@@ -331,7 +331,7 @@
       "status": "in_progress",
       "blocked_by": [],
       "proof": [],
-      "note": "หนึ่ง step ต่อหนึ่ง session ตาม rules[3] · ลำดับมาจาก §17 Build Order ของสเปก · ข้อบังคับที่สเปกไม่ได้เขียนแต่ marketplace บังคับ: help.md ต้องอัปเดตใน commit เดียวกับทุก step ที่เพิ่มคำสั่ง ไม่งั้น D11 แดง (ขาดคำสั่งเดียวก็แดง) · §16 เคาะแล้วแค่ D1 กับ D17 ที่เหลือยังเป็นข้อเสนอ step ที่ต้องใช้ต้องหยุดถามเจ้าของ ห้ามเลือกเอง ตาม §3.1 กับ CLAUDE.md §6",
+      "note": "หนึ่ง step ต่อหนึ่ง session ตาม rules[3] · ลำดับมาจาก §17 Build Order ของสเปก · ข้อบังคับที่สเปกไม่ได้เขียนแต่ marketplace บังคับ: help.md ต้องอัปเดตใน commit เดียวกับทุก step ที่เพิ่มคำสั่ง ไม่งั้น D11 แดง (ขาดคำสั่งเดียวก็แดง) · §16 เคาะแล้วแค่ D1 กับ D17 ที่เหลือยังเป็นข้อเสนอ step ที่ต้องใช้ต้องหยุดถามเจ้าของ ห้ามเลือกเอง ตาม §3.1 กับ CLAUDE.md §6 · **S1 เจอว่า §3.1 ของสเปกไม่ตรงกับของจริง**: §3.1 ระบุไฟล์สัญญา 5 ไฟล์ แต่ req v0.3.0 ผลิต spec.json ไฟล์เดียว ถ้ายึดตามตัวอักษร init จะ halt ทุกโปรเจกต์จริง 100% · เจ้าของเคาะ 2026-08-20 ให้อ่าน spec.json ผ่าน adapter (plugins/design/scripts/req-contract.mjs เป็นรอยต่อเดียวที่รู้จักรูปร่าง) แล้วแก้ §3.1 ทั้งฉบับ en และ th ให้ตรงความจริง · stakeholders กับ okr ไม่มีคนผลิตเลย เจ้าของเคาะให้เลื่อนไปตัดสินตอน S12 โดย init บันทึก Q-STAKEHOLDERS ที่ blocks:[rbac] ไว้ให้เห็นก่อน",
       "steps": [
         {
           "step": "S0",
@@ -341,8 +341,16 @@
         },
         {
           "step": "S1",
-          "status": "pending",
-          "title": "/design:init"
+          "status": "done",
+          "title": "/design:init — ตัวอ่านสัญญาจาก req + ไฟล์สถานะ + fixture 3 ชุด",
+          "closed_at": "2026-08-20",
+          "proof": [
+            "(ก) ชุดทดสอบตัวสคริปต์ ผลจริงที่รันเมื่อ 2026-08-20 — `node plugins/design/scripts/init.mjs --root plugins/design/scripts/fixtures/clean` exit 0 · `--root .../dirty --state-dir .notaeon` exit 2 (1 MALFORMED requirements เป็น object + 1 MISSING glossary[]) · `--root .../empty` exit 2 (MISSING spec.json พร้อมพิมพ์พาธเต็มที่มันหา) · สัญญาของแต่ละ fixture อยู่ที่ plugins/design/scripts/fixtures/EXPECTED.md",
+            "(ข) dirty ใช้ .notaeon จงใจแบบเดียวกับ fixture ของ req = พิสูจน์ว่าชื่อไดเรกทอรีสถานะเป็นพารามิเตอร์จริง · resolver ให้ .aeon (default) / .custom (--state-dir) / .fromenv ($AEON_STATE_DIR) และ flag ชนะ env ตามลำดับที่ประกาศไว้",
+            "(ค) idempotent พิสูจน์ด้วยการรันจริงไม่ใช่การอ่านโค้ด — เขียนรอบแรก แล้วแกล้งตั้ง overview เป็น done/attempts 3/artifacts [context.json] แล้วเขียนรอบสอง ผล: overview ยัง done · attempts ยัง 3 · artifacts ยังอยู่ · steps ยัง 14 ไม่มี id ซ้ำ · openQuestions ยัง 1 ไม่ append ซ้ำ · init.attempts นับขึ้นเป็น 2 ตามที่ควร",
+            "(ง) อ่านโปรเจกต์จริงได้ ไม่ใช่แค่ fixture — `readReqContract({root:aeon-miniloan})` -> ok true · schema 0.3.0 · module loan · requirements 9 · glossary 23 · changes 0",
+            "(จ) ไม่กระทบของเดิม — `node scripts/verify-design.mjs --root .` 0 error / 16 warning เท่า baseline ก่อนเริ่ม S0 ทุกตัว · req fixtures ยังนิ่ง clean exit 0 / dirty exit 1"
+          ]
         },
         {
           "step": "S2",

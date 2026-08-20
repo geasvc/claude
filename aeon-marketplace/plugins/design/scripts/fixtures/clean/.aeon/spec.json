@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "module": "fixture-clean",
+    "schema_version": "0.3.0",
+    "scale": "SMALL",
+    "status": "draft"
+  },
+  "sources": [],
+  "glossary": [
+    { "id": "UL-fx-001", "term": "วงเงิน", "definition": "จำนวนเงินสูงสุดที่อนุมัติให้ลูกค้ารายหนึ่ง" }
+  ],
+  "requirements": [
+    { "id": "REQ-fx-001", "title": "ตรวจวงเงินก่อนอนุมัติ", "is_current": true }
+  ],
+  "rules": [],
+  "examples": [],
+  "changes": []
+}

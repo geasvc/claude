@@ -30,8 +30,8 @@
     {
       "name": "design",
       "source": "./plugins/design",
-      "description": "Phase 2 (Design). SKELETON ONLY at v0.1.0 — `help` is the sole working command; the other fourteen are declared-not-built and labelled as such in commands/help.md, so an invocation of one produces nothing rather than a guess. Turns the rule spine from `req` into two renderings of one truth: a Thai narrative document the client signs, and structured JSON that mockup / dev / qa act on without a clarifying question. Binds to req through contract files and halts naming the missing path rather than inferring when one is absent. Ownership is per file, never per folder — no JSON is written by two plugins even for disjoint fields, since regeneration rewrites the whole file and the other party data disappears silently, so the trace graph is split by author and joined at read time by ID. The permission matrix is four-dimensional (data scope, state condition, field level, delegation), defaults to deny, and must be enforced at api or domain because hiding a button is not access control.",
-      "version": "0.1.0",
+      "description": "Phase 2 (Design) worker — IN PROGRESS at v0.2.0: `help` and `init` work; the other thirteen commands in the design specification are declared-not-built and labelled as such in commands/help.md, so invoking one produces nothing rather than a guess. Turns the requirement spine produced by `req` into two renderings of one truth: a Thai narrative document a client can sign, and structured JSON downstream plugin agents act on without asking a clarifying question. Reads req through scripts/req-contract.mjs, the single place that knows the shape of req output, and HALTS with exit 2 naming the path it looked for when a mandatory input is absent or malformed rather than inferring it. Ownership is per file, never per folder: no JSON file is written by two plugins even for disjoint fields, because regeneration rewrites the whole file and the other party data disappears silently — so the trace graph is split by author and joined at read time by ID. Every command is idempotent, reads design.state.json before acting, updates it on completion, and writes nothing without --write.",
+      "version": "0.2.0",
       "category": "development",
       "keywords": [
         "design",
@@ -43,8 +43,7 @@
         "rbac",
         "authorization",
         "sitemap",
-        "sdd",
-        "skeleton"
+        "sdd"
       ]
     }
   ]

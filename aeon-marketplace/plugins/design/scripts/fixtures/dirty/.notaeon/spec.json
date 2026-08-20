@@ -1,0 +1,8 @@
+{
+  "meta": {
+    "module": "fixture-dirty",
+    "schema_version": "0.3.0"
+  },
+  "requirements": { "REQ-fx-001": "requirements ต้องเป็น array ไม่ใช่ object — จงใจผิด" },
+  "changes": []
+}

@@ -1,0 +1,537 @@
+{
+  "meta": {
+    "module": "job",
+    "schema_version": "0.3.0",
+    "scale": "QUICK",
+    "status": "draft"
+  },
+  "sources": [
+    {
+      "id": "SRC-010",
+      "kind": "file",
+      "path": "C:/Users/mounc/Downloads/outside-project.docx",
+      "hash_at_import": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "captured_at": "2026-08-01T13:00+07:00",
+      "captured_by": "/req:capture job"
+    },
+    {
+      "id": "SRC-011",
+      "kind": "file",
+      "path": "docs/tor/deleted-by-user.docx",
+      "hash_at_import": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "captured_at": "2026-08-01T13:00+07:00",
+      "captured_by": "/req:capture job"
+    },
+    {
+      "id": "SRC-012",
+      "kind": "file",
+      "path": "docs/tor/changed-after-import.md",
+      "hash_at_import": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "captured_at": "2026-08-01T13:00+07:00",
+      "captured_by": "/req:capture job"
+    },
+    {
+      "id": "SRC-013",
+      "kind": "image",
+      "path": "docs/sources/never-written.png",
+      "hash_at_import": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "captured_at": "2026-08-01T13:00+07:00",
+      "captured_by": "/req:capture job (pasted image)",
+      "interpretation": {
+        "by": "claude-opus-5",
+        "at": "2026-08-01T13:00+07:00",
+        "transcript": "อ่านจากรูปได้ว่า 'ยกเลิกงานแล้วเงินคืนเต็มจำนวน'",
+        "confidence": 0.5,
+        "validation": {
+          "state": "deferred",
+          "at": "2026-08-01T13:05+07:00",
+          "corrected_to": null,
+          "question": null
+        }
+      }
+    },
+    {
+      "id": "SRC-014",
+      "kind": "sample_data",
+      "path": "docs/sources/SRC-014-sample-unmasked.csv",
+      "imported_from": "C:/Users/mounc/Downloads/jobs-raw.csv",
+      "hash_at_import": "sha256:8424ee460249ad6fce7023b1c3b7a060986371f90bb949a9d918e752ed8ef2e5",
+      "captured_at": "2026-08-01T13:10+07:00",
+      "captured_by": "/req:capture job",
+      "extracted": {
+        "by": "csv-parse",
+        "row_count": 2,
+        "schema": [
+          {
+            "name": "job_id",
+            "type": "text"
+          },
+          {
+            "name": "customer",
+            "type": "text"
+          },
+          {
+            "name": "phone",
+            "type": "text"
+          },
+          {
+            "name": "total",
+            "type": "number"
+          }
+        ]
+      }
+    }
+  ],
+  "glossary": [
+    {
+      "id": "UL-job-010",
+      "term_th": "การยกเลิก",
+      "term_en": "Cancellation",
+      "definition": "",
+      "aka": [],
+      "not_to_confuse_with": [
+        "UL-job-999"
+      ],
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-012",
+          "locator": {
+            "page": 1
+          },
+          "quote": "..."
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-job-011",
+      "term_th": "คำที่ไม่มีใครใช้",
+      "term_en": "OrphanTerm",
+      "definition": "นิยามไว้แต่ไม่มี requirement ไหนอ้างถึง",
+      "aka": [],
+      "not_to_confuse_with": [],
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-012",
+          "locator": {
+            "page": 1
+          },
+          "quote": "..."
+        }
+      ],
+      "becomes_entity": null
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-job-002",
+      "title": "การยกเลิกงานขนส่ง",
+      "actor": "",
+      "goal": "",
+      "status": "draft",
+      "has_ui": true,
+      "domain_concepts": [
+        "UL-job-010",
+        "UL-job-777"
+      ],
+      "rules": [
+        "BR-job-020",
+        "BR-job-021",
+        "BR-job-022",
+        "BR-job-030"
+      ],
+      "provenance": [
+        {
+          "source": "SRC-099",
+          "locator": {
+            "page": 1
+          },
+          "quote": "แหล่งที่ไม่มีอยู่จริง"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "id": "BR-job-020@v1",
+      "base_id": "BR-job-020",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-job-002",
+      "statement": "ยกเลิกงานได้เฉพาะก่อนสถานะ LOAD แล้วคืนเงินตามสัดส่วนที่วิ่งไปแล้ว",
+      "kind": "calculation",
+      "examples": [],
+      "questions": [
+        "Q-job-009"
+      ],
+      "provenance": [
+        {
+          "source": "SRC-012",
+          "locator": {
+            "page": 1
+          },
+          "quote": "..."
+        }
+      ],
+      "traces_down": {
+        "features": [],
+        "test_cases": []
+      }
+    },
+    {
+      "id": "BR-job-021@v1",
+      "base_id": "BR-job-021",
+      "version": 1,
+      "is_current": true,
+      "status": "superseded",
+      "belongs_to": "REQ-job-002",
+      "statement": "ยกเลิกแล้วคืนเงินเต็มจำนวน",
+      "kind": "policy",
+      "constrained_by": "CALC-job-999@v1",
+      "examples": [
+        "EX-job-040"
+      ],
+      "questions": [],
+      "provenance": [
+        {
+          "source": "SRC-012",
+          "locator": {
+            "page": 1
+          },
+          "quote": "..."
+        }
+      ],
+      "traces_down": {
+        "features": [],
+        "test_cases": []
+      }
+    },
+    {
+      "id": "BR-job-022@v1",
+      "base_id": "BR-job-022",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-job-002",
+      "statement": "ค่าปรับยกเลิกคิด 10% ของยอดงาน",
+      "kind": "calculation",
+      "golden": [
+        "GD-job-021"
+      ],
+      "examples": [
+        "EX-job-041"
+      ],
+      "questions": [],
+      "provenance": [
+        {
+          "source": "SRC-012",
+          "locator": {
+            "page": 1
+          },
+          "quote": "..."
+        }
+      ],
+      "traces_down": {
+        "features": [],
+        "test_cases": []
+      }
+    },
+    {
+      "id": "BR-job-022@v2",
+      "base_id": "BR-job-022",
+      "version": 2,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-job-002",
+      "statement": "งานที่ยกเลิกแล้วเปิดใหม่ได้ถ้า admin อนุมัติ",
+      "kind": "invariant",
+      "examples": [
+        "EX-job-041"
+      ],
+      "questions": [],
+      "provenance": [
+        {
+          "source": "SRC-012",
+          "locator": {
+            "page": 1
+          },
+          "quote": "..."
+        }
+      ],
+      "supersedes": null,
+      "superseded_by": null,
+      "change_reason": null,
+      "traces_down": {
+        "features": [],
+        "test_cases": []
+      }
+    }
+  ],
+  "calculations": [
+    {
+      "id": "CALC-job-010@v1",
+      "base_id": "CALC-job-010",
+      "version": 1,
+      "is_current": false,
+      "constrains": "BR-job-999@v1",
+      "formula": "refund = paid_amount",
+      "inputs": [
+        {
+          "name": "paid_amount",
+          "type": "money(2)"
+        }
+      ],
+      "numeric_type": "decimal",
+      "rounding_mode": "HALF_UP",
+      "rounding_points": "ปัดที่ยอดคืนครั้งเดียว",
+      "boundary_behavior": [
+        "paid_amount = 0 → refund = 0"
+      ],
+      "status": "superseded",
+      "provenance": [
+        {
+          "source": "SRC-012",
+          "locator": {
+            "page": 1
+          },
+          "quote": "..."
+        }
+      ],
+      "superseded_by": "CALC-job-010@v2",
+      "superseded_at": "2026-08-05T09:00+07:00"
+    },
+    {
+      "id": "CALC-job-011@v1",
+      "base_id": "CALC-job-011",
+      "version": 1,
+      "is_current": true,
+      "constrains": "BR-job-020@v1",
+      "formula": "fee = amount * rate",
+      "inputs": [
+        {
+          "name": "amount",
+          "type": "money(2)"
+        },
+        {
+          "name": "rate",
+          "type": "rate(10)"
+        }
+      ],
+      "numeric_type": "float",
+      "rounding_mode": "HALF_UP",
+      "rounding_points": "ปัดตอนท้าย",
+      "boundary_behavior": [
+        "rate = 0 → fee = 0"
+      ],
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-012",
+          "locator": {
+            "page": 1
+          },
+          "quote": "..."
+        }
+      ]
+    },
+    {
+      "id": "CALC-job-010@v2",
+      "base_id": "CALC-job-010",
+      "version": 2,
+      "is_current": true,
+      "constrains": "BR-job-999@v1",
+      "formula": "refund = paid_amount",
+      "inputs": [
+        {
+          "name": "paid_amount",
+          "type": "money(2)"
+        }
+      ],
+      "numeric_type": "decimal",
+      "rounding_mode": "HALF_UP",
+      "rounding_points": "ปัดทุกงวด",
+      "boundary_behavior": [
+        "paid_amount = 0 → refund = 0"
+      ],
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-012",
+          "locator": {
+            "page": 1
+          },
+          "quote": "..."
+        }
+      ],
+      "superseded_by": null,
+      "superseded_at": null,
+      "supersedes": "CALC-job-010@v1",
+      "change_reason": "ลูกค้าเปลี่ยนวิธีคืนเงิน"
+    },
+    {
+      "id": "CALC-job-011@v2",
+      "base_id": "CALC-job-011",
+      "version": 2,
+      "is_current": true,
+      "constrains": "BR-job-020@v1",
+      "formula": "fee = amount * rate",
+      "inputs": [
+        {
+          "name": "amount",
+          "type": "money(2)"
+        },
+        {
+          "name": "rate",
+          "type": "rate(10)"
+        }
+      ],
+      "numeric_type": "decimal",
+      "rounding_mode": "HALF_UP",
+      "rounding_points": "ปัดตอนท้าย",
+      "boundary_behavior": [
+        "rate = 0 → fee = 0"
+      ],
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-012",
+          "locator": {
+            "page": 1
+          },
+          "quote": "..."
+        }
+      ],
+      "supersedes": "CALC-job-011@v1"
+    }
+  ],
+  "golden_datasets": [
+    {
+      "id": "GD-job-020",
+      "proves": [
+        "BR-job-999@v1"
+      ],
+      "computed_by": "golden/CALC-job-999@v1.mjs",
+      "status": "draft",
+      "verified_by": "พี่ปู",
+      "verified_at": "2026-08-13T10:00+07:00",
+      "rows": [
+        {
+          "input": {
+            "amount": 100
+          },
+          "expected": {
+            "refund": "100.00"
+          }
+        }
+      ]
+    },
+    {
+      "id": "GD-job-021",
+      "proves": [
+        "BR-job-022@v1"
+      ],
+      "computed_by": "golden/CALC-job-011@v1.mjs",
+      "status": "draft",
+      "verified_by": null,
+      "verified_at": null,
+      "rows": [
+        {
+          "input": {
+            "amount": 1000
+          },
+          "expected": {
+            "fee": "100.00"
+          }
+        }
+      ]
+    }
+  ],
+  "examples": [
+    {
+      "id": "EX-job-040",
+      "proves": [
+        "BR-job-021@v1"
+      ],
+      "kind": "happy",
+      "status": "draft",
+      "given": "งาน J-010 อยู่สถานะ ASSIGN",
+      "when": "กดยกเลิกงาน",
+      "then": "แสดงข้อความผิดพลาด"
+    },
+    {
+      "id": "EX-job-041",
+      "proves": [
+        "BR-job-022"
+      ],
+      "kind": "exception",
+      "status": "draft",
+      "given": "งาน J-011 ถูกยกเลิกแล้ว",
+      "when": "กดเปิดงานใหม่",
+      "then": "ระบบปฏิเสธ"
+    },
+    {
+      "id": "EX-job-099",
+      "proves": [
+        "BR-job-999@v1"
+      ],
+      "kind": "boundary",
+      "status": "draft",
+      "given": "...",
+      "when": "...",
+      "then": "..."
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q-job-009",
+      "question": "ยกเลิกหลังรถออกแล้ว คิดค่าเสียเวลาไหม",
+      "raised_by": "BR-job-020@v1",
+      "state": "open",
+      "answer": null,
+      "answered_at": null
+    }
+  ],
+  "deferred_questions": [
+    {
+      "id": "DQ-job-005",
+      "question": "ยอดคืนเงินปัดเศษยังไง และเก็บที่ decimal(p,s) เท่าไหร่",
+      "raised_by": "BR-job-021",
+      "category": "calculation",
+      "blocked_until": "entity:Job.RefundAmount",
+      "answer_phase": "domain",
+      "state": "open",
+      "answer": null,
+      "answered_at": null,
+      "resulted_in": []
+    }
+  ],
+  "rollup": {
+    "rules_total": 99,
+    "rules_with_example": 99,
+    "rules_with_green_test": 5,
+    "open_questions": 0,
+    "open_deferred": 0,
+    "rule_coverage": 1,
+    "ready_for_next_step": true
+  },
+  "changes": [
+    {
+      "id": "CHG-job-010",
+      "at": "2026-08-05T09:00+07:00",
+      "requested_by": "ลูกค้า",
+      "triggered_by": [
+        "SRC-099"
+      ],
+      "reason": "เปลี่ยนวิธีคิดค่าปรับ",
+      "affects": [
+        "BR-job-998@v1"
+      ],
+      "invalidates": [
+        "GD-job-021"
+      ]
+    }
+  ]
+}

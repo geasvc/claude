@@ -1,0 +1,30 @@
+{
+  "$comment": "TRUTH for this fixture's authoring bundle. docs/wiki/** here is a RENDER of this file, produced by: node ../../wiki-authoring.mjs --root . --write · Its whole job is to give D4-equality and D7 something VALID to look at — a gate nobody has watched pass is a gate nobody trusts when it goes red.",
+  "version": "0.1.0",
+  "owner": "พี่ปู",
+  "reviewed": "2026-08-13",
+  "nodes": [
+    {
+      "id": "PLG-demo",
+      "type": "Plugin",
+      "title": "demo",
+      "description": "plugin ตัวอย่างของ fixture — มีคำสั่งเดียว",
+      "resource": "plugins/demo",
+      "tags": ["fixture"],
+      "lifecycle": "built",
+      "summary": "plugin ที่ถูกต้องทุกข้อ มีไว้ให้ตัวตรวจได้เห็นของที่ผ่านจริง ไม่ใช่เห็นแต่ของที่ตก",
+      "links": ["CMD-demo-001"]
+    },
+    {
+      "id": "CMD-demo-001",
+      "type": "Command",
+      "title": "/demo:thing",
+      "description": "คำสั่งเดียวของ plugin ตัวอย่าง",
+      "resource": "plugins/demo/commands/thing.md",
+      "tags": ["fixture"],
+      "lifecycle": "built",
+      "summary": "ทำสิ่งหนึ่งอย่าง แล้วหยุดรออนุมัติ",
+      "links": ["PLG-demo"]
+    }
+  ]
+}

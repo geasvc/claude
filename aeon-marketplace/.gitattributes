@@ -1,0 +1,19 @@
+# .gitattributes — marketplace `aeon`
+#
+# `* -text` = git ห้ามแปลงตัวขึ้นบรรทัดใหม่ (newline) ทั้ง ตอน commit และตอน checkout
+# ไฟล์ใน repo นี้เป็น LF ทั้งหมด และต้องอยู่เป็น LF บนทุกเครื่อง
+#
+# ทำไมถึงเป็นเรื่องคอขาดบาดตาย ไม่ใช่เรื่องความสวยงาม:
+#   plugins/req/scripts/doc-hash.mjs คิด sha256 จากเนื้อไฟล์ดิบ ไม่มีขั้นตอน normalize
+#   docs/design-registry.json เก็บ hash เหล่านั้นไว้เป็นตัวเทียบ
+#   ด่าน D4 กับ scripts/wiki-authoring.mjs วัด drift จาก hash นี้
+#
+#   ค่าเริ่มต้นของ Git for Windows คือ core.autocrlf=true (checkout แล้วแปลงเป็น CRLF)
+#   ถ้าปล่อยไว้ คนที่ clone ไปจะได้ไฟล์ CRLF → hash เปลี่ยนทุกไฟล์ →
+#   `node scripts/verify-design.mjs --root .` แดงที่ D4 และ
+#   `node scripts/wiki-authoring.mjs --root .` ขึ้น STALE ทั้ง bundle
+#   ทั้งที่ไม่มีใครแก้อะไรเลย
+#
+#   และมองไม่เห็นจากเครื่องที่ commit — เครื่องนั้นยังขึ้น "already matches" ตามปกติ
+
+* -text

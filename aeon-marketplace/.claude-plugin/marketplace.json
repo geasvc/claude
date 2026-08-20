@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "aeon",
+  "version": "0.1.0",
+  "description": "aeon — plugins for building a system end to end: gather the requirement, design it, build it, test it, hand it over. Built for a human driver rather than an AI orchestrator. Work happens in the main thread, every command stops for approval, and every gate is a deterministic script with no step left to a model's judgement. Status lives in JSON, knowledge lives in Markdown, and generated documents are never edited by hand.",
+  "owner": {
+    "name": "Mounchon"
+  },
+  "plugins": [
+    {
+      "name": "req",
+      "source": "./plugins/req",
+      "description": "Phase 1 (Analysis). Turns raw requirements — typed text, documents, spreadsheets, photos, chat screenshots, and extracts of the customer's real records — into a traceable spec.json of UL / REQ / BR / CALC / GD / EX / Q / NFR, keeping every source on disk under docs/ with page-level provenance so any rule can be traced back to the document it came from. Pins the arithmetic a rule depends on in a Calculation Contract (formula, numeric type, rounding mode AND rounding points, residual policy, boundary behaviour) because two correct implementations of the same rule otherwise disagree by satang. Frames the module before eliciting any rule — end goal, what this round deliberately leaves out, who else touches the data, and which two words are the same thing — settling the ubiquitous language in that same pass, since an undefined word makes every rule that uses it ambiguous. Runs Example Mapping as multiple-choice rounds of three with the owner's habitual answers pre-selected, splits AI interpretation from deterministic extraction so a misread screenshot never masquerades as a document, and keeps a data extract as its own kind so 500 real rows are treated as evidence of correct values rather than a source to guess rules from. Proves the arithmetic by RUNNING a script whose numbers a human then signs, rather than by reasoning about the formula — and when the answer key and the contract disagree, it is the contract that changes. Turns 'not sure yet' into a red card that blocks CP1. Ships verify-rules.mjs, a deterministic gate of fourteen checks with no LLM judgement, and regenerates two renders of the same truth: a readable Thai markdown document per requirement, and an OKF knowledge bundle under docs/wiki/ of one file per node — every page carrying a per-node hash so a document that no longer matches the spec goes red instead of quietly lying.",
+      "version": "0.3.0",
+      "category": "development",
+      "keywords": ["requirements", "analysis", "example-mapping", "business-rules", "provenance", "traceability", "sample-data", "pii", "bdd", "ddd", "gherkin"]
+    }
+  ]
+}

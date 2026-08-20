@@ -1,0 +1,439 @@
+{
+  "version": "0.3.0",
+  "source": "Field-tested question bank of the `req` plugin (aeon). Every OFFICIAL question here earned its place by surfacing a forgotten rule in real client work. Do NOT add questions derived from theory. Tier 1 ships PROVISIONAL on purpose — see tiers.1.status. Design notes: docs/requirement/req-skill-design.md §4.",
+  "tiers": {
+    "1": {
+      "title_th": "กรอบ",
+      "status": "provisional",
+      "pipeline_steps": "1-4 — End Goal · Scope · Actors · Ubiquitous Language",
+      "when": "once per module, after /req:capture, before the first rule question",
+      "rounds": 2,
+      "round_map": "6 questions in `order`, taken 3 at a time: round A = end_goal + scope x2 (what counts as done, and how far) · round B = actors x2 + language (who, and what things are called). per_round stays 3 — ask_rules is untouched.",
+      "requires": "spec.sources[] must not be empty. A framing red card has to point somewhere, and the schema allows `question.raised_by` to be a SRC-xxx or a BR-xxx@vN only (check #4 resolves it). Tier 1 runs before any rule exists, so SRC is the only option left. No source -> say so and stop; run /req:capture first.",
+      "star_rule": "The star on a TIER 1 question is NOT the owner's habit. It is the reading taken from the captured input, and it must be shown with its SRC id and locator next to it. Habits repeat across projects; an end goal does not. If the input supports no option, ask with no star and say the input is silent. (Tier 2 keeps owner_pattern below.)",
+      "may_write": [
+        "requirements[].goal",
+        "requirements[].business_value",
+        "requirements[].actor",
+        "requirements[].narrative",
+        "glossary[]",
+        "questions[]"
+      ],
+      "may_not_write": [
+        "rules[]",
+        "calculations[]",
+        "examples[]",
+        "golden_datasets[]",
+        "changes[]",
+        "deferred_questions[]"
+      ],
+      "may_not_write_why": "Framing is pipeline steps 1-4; rules start at step 5. An answer that states a rule is reported at the stop and drafted by its tier 2 category, with provenance pointing back at the same source. deferred_questions[] is closed to tier 1 by the SCHEMA, not by preference: deferredQuestion.category is an enum of the ten tier 2 categories only.",
+      "coverage": "session-tracked, same as tier 2. Readable hints only, never a gate: REQ.goal / REQ.actor filled (check #1 already errors when they are not), REQ.business_value filled, glossary[] non-empty (check #11, warn). `scope` has nothing to read — see declared_gap.",
+      "declared_gap": "There is no queryable out-of-scope field in spec.json. In-scope shows up as which REQ exist; an exclusion lands in requirements[].narrative and in the round report; a disputed exclusion becomes a Q-xxx red card. Adding meta.out_of_scope[] would touch meta (additionalProperties:false), both fixtures, possibly rollup + check #9, the renderer and EXPECTED.md — that is a round of its own, not a side effect of this one.",
+      "promotion": "A tier 1 question becomes official when it has surfaced a rule someone had forgotten on REAL CLIENT WORK at least once: record where in `field_evidence` and drop `status`. `derived_from` is where the wording came from, never evidence — teaching material and a fictional teaching project cannot promote a question. Until then the whole tier stays provisional (design §4: สร้างเป็นร่างก่อน แล้วเลื่อนเป็นทางการหลังใช้จริงรอบแรก)."
+    },
+    "2": {
+      "title_th": "กฎ",
+      "status": "official",
+      "pipeline_steps": "5-7 — Business Rules · Calculation Contract · State Machine",
+      "when": "every round, per requirement, repeatable until the relevant categories are covered"
+    }
+  },
+  "ask_rules": {
+    "per_round": 3,
+    "format": "multiple_choice",
+    "always_offer_undecided": true,
+    "preselect_default": true,
+    "timebox_minutes": 25,
+    "note": "The starred default is the OWNER'S DESIGN HABIT, not a domain law. Pre-select it, never skip the asking. Enterprise work often wants the opposite (retry queues, effective dates). Tier 1 stars mean something different — see tiers.1.star_rule."
+  },
+  "owner_pattern": "Consistently picks simple / direct / fail-loudly (round everywhere, fail fast, hit the constraint, see only your own) over clever / flexible / swallow-the-error. Recorded from tier 2 rounds only.",
+  "categories": [
+    {
+      "id": "end_goal",
+      "tier": 1,
+      "title_th": "เป้าหมายปลายทาง",
+      "status": "provisional",
+      "questions": [
+        {
+          "id": "QB-goal-01",
+          "order": 1,
+          "status": "provisional",
+          "text_th": "ถ้าส่งมอบแล้ว <ผู้ใช้หลัก> ยังต้องทำ <งานเดิม> ด้วยมืออยู่ ถือว่าโมดูลนี้สำเร็จไหม",
+          "options": [
+            { "key": "a", "text_th": "ไม่สำเร็จ — ต้องเลิกทำมือทั้งหมด" },
+            { "key": "b", "text_th": "สำเร็จ ถ้าเหลือทำมือเฉพาะเคสยกเว้น" },
+            { "key": "c", "text_th": "สำเร็จ — ระบบแค่บันทึกผลของงานที่ทำมือไปแล้ว" },
+            { "key": "z", "text_th": "ยังไม่แน่ใจ / ต้องถามลูกค้า", "red_card": true }
+          ],
+          "default_source": "input",
+          "derived_from": "docs/req-pipeline-slides.md · การ์ดใบ 1 End Goal · กับดัก \"เขียนเป็นรายการฟีเจอร์แทนผลลัพธ์\"",
+          "field_evidence": null,
+          "lands_in": ["requirements[].goal", "requirements[].business_value"],
+          "why_this_shape": "A goal stated as an observable end state can be disagreed with; a feature list cannot. All three options are end states, so no answer lets the goal stay a list."
+        }
+      ]
+    },
+    {
+      "id": "scope",
+      "tier": 1,
+      "title_th": "ขอบเขต",
+      "status": "provisional",
+      "questions": [
+        {
+          "id": "QB-bound-01",
+          "order": 2,
+          "status": "provisional",
+          "text_th": "<ของที่อินพุตเอ่ยถึงแต่ยังไม่มีใครตัดสิน> อยู่ในรอบนี้ไหม",
+          "options": [
+            { "key": "a", "text_th": "อยู่ในรอบนี้" },
+            { "key": "b", "text_th": "ไม่อยู่ — ยกไปรอบถัดไป" },
+            { "key": "c", "text_th": "อยู่บางส่วน — ต้องระบุว่าส่วนไหนอยู่" },
+            { "key": "z", "text_th": "ยังไม่แน่ใจ / ต้องถามลูกค้า", "red_card": true }
+          ],
+          "default_source": "input",
+          "derived_from": "docs/req-pipeline-slides.md · การ์ดใบ 2 Scope · กับดัก \"มีแต่ In Scope → ทุกคนคิดว่าของที่ตัวเองอยากได้อยู่ในนั้น\"",
+          "field_evidence": null,
+          "lands_in": ["requirements[] (in scope = a REQ exists)", "requirements[].narrative (out of scope)", "questions[] (disputed)"],
+          "why_this_shape": "Asked one candidate at a time, taken from the input, so the exclusion list is built from what the client actually said instead of from a checklist. Option c exists because half-in is the answer that gets skipped and then argued about at handover."
+        },
+        {
+          "id": "QB-bound-02",
+          "order": 3,
+          "status": "provisional",
+          "text_th": "ตัด <ของที่เพิ่งบอกว่าไม่อยู่ในรอบนี้> ออกแล้ว ยังบรรลุเป้าหมายปลายทางที่เพิ่งตอบไปไหม",
+          "options": [
+            { "key": "a", "text_th": "ยังบรรลุ — ของที่ตัดออกเป็นส่วนขยาย" },
+            { "key": "b", "text_th": "บรรลุแบบมีเงื่อนไข — ต้องมีทางทำมือรองรับระหว่างนี้" },
+            { "key": "c", "text_th": "ไม่บรรลุ — ต้องดึงกลับเข้ารอบนี้ หรือแก้เป้าหมายให้เล็กลง" },
+            { "key": "z", "text_th": "ยังไม่แน่ใจ / ต้องถามลูกค้า", "red_card": true }
+          ],
+          "default_source": "input",
+          "derived_from": "docs/req-pipeline-slides.md · สไลด์ 3 ลูป L4 Scope → Goal · ตัวอย่าง MiniLoan \"ตัด collection ออกแล้ว ระบบยังเรียกว่าระบบสินเชื่อได้ไหม\"",
+          "field_evidence": null,
+          "lands_in": ["requirements[].goal (answer c moves the goal)", "requirements[].narrative", "questions[]"],
+          "why_this_shape": "This is loop L4 asked on purpose instead of waiting for it to happen. It only works right after QB-scope-01, which is why `order` is fixed: the thing being cut has to be named before you can ask whether cutting it still lands the goal."
+        }
+      ]
+    },
+    {
+      "id": "actors",
+      "tier": 1,
+      "title_th": "ผู้เกี่ยวข้อง",
+      "status": "provisional",
+      "questions": [
+        {
+          "id": "QB-actor-01",
+          "order": 4,
+          "status": "provisional",
+          "text_th": "นอกจาก <actor ที่อินพุตเอ่ยถึง> มีใครอีกที่แตะข้อมูลชุดนี้ — ลูกค้าปลายทาง / ระบบอัตโนมัติ / ผู้ตรวจสอบ",
+          "options": [
+            { "key": "a", "text_th": "มีแค่ที่อินพุตเอ่ยถึง" },
+            { "key": "b", "text_th": "มีงานอัตโนมัติ / งานตามเวลา ที่ไม่มีคนกด" },
+            { "key": "c", "text_th": "มีคนนอกองค์กร (ลูกค้าปลายทาง / ผู้ตรวจ) ที่เห็นข้อมูลบางส่วน" },
+            { "key": "z", "text_th": "ยังไม่แน่ใจ / ต้องถามลูกค้า", "red_card": true }
+          ],
+          "default_source": "input",
+          "derived_from": "docs/req-pipeline-slides.md · สไลด์ 3 ลูป L5 API → Actors · ตัวอย่าง MiniLoan \"Applicant ยิง /approve ได้ไหม — ไม่มีใครเคยตอบ\"",
+          "field_evidence": null,
+          "lands_in": ["requirements[].actor", "glossary[] (a new actor is a term before it is a role)"],
+          "why_this_shape": "An actor nobody listed gets no permission rule, and the hole only shows up at step 11 when the role matrix is written. The three options are the three kinds of actor that get left out — a person outside the org, a scheduled job, and nobody."
+        },
+        {
+          "id": "QB-actor-02",
+          "order": 5,
+          "status": "provisional",
+          "text_th": "<actor> ทำอะไร \"ไม่ได้\" — ข้อห้ามที่ต้องเขียนไว้ตั้งแต่ตอนนี้",
+          "options": [
+            { "key": "a", "text_th": "ไม่มีข้อห้าม — ทำได้ทุกอย่างในขอบเขตข้อมูลของตัวเอง" },
+            { "key": "b", "text_th": "ห้ามทำสิ่งที่ย้อนกลับไม่ได้ (อนุมัติ / ปิดงาน / ยกเลิก)" },
+            { "key": "c", "text_th": "อ่านอย่างเดียว" },
+            { "key": "z", "text_th": "ยังไม่แน่ใจ / ต้องถามลูกค้า", "red_card": true }
+          ],
+          "default_source": "input",
+          "derived_from": "docs/req-pipeline-slides.md · การ์ดใบ 3 Actors · กับดัก \"ลืมเขียนว่าทำอะไรไม่ได้ → กลายเป็นช่องโหว่สิทธิ์ในข้อ 11\" · ประโยค \"Actor ที่ไม่มีข้อห้าม คือ actor ที่ทำได้ทุกอย่าง\"",
+          "field_evidence": null,
+          "lands_in": ["requirements[].actor", "requirements[].narrative"],
+          "handoff": "The answer is rule-shaped and tier 1 does not draft rules. Report it at the stop as `หมวด permission ชั้น 2 ค้างอยู่ 1 ข้อ` and let /req:ask permission draft the BR, with provenance pointing at the same source. Never draft the BR here — that would put rule drafting on two paths.",
+          "why_this_shape": "Option a is deliberately available and deliberately loud: choosing it records that the actor really has no prohibition, which is different from nobody having asked."
+        }
+      ]
+    },
+    {
+      "id": "language",
+      "tier": 1,
+      "title_th": "ศัพท์กลาง",
+      "status": "provisional",
+      "questions": [
+        {
+          "id": "QB-lang-01",
+          "order": 6,
+          "status": "provisional",
+          "text_th": "<คำ ก> กับ <คำ ข> ที่เจอในอินพุต เป็นสิ่งเดียวกันไหม",
+          "options": [
+            { "key": "a", "text_th": "สิ่งเดียวกัน — ใช้คำเดียวทั้งเอกสาร โค้ด และ UI" },
+            { "key": "b", "text_th": "คนละสิ่ง — แยกนิยาม และเขียน \"ห้ามสับสนกับ\" กันไว้" },
+            { "key": "c", "text_th": "ซ้อนกันบางส่วน — คำหนึ่งเป็นส่วนหนึ่งของอีกคำ" },
+            { "key": "z", "text_th": "ยังไม่แน่ใจ / ต้องถามลูกค้า", "red_card": true }
+          ],
+          "default_source": "input",
+          "derived_from": "docs/req-pipeline-slides.md · การ์ดใบ 4 Ubiquitous Language · กับดัก \"ลูกค้า / ผู้สมัคร / ผู้กู้ คือคนเดียวกันแต่เขียนคนละคำ → LLM สร้าง 3 คลาส\"",
+          "field_evidence": null,
+          "lands_in": ["glossary[] (term_th · aka on answer a · not_to_confuse_with on answer b · status draft · provenance -> the SRC the pair came from)"],
+          "why_this_shape": "Asked as a pair, not as \"define your terms\": people can always define a word, and cannot always say whether two words are the same thing. The pair is what tells you a class is about to be duplicated.",
+          "repeat": "This is the one tier 1 question worth firing more than once in a session — once per colliding pair the input contains. It still counts as one of the three in its round; extra pairs go to the next round."
+        }
+      ]
+    },
+    {
+      "id": "permission",
+      "tier": 2,
+      "title_th": "สิทธิ์",
+      "questions": [
+        {
+          "id": "QB-perm-01",
+          "text_th": "ใครมีสิทธิ์กด<การกระทำ>ไปข้างหน้า",
+          "options": [
+            { "key": "a", "text_th": "actor หน้างานทุกขั้น" },
+            { "key": "b", "text_th": "actor หน้างานบางขั้น ที่เหลือ admin", "default": true },
+            { "key": "c", "text_th": "admin เท่านั้น" },
+            { "key": "z", "text_th": "ยังไม่ตัดสิน / ต้องถามลูกค้า", "red_card": true }
+          ]
+        },
+        {
+          "id": "QB-perm-02",
+          "text_th": "<actor> ที่กดต้องเป็นคนที่ถูก assign งานนั้นไหม",
+          "options": [
+            { "key": "a", "text_th": "เฉพาะคนที่ถูก assign", "default": true },
+            { "key": "b", "text_th": "ใครก็ได้ใน tenant" },
+            { "key": "c", "text_th": "คนที่ assign + คนสำรอง" },
+            { "key": "z", "text_th": "ยังไม่ตัดสิน / ต้องถามลูกค้า", "red_card": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reversal",
+      "tier": 2,
+      "title_th": "การย้อนกลับ",
+      "questions": [
+        {
+          "id": "QB-rev-01",
+          "text_th": "ทำผิดแล้วเดินเลยไปแล้ว จะทำยังไง",
+          "options": [
+            { "key": "a", "text_th": "ถอยไม่ได้ ยกเลิกแล้วสร้างใหม่" },
+            { "key": "b", "text_th": "ถอยได้เฉพาะ admin + ต้องระบุเหตุผล", "default": true },
+            { "key": "c", "text_th": "แก้ย้อนหลังได้ ไม่ต้องถอย" },
+            { "key": "z", "text_th": "ยังไม่ตัดสิน / ต้องถามลูกค้า", "red_card": true }
+          ]
+        },
+        {
+          "id": "QB-rev-02",
+          "text_th": "ถอยได้ลึกแค่ไหน",
+          "options": [
+            { "key": "a", "text_th": "ทีละ 1 ขั้น" },
+            { "key": "b", "text_th": "ขั้นไหนก็ได้ที่ผ่านมา" },
+            { "key": "c", "text_th": "เฉพาะก่อนถึงสถานะปิด", "default": true },
+            { "key": "z", "text_th": "ยังไม่ตัดสิน / ต้องถามลูกค้า", "red_card": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "freeze_point",
+      "tier": 2,
+      "title_th": "จุดแช่แข็ง",
+      "questions": [
+        {
+          "id": "QB-frz-01",
+          "text_th": "<สถานะปิด> แล้วยังแก้ข้อมูลได้ไหม",
+          "options": [
+            { "key": "a", "text_th": "แก้ได้เลย" },
+            { "key": "b", "text_th": "แก้ได้ แต่ต้องมีคนอนุมัติ", "default": true },
+            { "key": "c", "text_th": "แก้ไม่ได้ ต้องยกเลิกอย่างเดียว" },
+            { "key": "z", "text_th": "ยังไม่ตัดสิน / ต้องถามลูกค้า", "red_card": true }
+          ]
+        },
+        {
+          "id": "QB-frz-02",
+          "text_th": "ออกเอกสารทางการแล้วยังแก้ได้ไหม",
+          "options": [
+            { "key": "a", "text_th": "ล็อกถาวร" },
+            { "key": "b", "text_th": "แก้ได้ถ้ายังไม่ส่ง / ยังไม่ชำระ" },
+            { "key": "c", "text_th": "แก้ได้ แต่ต้องออกใบใหม่ทับ", "default": true },
+            { "key": "z", "text_th": "ยังไม่ตัดสิน / ต้องถามลูกค้า", "red_card": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "approval",
+      "tier": 2,
+      "title_th": "ผู้อนุมัติ",
+      "questions": [
+        {
+          "id": "QB-apr-01",
+          "text_th": "คนอนุมัติคือใคร",
+          "options": [
+            { "key": "a", "text_th": "เจ้าของ (owner) เท่านั้น" },
+            { "key": "b", "text_th": "ระดับ admin คนไหนก็ได้ที่ไม่ใช่คนแก้" },
+            { "key": "c", "text_th": "ตั้ง role เองได้ต่อ tenant", "default": true },
+            { "key": "z", "text_th": "ยังไม่ตัดสิน / ต้องถามลูกค้า", "red_card": true }
+          ]
+        },
+        {
+          "id": "QB-apr-02",
+          "text_th": "ถ้ายังไม่ตั้งค่าผู้อนุมัติ ระบบทำยังไง",
+          "options": [
+            { "key": "a", "text_th": "มี default (owner) ตั้งทีหลังได้", "default": true },
+            { "key": "b", "text_th": "บังคับตั้งตอน onboarding" },
+            { "key": "c", "text_th": "ไม่ตั้ง = ใช้ฟีเจอร์นั้นไม่ได้" },
+            { "key": "z", "text_th": "ยังไม่ตัดสิน / ต้องถามลูกค้า", "red_card": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "audit",
+      "tier": 2,
+      "title_th": "ร่องรอย",
+      "questions": [
+        {
+          "id": "QB-aud-01",
+          "text_th": "แก้ข้อมูลหลังปิด เก็บร่องรอยยังไง",
+          "options": [
+            { "key": "a", "text_th": "ทับค่าเดิม + เขียน log แยก" },
+            { "key": "b", "text_th": "เก็บเป็น adjustment แยก ค่าเดิมคงไว้", "default": true },
+            { "key": "c", "text_th": "ลง log สถานะเดิมอย่างเดียว" },
+            { "key": "z", "text_th": "ยังไม่ตัดสิน / ต้องถามลูกค้า", "red_card": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "calculation",
+      "tier": 2,
+      "title_th": "การคำนวณ",
+      "questions": [
+        {
+          "id": "QB-calc-01",
+          "text_th": "สูตรให้ผลมีเศษทศนิยม ระบบทำยังไง",
+          "options": [
+            { "key": "a", "text_th": "ปัดทุกจุดตามมาตรฐาน round half up", "default": true },
+            { "key": "b", "text_th": "เก็บค่าเต็ม ปัดเฉพาะตอนแสดง / ออกเอกสาร" },
+            { "key": "c", "text_th": "แต่ละลูกค้ากำหนดวิธีปัดเอง" },
+            { "key": "z", "text_th": "ยังไม่ตัดสิน / ต้องถามลูกค้า", "red_card": true }
+          ],
+          "spillover": [
+            "ปัดที่ทศนิยมกี่ตำแหน่ง",
+            "ปัดทีละขั้นหรือปัดตอนท้าย (คนละยอดกัน)",
+            "decimal(p,s) ใน DB เท่าไหร่"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "temporal",
+      "tier": 2,
+      "title_th": "เวลา / เวอร์ชัน",
+      "questions": [
+        {
+          "id": "QB-tmp-01",
+          "text_th": "แก้เรท / สูตร / กฎใหม่ มีผลกับงานเก่ายังไง",
+          "options": [
+            { "key": "a", "text_th": "มีผลย้อนหลังทั้งหมด" },
+            { "key": "b", "text_th": "มีผลเฉพาะงานใหม่ งานเก่าใช้ค่าที่ผูกตอนสร้าง", "default": true },
+            { "key": "c", "text_th": "กำหนด effective date ได้" },
+            { "key": "z", "text_th": "ยังไม่ตัดสิน / ต้องถามลูกค้า", "red_card": true }
+          ]
+        },
+        {
+          "id": "QB-tmp-02",
+          "text_th": "งานเก่าเก็บค่านั้นยังไง",
+          "options": [
+            { "key": "a", "text_th": "copy ค่าลงตัวงาน (denormalize)" },
+            { "key": "b", "text_th": "เก็บ id ของเวอร์ชันเรท — master มี version ห้ามลบ", "default": true },
+            { "key": "c", "text_th": "เก็บทั้งคู่" },
+            { "key": "z", "text_th": "ยังไม่ตัดสิน / ต้องถามลูกค้า", "red_card": true }
+          ],
+          "spillover": [
+            "แก้เวอร์ชันเดิมได้ไหม หรือต้องสร้างใหม่เสมอ",
+            "master ต้อง soft-delete / archive ไหม",
+            "หน้าจอ master ต้องมี version history ไหม"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "data_scope",
+      "tier": 2,
+      "title_th": "ขอบเขตข้อมูล",
+      "questions": [
+        {
+          "id": "QB-scope-01",
+          "text_th": "ผู้ใช้ที่ไม่ใช่ admin เห็นข้อมูลแค่ไหน",
+          "options": [
+            { "key": "a", "text_th": "เห็นทุกอย่างใน tenant" },
+            { "key": "b", "text_th": "เห็นเฉพาะที่ตัวเองสร้าง / ถูก assign", "default": true },
+            { "key": "c", "text_th": "เห็นตามสาขา / ทีมที่สังกัด" },
+            { "key": "z", "text_th": "ยังไม่ตัดสิน / ต้องถามลูกค้า", "red_card": true }
+          ],
+          "spillover": [
+            "หัวหน้าเห็นของลูกน้องไหม",
+            "โอนงานแล้วคนเดิมยังเห็นไหม",
+            "รายงาน / ยอดรวม / export ใช้ scope เดียวกันไหม"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "integration",
+      "tier": 2,
+      "title_th": "ระบบภายนอก",
+      "questions": [
+        {
+          "id": "QB-int-01",
+          "text_th": "เรียก API ภายนอกแล้วล่ม",
+          "options": [
+            { "key": "a", "text_th": "ล้มทันที แจ้ง user ให้กดใหม่เอง", "default": true },
+            { "key": "b", "text_th": "เข้าคิว retry อัตโนมัติ งานเดินต่อ" },
+            { "key": "c", "text_th": "งานหยุดค้างรอจนสำเร็จ" },
+            { "key": "z", "text_th": "ยังไม่ตัดสิน / ต้องถามลูกค้า", "red_card": true }
+          ],
+          "spillover": [
+            "ข้อมูลที่เขียนไปแล้วก่อนเรียก external → rollback หรือค้างครึ่งทาง (transaction boundary)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "idempotency",
+      "tier": 2,
+      "title_th": "การยิงซ้ำ",
+      "questions": [
+        {
+          "id": "QB-idem-01",
+          "text_th": "user กดบันทึกซ้ำ / ยิง request ซ้ำ",
+          "options": [
+            { "key": "a", "text_th": "กันที่ DB unique constraint แล้วโยน error", "default": true },
+            { "key": "b", "text_th": "ตรวจ key ซ้ำแล้วคืนผลเดิม (idempotent)" },
+            { "key": "c", "text_th": "ไม่กัน ให้ user ลบเอง" },
+            { "key": "z", "text_th": "ยังไม่ตัดสิน / ต้องถามลูกค้า", "red_card": true }
+          ],
+          "spillover": [
+            "natural key คือฟิลด์อะไร",
+            "ข้อความ error ภาษาไทยตรงตัวที่ user เห็น"
+          ]
+        }
+      ]
+    }
+  ],
+  "known_gaps": [
+    "การแจ้งเตือน — ใครได้ ช่องทางไหน ส่งไม่สำเร็จแล้วยังไง",
+    "การนำเข้า-ส่งออกไฟล์ — แถวเสียบางแถว = ล้มทั้งไฟล์หรือข้าม",
+    "subscription / หมดอายุ — หมดแล้วข้อมูลเป็นยังไง",
+    "การลบ — soft / hard, มีข้อมูลผูกอยู่แล้วลบได้ไหม",
+    "หลายภาษา / หลายสกุลเงิน — ถ้าจะขายนอกไทย",
+    "ชั้น 1 · State Machine (ขั้น 7) ยังไม่มีหมวดของตัวเอง — ตอนนี้ซ่อนอยู่ในหมวด reversal / freeze_point ของชั้น 2 ตามที่ design §2 จดไว้"
+  ]
+}

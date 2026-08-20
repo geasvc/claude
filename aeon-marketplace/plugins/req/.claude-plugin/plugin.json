@@ -1,0 +1,30 @@
+{
+  "name": "req",
+  "version": "0.3.0",
+  "description": "Phase 1 (Analysis) worker. Captures raw requirements from any source into spec.json — the rule spine every later phase traces back to. The rule (BR-xxx) is the unit of coverage; examples prove rules; a Calculation Contract (CALC-xxx) pins how a rule's numbers are produced; a golden dataset (GD-xxx) holds the answer key those numbers were checked against, produced by running a script and signed by a human; open questions block CP1; and a change set (CHG-xxx) records why a rule or contract moved up a version, since one decision usually moves several nodes at once. /req:change is the only path that produces @v(n+1), and /req:capture classifies every drafted rule as new / same / changed / unsure before writing anything. A customer's data extract is its own source kind (sample_data): evidence of correct values, never a source rules get guessed from, and its PII question is settled before the file enters git history. The question bank runs in two tiers: framing once per module — end goal, out-of-scope, actors, vocabulary — before the first rule question, then the rule categories per requirement; framing writes only the frame and never drafts a rule, so rule creation keeps a single path. Deterministic gate via scripts/verify-rules.mjs; derived counts owned by scripts/rollup.mjs and per-node document hashes by scripts/doc-hash.mjs, so no command has to hold the whole spec in context. scripts/wiki.mjs renders docs/wiki/ — one file per node, linked by ordinary markdown links so the traceability graph is walkable by any tool, and hash-stamped so check #12 catches a page the spec moved out from under.",
+  "author": {
+    "name": "Mounchon"
+  },
+  "keywords": [
+    "requirements",
+    "analysis",
+    "example-mapping",
+    "business-rules",
+    "provenance",
+    "traceability",
+    "sample-data",
+    "pii",
+    "bdd",
+    "ddd",
+    "versioning",
+    "change-management",
+    "golden-data",
+    "okf",
+    "knowledge-bundle"
+  ],
+  "permissions": {
+    "allow": [
+      "Bash(node:*)"
+    ]
+  }
+}

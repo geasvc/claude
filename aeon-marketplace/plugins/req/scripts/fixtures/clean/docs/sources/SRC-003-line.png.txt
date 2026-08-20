@@ -1,0 +1,3 @@
+FIXTURE PLACEHOLDER — stands in for a pasted Line screenshot.
+The checker only hashes the bytes, so a text file is enough for the fixture.
+Real captures write a real .png here.

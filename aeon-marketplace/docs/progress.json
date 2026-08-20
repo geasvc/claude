@@ -1,0 +1,323 @@
+{
+  "$schema_note": "no JSON Schema owns this file yet, and no check reads it either. verify-design.mjs exists (task 5, done 2026-08-13) but holds no check that opens this file — proof: `grep -n progress scripts/verify-design.mjs` only hits D6's message text. The rules below are therefore still enforced by review, not by a script. 'the script exists' is not the same claim as 'this file is checked'.",
+  "rules": [
+    "never delete an unfinished task to make the list look done (DOC-STANDARD §7 rule 2)",
+    "status may not be \"done\" unless proof[] holds the command(s) that prove it — \"it ran without errors\" is not a pass criterion (DOC-STANDARD §7 rule 3)",
+    "one task per session; close the session by updating this file, not by remembering",
+    "titles are copied verbatim from the owner's wording — do not translate or paraphrase"
+  ],
+  "status_values": [
+    "done",
+    "in_progress",
+    "pending",
+    "blocked"
+  ],
+  "owner": "พี่ปู",
+  "reviewed": "2026-08-13",
+  "moved_from": "CLAUDE.md §4 on 2026-08-13 — the declared expiry condition (table over 10 rows) was met",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "เซ็นอนุมัติ DOC-STANDARD v1.1",
+      "status": "pending",
+      "blocked_by": [
+        "เจ้าของอ่านจบ"
+      ],
+      "proof": []
+    },
+    {
+      "id": "2",
+      "title": "สร้าง .claude-plugin/marketplace.json",
+      "status": "done",
+      "closed_at": "2026-08-13",
+      "blocked_by": [],
+      "proof": [
+        "ls .claude-plugin/marketplace.json — aeon v0.1.0"
+      ]
+    },
+    {
+      "id": "3",
+      "title": "ทำให้ workspace เป็น git repo",
+      "status": "blocked",
+      "blocked_by": [
+        "git ไม่ได้ติดตั้งบนเครื่องนี้ — เจ้าของต้องติดตั้งเอง: winget install --id Git.Git -e --source winget"
+      ],
+      "proof": [],
+      "note": "2026-08-20 เจ้าของสั่ง \"git init and commit\" แล้ว — ตัวกั้นเดิม (รอเจ้าของสั่ง) ปลดแล้ว ตัวกั้นใหม่คือเครื่องไม่มี git · พิสูจน์: `git --version` -> CommandNotFoundException และไม่พบ git.exe ใน Program Files, LOCALAPPDATA\\Programs, scoop\\shims, chocolatey\\bin · เตรียมของไว้ให้แล้วในวันเดียวกัน: .gitignore + .gitattributes (`* -text` กัน CRLF ทำ hash ของ D4 เพี้ยนตอน clone) · ดู CLAUDE.md §5 ประตู 3"
+    },
+    {
+      "id": "4",
+      "title": "สร้าง plugin ตัวแรก — req v0.3 ตาม req-skill-design.md §9 รอบ 0–7",
+      "status": "done",
+      "closed_at": "2026-08-13",
+      "blocked_by": [],
+      "proof": [
+        "รอบ 0–7 ปิดครบทุกข้อ แต่ละข้อมี proof ของตัวเอง (4.0–4.7) — ข้อนี้ปิดได้เพราะลูกครบ ไม่ใช่เพราะรู้สึกว่าจบ",
+        "ตัวตรวจครบชุดตาม CLAUDE.md §3 เขียวตามสัญญา: node plugins/req/scripts/verify-rules.mjs --root plugins/req/scripts/fixtures/clean (exit 0) · --root plugins/req/scripts/fixtures/dirty --state-dir .notaeon (44/19) · --cp1 (43/19) · --cp2 (30/0)",
+        "node plugins/req/scripts/rollup.mjs --root plugins/req/scripts/fixtures/clean (already correct) · node plugins/req/scripts/wiki.mjs --root plugins/req/scripts/fixtures/clean (already matches · idempotent)",
+        "node plugins/req/scripts/doc-frontmatter.mjs --verify-against schemas/spec.schema.json (exit 0 · all id patterns match)"
+      ],
+      "note": "รอบ 0–7 ครบตาม design §9 · **ไม่ได้แปลว่า req พร้อมส่งมอบ** — ที่ยังค้างและอยู่นอกข้อนี้: ข้อ 1 (เซ็น DOC-STANDARD) · ข้อ 5 (verify-design.mjs ยังไม่มี จึงยังไม่มีใครตรวจ D1–D12b ให้ plugin นี้เลย ตอนนี้ใช้คำสั่งทำมือใน CLAUDE.md §3 แทนชั่วคราว) · ข้อ 3 (ยังไม่อยู่ใต้ git)",
+      "subtasks": [
+        {
+          "id": "4.0",
+          "title": "รอบ 0 — บั๊ม schema_version -> 0.3.0",
+          "status": "done",
+          "closed_at": "2026-08-13",
+          "proof": [
+            "ajv ตีกลับ spec ที่ยังเป็น 0.2.0 ด้วย keyword const"
+          ]
+        },
+        {
+          "id": "4.1",
+          "title": "รอบ 1 — sample_data + PII masking",
+          "status": "done",
+          "closed_at": "2026-08-13",
+          "proof": [
+            "fixtures/clean valid + exit 0",
+            "fixtures/dirty invalid ที่ /sources/4 (missingProperty: masked) + exit 1"
+          ]
+        },
+        {
+          "id": "4.2",
+          "title": "รอบ 2 — /req:calc + calculations[]",
+          "status": "done",
+          "closed_at": "2026-08-13",
+          "proof": [
+            "fixtures/clean มี CALC-job-001 ผูก BR-job-016@v1 จริง -> ajv valid + verify exit 0 ที่ 4 กฎ / 4 ตัวอย่าง",
+            "fixtures/dirty ปลูกความผิด 3 ข้อ -> 31/5 · 30/5 · 22/0 และ ajv ตีตก numeric_type: \"float\" ที่ /calculations/1/numeric_type"
+          ],
+          "note": "rollup มาจาก rollup.mjs --write · doc-hash มาจาก doc-hash.mjs"
+        },
+        {
+          "id": "4.3",
+          "title": "รอบ 3 — /req:golden + golden_datasets[] + check #13 (warn)",
+          "status": "done",
+          "closed_at": "2026-08-13",
+          "proof": [
+            "node \"plugins/req/scripts/fixtures/clean/.aeon/golden/CALC-job-001@v1.mjs\" — รันได้จริง พิมพ์ 7 แถว ซึ่งเป็นที่มาของตัวเลขใน GD-job-001 (3 แถวทาบกับ SRC-004 ตรงหมด)",
+            "fixtures/clean -> ajv valid + verify exit 0 และ #13 เงียบเพราะมี verified_by",
+            "fixtures/dirty ปลูก 3 ข้อ -> 32/7 · 31/7 · 23/0 โดย #13 ยิงครบทั้งสองสาขา (ไม่มี GD เลย / มีแต่ไม่มีใครเซ็น)"
+          ]
+        },
+        {
+          "id": "4.4",
+          "title": "รอบ 4 — /req:change + CHG + CALC versioning + check #14 + change detection ใน capture (ส่งแยกกันไม่ได้)",
+          "status": "done",
+          "closed_at": "2026-08-13",
+          "proof": [
+            "(ก) ย้าย CALC เป็น @v ใน fixture ทั้งสองตัวก่อนเพิ่ม check ใหม่ แล้ววัดได้ 32/7 เท่าเดิม = การย้าย id แยกออกจาก check ได้จริง",
+            "(ข) clean ได้ CHG-job-001 + effective_from -> exit 0 · 0 error 0 warn (#14 เงียบเพราะมี CHG ครบและ approved_by ไม่ว่าง)",
+            "(ค) dirty ปลูก 3 โหนด -> 39/10 · 38/10 · 30/0 โดย #14 ยิงครบทั้ง 3 สาขา และ #7 ปิดหนี้รอบ 2 (2 สัญญาผูกกฎเดียวกัน) ได้จริง"
+          ]
+        },
+        {
+          "id": "4.5",
+          "title": "รอบ 5 — nodeDocHash + wiki renderer + check #12",
+          "status": "done",
+          "blocked_by": [
+            "4.4"
+          ],
+          "proof": [
+            "(ก) doc-frontmatter.mjs --verify-against schemas/spec.schema.json -> exit 0 · id pattern ทั้ง 10 ตัวตรงกับ $defs ของ schema (NFR ข้ามเพราะ pattern อยู่ inline)",
+            "(ข) doc-hash.mjs --root fixtures/clean --nodes -> 25 โหนด · แถว REQ-job-001 เท่ากับผลของ reqDocHash เป๊ะ = #10 กับ #12 ไม่ตอบคนละอย่างเรื่อง requirement เดียวกัน",
+            "(ค) probe closure 5 ข้อผ่านหมด: แก้ CHG.reason -> hash ของหน้ากฎขยับ · ตีตรา SRC-002 เป็น corrected -> ขยับ · แก้ข้อความกฎ -> hash ของหน้าตัวอย่างขยับ · แก้ UL ที่ไม่เกี่ยว -> ไม่ขยับ · รันซ้ำได้ค่าเดิม",
+            "(ง) วัดสองจังหวะ: render bundle ทั้งก้อนลงทั้งสอง fixture ทั้งที่ #12 เปิดแล้ว -> clean 0/0 · dirty 39/17 (error ไม่ขยับ = เพิ่ม 35 ไฟล์ไม่กวน check เดิม) แล้วค่อยปลูก 6 หน้า -> 44/19",
+            "(จ) ปลูกครบทั้ง 7 อนุประโยค ก ข ค ง จ ฉ ช โดยแต่ละตัวสาวกลับไปหาหน้าที่ปลูกได้ (ตาราง Planted in docs/wiki ของ EXPECTED.md)",
+            "(ฉ) --cp2 ยังเป็น 30 error / 0 warn เท่าเดิม = ทั้ง 7 อนุประโยคอยู่ gate CP1 จริง ไม่มีตัวไหนหลุดเป็น ALL",
+            "(ช) wiki.mjs --root fixtures/clean -> exit 0 already matches (idempotent) · --root fixtures/dirty -> exit 1 · 4 STALE 1 MISSING 1 ORPHAN ตรงกับ EXPECTED.md",
+            "(ซ) ajv validate fixtures/clean -> valid"
+          ],
+          "closed_at": "2026-08-13",
+          "note": "renderer ไม่มีตรรกะแช่แข็ง โดยตั้งใจ — ตามแบบ §7.7 การแช่แข็งคือไม่เขียนอะไรลง spec เลย โหนดจึงไม่ขยับ hash ไม่ขยับ regenerate เป็น no-op เอง · --write เขียนเฉพาะหน้าที่ drift และไม่ลบหน้ากำพร้า"
+        },
+        {
+          "id": "4.6",
+          "title": "รอบ 6 — question bank ชั้น 1 (4 หมวด)",
+          "status": "done",
+          "closed_at": "2026-08-13",
+          "blocked_by": [],
+          "proof": [
+            "(ก) ตัวเลขและ invariant ของคลังคำถามมาจากคำสั่งนี้ ไม่ได้นับมือ — ได้ `bank v0.3.0 tier1 4cat/6q tier2 10cat/15q PASS` exit 0 (ยืนยัน: id ไม่ซ้ำ · ทุกข้อมีตัวเลือกการ์ดแดง · ชั้น 1 ไม่มีข้อไหนฝัง default:true · ชั้น 1 ทุกข้อ field_evidence เป็น null · ชั้น 2 มีดาวครบ) — ไม่มี check ไหนและไม่มี schema ไหนเป็นเจ้าของไฟล์นี้ คำสั่งนี้จึงเป็นด่านเดียวที่มี: node -e \"const b=JSON.parse(require('fs').readFileSync('plugins/req/assets/question-bank.json','utf8')),q=b.categories.flatMap(c=>c.questions.map(x=>({...x,tier:c.tier}))),bad=[],ids=q.map(x=>x.id);if(new Set(ids).size!==ids.length)bad.push('duplicate id');q.forEach(x=>{if(!x.options.some(o=>o.red_card))bad.push(x.id+':no-red-card');if(x.tier===1&&x.options.some(o=>o.default))bad.push(x.id+':tier1-baked-star');if(x.tier===1&&x.field_evidence!==null)bad.push(x.id+':tier1-claims-evidence');if(x.tier===2&&!x.options.some(o=>o.default))bad.push(x.id+':tier2-no-star')});const n=t=>b.categories.filter(c=>c.tier===t).length+'cat/'+q.filter(x=>x.tier===t).length+'q';console.log('bank v'+b.version,'tier1',n(1),'tier2',n(2),bad.length?'FAIL '+bad.join(' '):'PASS');process.exit(bad.length?1:0)\"",
+            "(ข) วัดสองจังหวะแบบรอบ 4–5: รันตัวตรวจครบชุด 'ก่อน' แก้ ได้ 0 / 44·19 / 43·19 / 30·0 แล้วรันซ้ำ 'หลัง' แก้ ได้เท่ากันเป๊ะทุกตัว — คลังคำถามไม่ได้อยู่ใน spec.json การเพิ่มชั้นจึงต้องไม่ขยับ gate ไหนเลย นี่คือสิ่งที่รอบนี้วัด",
+            "(ค) rollup.mjs clean -> already correct · wiki.mjs clean -> already matches (idempotent) · doc-frontmatter.mjs --verify-against schemas/spec.schema.json -> all id patterns match",
+            "(ง) ข้อจำกัดของ schema ถูกอ่านก่อนเขียน doctrine ไม่ใช่เขียนแล้วค่อยรู้: question.raised_by รับแค่ SRC-xxx | BR-xxx@vN (check #4 บังคับ) -> ชั้น 1 ต้องมี SRC อย่างน้อย 1 อันก่อน ไม่งั้นการ์ดแดงชี้ไม่ได้ · deferredQuestion.category เป็น enum ของ 10 หมวดชั้น 2 -> ชั้น 1 เขียน deferred_questions[] ไม่ได้ 'โดย schema' ไม่ใช่โดยรสนิยม ทั้งสองข้อเขียนลง tiers.1 พร้อมเหตุผล",
+            "(จ) ชั้น 1 ทั้งหมด status: provisional + field_evidence: null — derived_from ชี้การ์ด pipeline ในฐานะ 'ที่มาของถ้อยคำ' ไม่ใช่หลักฐาน (สื่อการสอน + โปรเจกต์สอนสมมติ เลื่อนคำถามเป็นทางการไม่ได้ ตามกติกา design §4) · เขียนวิธีเลื่อนไว้ที่ tiers.1.promotion",
+            "(ฉ) ไม่มี check ใหม่ ไม่มี field ใหม่ใน schema — คำตอบชั้น 1 ลงเฉพาะ field ที่มีอยู่ (goal · business_value · actor · narrative · glossary[] · questions[])",
+            "(ช) เส้นแบ่งเจ้าของ glossary[] เขียนลง capture.md ข้อ 4 แล้ว — capture 'เสนอ' คำศัพท์และแจ้งคู่คำที่ชนกัน · ชั้น 1 หมวด language 'ตัดสิน' แล้วเป็นคนเขียน aka / not_to_confuse_with · capture เติมสองฟิลด์นี้ได้เฉพาะเมื่อต้นทางบอกตรง ๆ ไม่ใช่จากการอ่าน — และ capture ข้อ 11 บอกชื่อคำสั่งถัดไป (ชั้น 1) โดยไม่รันเอง"
+          ],
+          "note": "ตัดสินเพิ่ม 3 ข้อ ระหว่างทาง: (1) ดาวของชั้น 1 ไม่ใช่นิสัยเจ้าของแต่เป็น 'สิ่งที่อ่านได้จากอินพุต' ต้องโชว์ SRC + locator — นิสัยซ้ำข้ามโปรเจกต์ได้ เป้าหมายโมดูลซ้ำไม่ได้ · ask_rules ไม่ถูกแตะ (2) 6 คำถาม = 2 รอบ ๆ ละ 3 per_round จึงไม่ขยับ (3) QB-scope-01 ของหมวด data_scope คงชื่อเดิม คำถามชั้น 1 ใช้ QB-bound-01/02 แทน — ของที่ผ่านสนามแล้วไม่ควรต้องเปลี่ยนชื่อให้ของที่ยังเป็นร่าง · ช่องว่างที่ประกาศไว้: spec.json ไม่มีที่เก็บ 'นอกขอบเขต' ที่ query ได้ ลงได้แค่ narrative — จดที่ tiers.1.declared_gap รอเจ้าของตัดสินว่าจะเพิ่ม meta.out_of_scope[] เป็นอีกรอบไหม"
+        },
+        {
+          "id": "4.7",
+          "title": "รอบ 7 — /req:help + USER-GUIDE.md + แก้สัญญา capture.md (§2.3)",
+          "status": "done",
+          "closed_at": "2026-08-13",
+          "blocked_by": [
+            "4.2",
+            "4.3",
+            "4.4"
+          ],
+          "proof": [
+            "(ก) คำสั่งครบทุกตัวในคู่มือทั้งสองเล่ม — ได้ `8 commands documented in help.md + USER-GUIDE.md` exit 0 (ทำมือไปก่อนจนกว่า verify-design.mjs จะเป็นเจ้าของ D11/D12a): node -e \"const fs=require('fs'),c=fs.readdirSync('plugins/req/commands').filter(f=>f.endsWith('.md')).map(f=>f.slice(0,-3)),h=fs.readFileSync('plugins/req/commands/help.md','utf8'),g=fs.readFileSync('plugins/req/USER-GUIDE.md','utf8'),bad=c.filter(x=>!h.includes('/req:'+x)||!g.includes('/req:'+x));console.log(c.length+' commands',bad.length?'MISSING '+bad.join(' '):'documented in help.md + USER-GUIDE.md');process.exit(bad.length?1:0)\"",
+            "(ข) จำนวน check มาจากสคริปต์ ไม่ได้นับมือ — ดึงเลขจาก call site ของ err()/warn() ใน verify-rules.mjs ได้ 14 ข้อ (1–14) · ไม่มี call site ไหนที่อาร์กิวเมนต์แรกเป็นตัวแปร (ถ้ามีแปลว่านับด้วยวิธีนี้ไม่ได้) · warn-only = 11/13/14 · CP2-only = 5: node -e \"const s=require('fs').readFileSync('plugins/req/scripts/verify-rules.mjs','utf8'),lit=new Set(),dyn=[];for(const m of s.matchAll(/\\b(err|warn)\\(([^,]+),/g)){const a=m[2].trim();/^[0-9]+$/.test(a)?lit.add(+a):dyn.push(a)}console.log('checks',lit.size,[...lit].sort((a,b)=>a-b).join(' '),'· dynamic',dyn.length)\"",
+            "(ค) capture.md §2.3 ตรวจแล้วว่าทำไปจริงตั้งแต่รอบ 5 — หัวข้อ 'Regenerate-only mode' ระบุ rollup --write → REQ-xxx.md → wiki.mjs --write → checker → 🛑 พร้อมประโยคที่ประกาศว่าเป็นการเปลี่ยนสัญญาของคำสั่ง จึงไม่แตะซ้ำในรอบนี้",
+            "(ง) รอบนี้ไม่แตะ spec.json — ตัวตรวจต้องนิ่งทุกตัว และนิ่งจริง: 0 / 44·19 / 43·19 / 30·0 · rollup already correct · wiki already matches"
+          ],
+          "note": "ทำไปแล้วบางส่วนตั้งแต่ก่อนหน้า: (ก) แก้สัญญา capture.md ให้ regenerate walk docs/wiki/** (ข) เติม wiki.mjs ให้ครบทั้ง 6 คำสั่งที่ regenerate (ค) คู่มือ /req:calc + ตัวอย่างเดินจริง BR-06 ของ MiniLoan · รอบนี้คือการทบทวนทั้งฉบับหลังคำสั่งครบตามที่ค้างไว้ · **ของค้างที่การทบทวนเจอและแก้ 5 จุด:** USER-GUIDE เขียน `ตรวจ 13 ข้อ` (จริง 14 · ตกตั้งแต่รอบ 5 เพิ่ม #12) · CLAUDE.md §1 เขียน `13 ข้อ (1–14 เว้น 12)` เหตุผลเดียวกัน · USER-GUIDE ยังโฆษณา `/req:rule` ว่า 'รอบถัดไป' ทั้งที่ตัดทิ้งถาวรแล้ว (ขัดกับหัวข้อล่างสุดของไฟล์เดียวกัน) · รายการเนื้อใน spec.json ตกหล่น CALC/GD/CHG ของรอบ 2–4 ทั้งใน USER-GUIDE และ help.md · ไม่มีแถว `.aeon/golden/<CALC-id>.mjs` ในตารางไฟล์ของ USER-GUIDE ทั้งที่ help.md มี · **และแก้ระดับความรุนแรงของ #12** ที่เดิมอธิบายต่อจากย่อหน้า warn โดยไม่บอกระดับ อ่านผ่าน ๆ เหมือนเป็นคำเตือน → ตอนนี้เป็นตาราง 3 ระดับ (⚠️ 11/13/14 · ⏭ 5 ของ CP2 · ❌ ที่เหลือรวม 12) ·**คำถามค้างถึงเจ้าของ 1 ข้อ ไม่ได้แก้เอง:** USER-GUIDE บรรทัด 'โพส/คอมเมนต์ FB เรียก skill req-miner' — `req-miner` เป็นสกิลระดับเครื่อง ไม่ได้อยู่ใน repo นี้และ `req` ไม่ได้ ship มาด้วย · จะปล่อยไว้ (เป็นความสามารถของเครื่องเจ้าของ) หรือจะเขียนกำกับว่าเป็นของนอก plugin เป็นการตัดสินใจเรื่องขอบเขต จึงไม่เดาแทน"
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "title": "เขียน verify-design.mjs (D1–D12b)",
+      "status": "done",
+      "closed_at": "2026-08-13",
+      "blocked_by": [],
+      "proof": [
+        "(ก) สัญญา exit 0/1/2 ครบทุกทาง: node scripts/verify-design.mjs --root scripts/fixtures/clean (exit 0 · PASS) · --root scripts/fixtures/dirty (exit 1 · 11 error / 6 warn) · --root . (exit 0 · 0 error / 5 warn) · --root /nope (exit 2 · NOT-FOUND) · ส่ง positional เปล่า ๆ (exit 2 · CONFIG-ERROR)",
+        "(ข) ทั้ง 12 ข้อยิงจริงใน dirty ไม่มีข้อไหนตายเงียบ — แยกรายข้อได้ด้วย: node scripts/verify-design.mjs --root scripts/fixtures/dirty --json แล้วนับตาม check (D1 1e · D2 1e · D3 1e · D4 1e · D5 1w · D6 2w · D8 2e · D9 2e · D10 2w · D11 1e · D12a 2e · D12b 1w) · ตัวเลขและที่มาของแต่ละข้อตรึงไว้ที่ scripts/fixtures/dirty/EXPECTED.md",
+        "(ค) severity ของ D1–D5 import มาจาก doc-frontmatter.mjs (SHARED_LEVEL) ไม่ได้พิมพ์ซ้ำในไฟล์นี้ — DOC-STANDARD §9 ห้ามสองด่านตอบกติกาเดียวกันคนละระดับ · ไฟล์นี้ตั้งชื่อ finding ใหม่ได้ (D3 vs 'ค') แต่เปลี่ยนระดับไม่ได้ เพราะไม่มีที่ให้เปลี่ยน",
+        "(ง) วัด req ของจริงเป็นครั้งแรก — 0 error / 5 warn (D10 ×3 · D12b ×2) · คำทำนาย 5 แถวใน DOC-STANDARD §11 ถูกทั้งหมด และสองแถวที่เป็น ⬜ 'ยังไม่ได้ตรวจ' ถูกแทนด้วยค่าที่วัดได้แล้ว",
+        "(จ) เงื่อนไขหมดอายุที่เขียนไว้ใน note ของข้อนี้ถูกกระตุ้นและทำจริง — ลบคำสั่งชั่วคราวที่นับ 'help ครบทุกคำสั่งไหม' ออกจาก CLAUDE.md §3 แล้ว เพราะ D11 เป็นเจ้าของแทน",
+        "(ฉ) D11 ถูกวัดก่อนปล่อย ไม่ได้เชื่อว่ามันทำงาน — รุ่นแรกยอมรับ backtick คำเปล่า ๆ เป็น 'มีในคู่มือ' ซึ่งวัดกับ help.md ของ req จริงแล้วพบว่า **6 ใน 7 คำสั่งผ่านโดยบังเอิญ** (`calc` `capture` `change` `check` `example` `golden` โผล่ในประโยคเรื่องอื่น) จึงตัดทิ้ง เหลือรูปแบบ /plugin:command อย่างเดียว · พิสูจน์ว่ายังจับได้: ลบทุกการเอ่ยถึง /demo:thing ใน fixture dirty -> D11 ยิง 2 ข้อ รวม 12e/6w · คืนไฟล์ -> กลับมา 11e/6w",
+        "(ช) ของที่ทำไม่ได้ถูกประกาศ ไม่ใช่รายงานเป็นศูนย์เงียบ ๆ — ทุกครั้งที่รันจะพิมพ์ LIMIT D4 (เทียบ hash กับค่าที่คำนวณใหม่ไม่ได้ เพราะฝั่ง authoring ยังไม่มีตัว generate) และ LIMIT D7 (ไม่รันเลย เพราะ 'กำพร้า' ต้องมี design-registry.json เป็นตัวหาร ตาม §9)"
+      ],
+      "note": "อยู่ที่ scripts/verify-design.mjs (root ของ repo ไม่ใช่ใต้ plugins/) เพราะเป็นด่านระดับ marketplace ที่ตรวจ **ทุก** plugin — วางไว้ใน plugins/req/ แปลว่าด่านของ plugin ตัวอื่นไปอยู่ในบ้าน req · **ข้อที่เคยค้าง ปิดแล้ว 2026-08-13:** ผังไฟล์ใน DOC-STANDARD §3.1 ไม่มีบรรทัด `scripts/` ที่ root — เจ้าของอนุญาตให้แก้ จึงเติมทั้ง `scripts/` (พร้อมเส้นแบ่งว่าอะไรอยู่ root อะไรอยู่ใต้ plugin) · `docs/design-registry.json` · `BUNDLE.md` และจดลงตารางเวอร์ชัน §13 ว่าเป็นการแก้ร่าง ยังเป็น v1.1 · **ค้างถึงเจ้าของ 1 ข้อ:** §13 คำถามค้างข้อ 3 ถามว่า D8 ควรเป็น error หรือ warn ก่อน — ทำตามตาราง §9 (error) ไว้ก่อนเพราะตารางคือของที่บังคับใช้ · เปลี่ยนเป็น warn ได้ที่ OWN_LEVEL จุดเดียว · §13 ข้อ 2 ตอบได้แล้วด้วยของจริง: ยัด D1–D10 ไว้ในสคริปต์เดียวไม่บวม (~330 บรรทัด)"
+    },
+    {
+      "id": "6",
+      "title": "สร้าง docs/wiki/ (OKF authoring bundle)",
+      "status": "done",
+      "closed_at": "2026-08-13",
+      "blocked_by": [],
+      "proof": [
+        "(ก) ไม่ได้เขียน bundle ด้วยมือ — สร้าง docs/design-registry.json เป็นความจริง (28 โหนด) แล้ว render: node scripts/wiki-authoring.mjs --root . --write -> 40 ไฟล์ + log.md · รันซ้ำ node scripts/wiki-authoring.mjs --root . -> `bundle already matches the registry` exit 0 (idempotent)",
+        "(ข) ขอบเขตของ hash ถูกวัด 4 โพรบ ไม่ได้เชื่อว่ามันถูก: แก้ summary ของ ADR-aeon-004 -> ขยับ 1 หน้า · แก้ title ของ CMD-req-003 ซึ่งอีก 2 หน้าเรนเดอร์ชื่อมันออกมา -> ขยับ 3 หน้า (ตัวเอง + สองหน้านั้น) · แก้ description ของ SCR-req-002 -> ขยับ 2 หน้า (ตัวเอง + สารบัญ scripts/ ที่เรนเดอร์ description) · แก้ $comment ระดับบนสุดที่ไม่มีหน้าไหนเรนเดอร์ -> ขยับ 0 หน้า · คืนไฟล์แล้วกลับมา 0",
+        "(ค) ครึ่ง 'เทียบ hash จริง' มีเจ้าของแล้ว: แก้ docs/wiki/commands/CMD-req-001.md ด้วยมือ -> renderer ขึ้น STALE exit 1 · คืนไฟล์ -> already matches exit 0",
+        "(ง) D1–D6 เริ่มทำงานจริงกับ bundle นี้ (ก่อนหน้านี้ตัวตรวจพิมพ์ SKIP) — node scripts/verify-design.mjs --root . -> 0 error / 5 warn เท่าเดิม ไม่มี D5/D6 โผล่เลย = ลิงก์ถึงกันครบและมีสารบัญครบทุกไดเรกทอรี",
+        "(จ) D4 กัดจริงกับ bundle จริง: ทุบ spec_hash ของ ADR-aeon-004 ให้ผิดรูป -> D4 ยิง 1 ข้อ (รวม 1 error) · คืนไฟล์ -> กลับมา 0 error",
+        "(ฉ) fixture ของด่านไม่ขยับ: clean exit 0 · dirty 11 error / 6 warn เท่าเดิม",
+        "(ช) ด่านที่กันไม่ให้ registry พังลาม ถูกดูให้เห็นว่ายิงจริงทั้ง 4 สาขา ไม่ใช่สมมติว่าทำงาน — resource ที่ไม่มีอยู่จริง · type นอกรายการปิด §5.1 · id ผิดรูปแบบ · ลิงก์ไปโหนดที่ไม่มี · ทุกสาขาได้ REGISTRY-ERROR exit 2 และ **ไม่มีไฟล์ไหนถูกเขียน** (รันตรวจซ้ำหลังโพรบ ยังได้ already matches)",
+        "(ซ) แก้ความไม่ตรงกันที่เจอระหว่างทาง: doc-frontmatter.mjs เคยตั้ง dir ของ type Decision ว่า `decisions` แต่ DOC-STANDARD §3.1 และ §12 เขียน `adr/` — จับให้ตรงเป็น `adr` เพราะมาตรฐานเป็นเจ้าของโครงสร้าง (CLAUDE.md §2) · ไม่มีใครเรียกใช้ค่านี้มาก่อน จึงไม่กระทบของเดิม"
+      ],
+      "note": "ทางแยกที่เคาะระหว่างทาง: **ไม่เขียน bundle ด้วยมือ** เพราะ DOC-STANDARD §2 จัด docs/wiki/** เป็นเอกสารชั้น A (generate) — เขียนมือแล้วประทับ hash ลงไป = ลายนิ้วมือของสิ่งที่ไม่มีใคร generate ซึ่งเป็นความไม่ซื่อสัตย์ที่การแบ่งชั้นมีไว้กันพอดี · จึงทำ registry -> renderer -> render ตามลำดับ · **เรื่องที่เคยค้างถึงเจ้าของ ปิดแล้ววันเดียวกัน:** `docs/wiki/CLAUDE.md` ถูก Claude Code โหลดเข้า context **ในฐานะคำสั่ง** ทุก session และไฟล์นั้น generate จาก JSON ด้วยสคริปต์ — เจ้าของสั่งเปลี่ยนชื่อเป็น `BUNDLE.md` · ทำแล้ว **ทั้งสอง bundle** (ฝั่งเครื่องมือ + ฝั่งโปรเจกต์ที่ /req:capture เขียนลง repo ลูกค้า) · ชื่ออยู่ที่เดียวใน SCAFFOLD_FILES ของ doc-frontmatter.mjs · วัดซ้ำทุกด่านแล้วตัวเลขไม่ขยับสักตัว · บันทึกเป็น ADR-aeon-005 + CLAUDE.md §5 ประตู 5"
+    },
+    {
+      "id": "7",
+      "title": "ตัดสายสัมพันธ์กับ repo อื่นให้หมด + เปลี่ยนไดเรกทอรีสถานะ .scenarioops/ -> .aeon/",
+      "status": "done",
+      "closed_at": "2026-08-13",
+      "proof": [
+        "(ก) grep -rIn --exclude-dir=.remember --exclude=CLAUDE.md -iE 'scenarioops|sysdev' . -> exit 1 ไม่เจอสักที่",
+        "(ข) ตัวตรวจ 4 คำสั่งใน CLAUDE.md §3 ให้ตัวเลขเท่าเดิมทุกตัว (0 / 29·5 / 28·5 / 20·0)"
+      ]
+    },
+    {
+      "id": "8",
+      "title": "ทำชื่อไดเรกทอรีสถานะให้เป็นพารามิเตอร์ (state-dir.mjs + --state-dir + $AEON_STATE_DIR)",
+      "status": "done",
+      "closed_at": "2026-08-13",
+      "proof": [
+        "fixtures/dirty ย้ายไปใช้ .notaeon/ แล้วยังได้ 29·5 / 28·5 / 20·0 เท่าเดิม เมื่อส่ง --state-dir .notaeon",
+        "ไม่ส่ง flag -> exit 2 พร้อมบอก path ไม่ใช่เดา",
+        "node plugins/req/scripts/state-dir.mjs --state-dir foo/bar -> CONFIG-ERROR exit 2"
+      ],
+      "note": "แถม: แก้บั๊ก rootIdx + 1 ที่ทำให้ positional path หายเงียบ (รวม parser เหลือตัวเดียว)"
+    },
+    {
+      "id": "9",
+      "title": "ย้ายตารางสถานะจาก CLAUDE.md §4 มาเป็น docs/progress.json",
+      "status": "done",
+      "closed_at": "2026-08-13",
+      "proof": [
+        "node -e \"JSON.parse(require('fs').readFileSync('docs/progress.json','utf8'))\" -> parse ผ่าน",
+        "CLAUDE.md §4 เหลือ pointer + สรุป 1 บรรทัด ไม่มีสถานะซ้ำสองที่"
+      ],
+      "note": "เงื่อนไขหมดอายุที่ประกาศไว้ใน CLAUDE.md §4 (ตารางเกิน 10 แถว) ถูกกระตุ้นเมื่อ 2026-08-13"
+    },
+    {
+      "id": "10",
+      "title": "ปิดประตู 4 — ชุดคำสั่งหยุดที่ 8 ตัว · ตัด /req:rule ถาวร · ask ตรวจจับและพาไป /req:change",
+      "status": "done",
+      "closed_at": "2026-08-13",
+      "blocked_by": [],
+      "proof": [
+        "CLAUDE.md §5 ประตู 4 บันทึกครบ 4 การตัดสิน พร้อมเหตุผลอ้าง req-pipeline-slides.md ขั้น 6 🔵 และ doctrine second extraction path",
+        "grep -c wiki.mjs ในทุกคำสั่งที่ regenerate -> 6/6 (เดิม 1/6) · ปิดบั๊กที่ /req:ask /req:calc /req:change /req:example /req:golden ทำให้ check #12 แดง",
+        "ask.md เพิ่มขั้นจำแนก 4 ทาง (อ้าง capture.md เป็นบ้านเดียวของนิยาม ไม่ก๊อป) + เงื่อนไข 5 ข้อสำหรับแก้ร่างในที่ + ข้อความพาไป /req:change",
+        "ลบ /req:rule ออกจากรายการรอทำครบ 3 ที่ (help.md · SKILL.md · USER-GUIDE.md) โดยขีดฆ่าไว้ ไม่ลบเงียบ",
+        "USER-GUIDE เพิ่มคู่มือ /req:calc + ตัวอย่าง BR-06 · เลข 9504.42/9504.43/114053.05 มาจากสคริปต์ที่ฝังในคู่มือ รันซ้ำได้ ไม่ได้พิมพ์เอง"
+      ],
+      "note": "ที่มา: เจ้าของถามว่าเคยสั่งให้รวม /req:change เข้า /req:capture ไว้ไหม แล้วค้นทั้ง repo ไม่เจอบันทึก — ประตูนี้จึงถูกจดเพื่อไม่ให้ถูกเปิดถามซ้ำอีก"
+    },
+    {
+      "id": "11",
+      "title": "เปิด D7 (หน้ากำพร้าฝั่ง authoring) + ยก D4 ให้เทียบ hash จริงในด่าน",
+      "status": "done",
+      "closed_at": "2026-08-13",
+      "blocked_by": [],
+      "proof": [
+        "(ก) เงื่อนไขที่ตั้งไว้ถูกทำก่อนเปิดจริง — fixture ทั้งสองชุดมีทะเบียนของตัวเองแล้ว · `clean/` ถูก **render จากทะเบียน** (node scripts/wiki-authoring.mjs --root scripts/fixtures/clean --write) hash จึงเป็น hash ของบางอย่างจริง ๆ ไม่ใช่เลขที่พิมพ์ขึ้น · `dirty/` มีทะเบียนไว้ให้ด่านอ่านอย่างเดียว ห้าม render ทับ",
+        "(ข) ตัวเลขใหม่ที่ตรึงไว้: clean 0/0 exit 0 · dirty **12 error / 7 warn** exit 1 (เดิม 11/6) · ส่วนต่างสาวกลับได้ทั้งสองตัว — D4 เพิ่มสาขา 'มี hash แต่ไม่ตรง' ที่ PLG-demo.md (+1 error) · D7 ยิงที่ SKL-orphan.md (+1 warn) · ครบทั้ง 13 ข้อไม่มีข้อไหนตายเงียบ",
+        "(ค) hash ที่ด่านใช้เทียบ **import มาจาก scripts/registry.mjs ตัวเดียวกับที่ตัวเรนเดอร์เขียนออกมา** ไม่ได้คำนวณเอง — ด่านที่คำนวณเองคือด่านที่ตรวจเลขคณิตของตัวเอง (หลักเดียวกับ doc-frontmatter.mjs ของกติกาเอกสาร)",
+        "(ง) พฤติกรรมตอนไม่มีทะเบียนถูกทดสอบด้วย: ก่อนใส่ทะเบียนให้ fixture ด่านพิมพ์ LIMIT D4/D7 และตัวเลขยังเป็น 11/6 — ไม่มีการรายงานศูนย์เงียบ ๆ ในกรณีที่ตรวจไม่ได้",
+        "(จ) repo จริงไม่ขยับ: node scripts/verify-design.mjs --root . -> 0 error / 5 warn เท่าเดิม พร้อมบรรทัด LIVE D4/D7 · node scripts/wiki-authoring.mjs --root . -> already matches",
+        "(ฉ) ด่านฝั่งโปรเจกต์ไม่ถูกกวน: verify-rules clean exit 0 · dirty 44/19 เท่าเดิม"
+      ],
+      "note": "**บั๊กจริงที่การทำข้อนี้ขุดเจอ:** ตัวเรนเดอร์เขียนหน้า BUNDLE.md โดยลิงก์ไป adr/ · commands/ · scripts/ แบบตายตัว — พอ fixture clean มีแค่ 2 ไดเรกทอรี ลิงก์จึงตายและ D5 ยิงทันที · แก้ให้สร้างแถวจากไดเรกทอรีที่ bundle นั้นมีจริง · **ตัวเรนเดอร์ที่ปล่อยลิงก์ไปยังไฟล์ที่ตัวเองไม่ได้เขียน คือตัวเรนเดอร์ที่ผลิตความผิดให้ตัวเอง** · เจอเพราะ fixture เล็กกว่า repo จริง ไม่ใช่เพราะอ่านโค้ด · ประวัติเดิมของข้อนี้: ตัวหารที่ D7 รอมาตลอด (docs/design-registry.json) เกิดเมื่อ 2026-08-13 แต่ **จงใจไม่เปิดในรอบเดียวกับที่สร้าง bundle** — การเปิดคือการเปลี่ยนสิ่งที่ด่านเดิมบังคับ ถ้าเปิดพร้อมกันแล้วมีอะไรแดง จะแยกไม่ออกว่าเป็นของ D7 หรือของ renderer (บทเรียนจาก D11 ในข้อ 5) · **เงื่อนไขที่ต้องทำก่อน:** fixture ทั้งสองชุดของ verify-design ต้องมี registry ของตัวเอง ไม่งั้น clean จะตกด้วยเหตุผลที่ไม่เกี่ยวกับสิ่งที่มันทดสอบ (ตอนนี้ hash ใน fixture เป็นค่าที่ไม่ได้ hash อะไร โดยตั้งใจ) · ระหว่างนี้ครึ่ง 'เทียบ hash จริง' ไม่ได้หายไปไหน — `node scripts/wiki-authoring.mjs --root .` รายงาน STALE ให้อยู่แล้ว และ LIMIT ทั้งสองบรรทัดพิมพ์ทุกครั้งที่รันด่าน"
+    },
+    {
+      "id": "12",
+      "title": "ปิดช่องว่างระหว่างเอกสารกับของจริง — เอกสารบอกว่าของที่มีอยู่แล้ว \"ยังไม่มี\" และตัวเลข bundle ค้าง",
+      "status": "done",
+      "closed_at": "2026-08-13",
+      "blocked_by": [],
+      "proof": [
+        "(ก) ตัวเลขที่ค้างถูกวัดใหม่ด้วยสคริปต์ ไม่ได้นับมือ — node scripts/wiki-authoring.mjs --root . พิมพ์ `30 node(s) · 42 rendered file(s)` และ find docs/wiki -type f | wc -l ได้ 43 (42 ที่ render + log.md) ขณะที่ CLAUDE.md เขียนค้างไว้ 28 โหนด · 40 ไฟล์ที่ render · 41 ไฟล์ · **ส่วนต่าง 2 โหนดเป็นการอนุมานจากเอกสาร ไม่ใช่จากการวัด** — log.md จดแค่ยอด `28 โหนด` ไม่ได้จดรายชื่อ จึงสาวกลับได้แค่ผ่านบันทึกของงานข้อ 6 (ADR-aeon-005 · BUNDLE.md) และข้อ 11 (SCR-aeon-003 · registry.mjs) ซึ่งเป็นสองโหนดที่เกิดหลังการ render ครั้งแรก · เขียนแยกไว้ตรงนี้เพราะ repo นี้มีกติกาว่าตัวเลขที่สาวกลับไปหาโหนดไม่ได้ ไม่ใช่สัญญา",
+        "(ข) **ไม่ได้แก้ตัวเลขให้ตรงเฉย ๆ แต่ตัดต้นตอ drift ทิ้ง** — ตัวเลข bundle ของ repo เองโตทุกครั้งที่เพิ่มโหนด จึงไม่ใช่สัญญาที่ต้องนิ่งแบบตัวเลข fixture (44/19 · 12/7) · CLAUDE.md §1 และ §3 จึงเขียนว่าให้อ่านจาก output ของคำสั่ง แทนที่จะพิมพ์เลขค้างไว้ให้ล้าอีกรอบ",
+        "(ค) เอกสารที่บอกว่าของที่มีอยู่ \"ยังไม่มี\" ถูกล่าด้วย grep ไม่ใช่ด้วยความจำ — grep -rn 'ยังไม่มี|เสนอไว้|จนกว่าจะมี' CLAUDE.md docs/standard/DOC-STANDARD.md docs/requirement/req-skill-design.md plugins/req/USER-GUIDE.md · ได้ 3 จุดที่ล้าจริง (DOC-STANDARD §9 หัวข้อ + §9 ตาราง D7 + req-skill-design §ตรวจ) ที่เหลือยังจริง (impact/lock · out_of_scope · package.json) จึงไม่แตะ",
+        "(ง) DOC-STANDARD §9 แก้ 4 จุด: ตาราง D7 `ด่าน project เท่านั้น` -> `ทั้งสองด่าน` · ตาราง bundle `D1–D10` -> `D1–D12b` · ตาราง 'ของใครของมัน' ย้าย D7 ไปอยู่ทั้งสองแถวพร้อมตัวหารของแต่ละด่าน · หัวข้อ §9 ที่เขียนว่า design-registry.json + verify-design.mjs 'เสนอแล้วยังไม่ได้สร้าง' ติดป้ายว่าเกิดแล้ว · จดลงตารางเวอร์ชัน §13 เป็นการแก้ร่าง ยังเป็น v1.1 ตามแบบอย่างของงานข้อ 5 และ 6",
+        "(จ) §13 คำถามค้างลดจาก 3 เหลือ 2 — ข้อ 2 ('ยัด D1–D10 ไว้ในสคริปต์เดียวจะบวมไหม') ปิดด้วยของที่วัดได้: wc -l < scripts/verify-design.mjs = 418 บรรทัดถือครบ 13 ข้อ · registry.mjs 95 บรรทัด · ขีดฆ่าไว้ ไม่ลบเงียบ ตามแบบเดียวกับที่ทำกับ /req:rule",
+        "(ฉ) req-skill-design.md ใช้วิธี **เติมหมายเหตุ ไม่เขียนทับ** — เอกสารออกแบบเป็นบันทึกสภาพ ณ วันออกแบบ (CLAUDE.md §2 ลำดับ 4) การแก้ย้อนหลังคือการลบประวัติ จึงคงประโยคเดิมไว้แล้วต่อท้ายว่าที่บังคับ ณ วันนี้อยู่ที่ DOC-STANDARD §9",
+        "(ช) CLAUDE.md §4 + progress.json $schema_note แก้จาก 'ยังไม่มีสคริปต์ตรวจไฟล์นี้ จนกว่าจะมี' เป็น 'สคริปต์เกิดแล้วแต่ไม่มี check ข้อไหนอ่านไฟล์นี้' — พิสูจน์: grep -n progress scripts/verify-design.mjs เจอแค่คำในข้อความของ D6 · สองประโยคนี้ไม่เหมือนกัน และประโยคเดิมทำให้เข้าใจว่าสคริปต์ยังไม่เกิด",
+        "(ฌ) **ทะเบียนถูกสแกนด้วย ไม่ใช่แค่หน้าที่มันเรนเดอร์ออกมา** — `already matches` พิสูจน์แค่ว่าหน้าตรงกับทะเบียน ไม่ได้พิสูจน์ว่าข้อความในทะเบียนยังจริง และข้อความนั้นแพร่ลง 42 ไฟล์ · สแกน title/description/summary ทุกโหนดด้วยคำเดียวกับข้อ (ค) ได้ 3 hit และตรวจแล้วเป็น false positive ทั้งหมด (คำโปรยของ req · เงื่อนไขจริงของ CP2 · 'ยังไม่มีคนเซ็น' ที่ยังจริงตามงานข้อ 1) — ไม่ต้องแก้ ไม่ต้อง render ใหม่",
+        "(ญ) ลิงก์ 2 เส้นที่เพิ่มเข้าไปอยู่นอก docs/wiki/** จึงไม่มี D5 ตัวไหนตรวจให้ — ตรวจด้วยมือด้วย ls docs/progress.json docs/standard/DOC-STANDARD.md ทั้งคู่มีจริง · จดไว้ว่าเป็นช่องโหว่ของด่าน ไม่ใช่ว่าตรวจแล้วผ่าน",
+        "(ซ) ทุกด่านนิ่งหลังแก้ ไม่มีตัวไหนขยับสักตัว: verify-design --root . -> 0 error / 5 warn · clean -> PASS · dirty -> 12/7 · wiki-authoring --root . -> already matches (ยืนยันว่า hash ของ bundle คิดจากทะเบียน ไม่ใช่จากเนื้อไฟล์ resource การแก้ CLAUDE.md/DOC-STANDARD.md จึงไม่ทำให้หน้า wiki stale) · verify-rules clean -> PASS · dirty --state-dir .notaeon -> 44/19 · wiki.mjs clean -> already matches"
+      ],
+      "note": "งานนี้ไม่ได้อยู่ในรายการมาก่อน — โผล่จากการรันด่านตอนเปิด session แล้วเห็นว่า output ของสคริปต์ (30 โหนด · 43 ไฟล์) ไม่ตรงกับที่ CLAUDE.md เขียนไว้ · **ที่ทำไม่ได้และไม่ทำ:** warn D10 x3 ต้องประทับทั้ง owner และวันที่ทบทวน (verify-design.mjs บรรทัด 372-377 ตรวจแบบ AND) การเติมเองแปลว่าเขียนว่า 'ทบทวนล่าสุด 2026-08-13' ลงเอกสารที่ไม่มีใครทบทวนวันนี้ = ปลอมหลักฐาน หลักเดียวกับที่งานข้อ 6 ปฏิเสธการเขียน bundle ด้วยมือแล้วประทับ hash · หนึ่งในสามไฟล์ (req-skill-create.md) ยังเป็นข้อความดิบของเจ้าของ การแปะหัวเอกสารทับของเจ้าของต้องให้เจ้าของสั่ง · จึงยกเป็นคำถามค้างข้อ 1 ในรายการที่ส่งให้เจ้าของ ไม่ใช่ทำเงียบ ๆ · **เจ้าของตอบใน session เดียวกัน -> ทำต่อที่งานข้อ 13** · ตัวเลข `0 error / 5 warn` ใน proof ข้อ (ซ) ถูก ณ เวลาที่ปิดข้อนี้ ไม่แก้ย้อนหลัง — ค่าใหม่หลังปิด D10 อยู่ที่ข้อ 13"
+    },
+    {
+      "id": "13",
+      "title": "ปิด warn D10 ×3 + ปิดคำถามค้าง §13 ข้อ 3 (D8 = error) ตามที่เจ้าของเคาะ",
+      "status": "done",
+      "closed_at": "2026-08-13",
+      "blocked_by": [],
+      "proof": [
+        "(ก) **ไม่ได้ประทับวันทบทวนเอง — ถามก่อนแล้วเจ้าของตอบว่า 'ทบทวนแล้ว ประทับวันนี้'** · เหตุผลที่ต้องถามอยู่ใน note ของงานข้อ 12: D10 บังคับ owner **และ** วันที่ทบทวนพร้อมกัน (verify-design.mjs ตรวจแบบ AND) การเติมเองจึงเท่ากับประกาศว่ามีคนทบทวนวันนี้ ซึ่งเป็นข้อความที่ตัวเราเองพิสูจน์ไม่ได้",
+        "(ข) ผลวัดหลังเติม: node scripts/verify-design.mjs --root . -> **0 error / 2 warn** (เดิม 0/5) · ส่วนต่าง 3 warn สาวกลับไปหาไฟล์ได้ทุกตัว — req-pipeline-slides.md · requirement/req-skill-create.md · requirement/requirements.md",
+        "(ค) **warn ที่เหลือทั้งหมดเป็น D12b ซึ่งประกาศไว้แล้วว่าถาวร** = เป็นครั้งแรกที่ repo เข้าเงื่อนไข DOC-STANDARD §9 / CLAUDE.md §7 กติกา 3 ('ห้ามมี warn ที่ปิดไม่ได้') ได้ครบ · ตั้งแต่นี้ warn ที่โผล่ใหม่ = ของใหม่ ไม่ใช่ของค้าง ซึ่งทำให้ warn กลับมาอ่านได้อีกครั้ง",
+        "(ง) req-skill-create.md เติมหัวเอกสาร **โดยไม่แตะเนื้อแม้แต่บรรทัดเดียว** และเขียนกำกับไว้ในไฟล์เองว่าห้ามเกลาถ้อยคำข้างล่าง เพราะมันคือหลักฐานว่าโจทย์ถูกสั่งมาว่าอะไร ไม่ใช่ว่าเราเข้าใจว่าอะไร",
+        "(จ) DOC-STANDARD §11 สามแถวเปลี่ยนจาก 🟡 เป็น ✅ พร้อมเหตุผลต่อแถว · §13 ปิดคำถามค้างข้อ 3 (D8 คง `error` ตามที่เจ้าของเคาะ) ทำให้เหลือค้าง 1 ข้อคือ 'docs/wiki/ เข้า git ไหม' ซึ่งผูกกับงานข้อ 3 ที่เจ้าของสั่งว่ายังไม่ต้อง",
+        "(ฉ) ทุกด่านนิ่ง: verify-design clean -> PASS · dirty -> 12/7 · wiki-authoring --root . -> already matches · verify-rules clean -> PASS · dirty --state-dir .notaeon -> 44/19"
+      ],
+      "note": "**สิ่งที่เจ้าของเคาะใน session นี้ 4 ข้อ** — จดไว้ที่นี่เพื่อไม่ให้ถูกเปิดถามซ้ำ (บทเรียนจากประตู 4 ใน CLAUDE.md §5): (1) D10 -> ประทับวันนี้ได้ เพราะทบทวนแล้วจริง (2) **git init -> ยังไม่ต้อง** งานข้อ 3 คง blocked (3) **DOC-STANDARD -> อ่านก่อน ยังไม่เซ็น** งานข้อ 1 คง pending · การแก้ร่าง 3 แถวของวันนี้ (§9 D7 · §11 D10 · §13 ข้อ 2-3) อยู่ในตารางเวอร์ชัน §13 ครบ ไม่มีการแก้เงียบ (4) **D8 คงเป็น error** · **สิ่งที่ยังค้างถึงเจ้าของและไม่ได้ถามรอบนี้ 2 ข้อ:** บรรทัด req-miner ใน USER-GUIDE (สกิลระดับเครื่อง ไม่ได้ ship มากับ req — จะปล่อยหรือติดป้ายว่าเป็นของนอก plugin) และ meta.out_of_scope[] ที่จดไว้ที่ tiers.1.declared_gap ของคลังคำถาม"
+    },
+    {
+      "id": "14",
+      "title": "แยก marketplace ออกจากโปรเจกต์ทดสอบ — repo นี้เป็น aeon-marketplace ล้วน",
+      "status": "done",
+      "closed_at": "2026-08-14",
+      "blocked_by": [],
+      "proof": [
+        "(ก) สำเนาถูกพิสูจน์ว่าตรงไบต์ต่อไบต์ ไม่ได้ดูแค่ชื่อไฟล์ — เทียบ SHA256 รายไฟล์ของ .claude-plugin/ · plugins/ · schemas/ · scripts/ · CLAUDE.md ระหว่างต้นทางกับที่นี่ ได้ 149 ไฟล์ · missing 0 · content differs 0 · extra 0",
+        "(ข) fixture ทั้งสองชุดคือด่านวัดความเพี้ยนของการ copy และให้ตัวเลขตามสัญญาเป๊ะเมื่อรันจากสคริปต์ของ repo นี้เอง: verify-rules clean exit 0 · dirty --state-dir .notaeon 44 error / 19 warn · verify-design clean exit 0 · dirty 12 error / 7 warn · doc-frontmatter.mjs --verify-against schemas/spec.schema.json exit 0",
+        "(ค) docs/wiki/ ถูก render ใหม่ทั้งก้อนแทนการ copy — node scripts/wiki-authoring.mjs --root . --write -> 30 node(s) · 42 rendered file(s) แล้วรันซ้ำ -> `bundle already matches the registry` exit 0 (idempotent) · นับไฟล์จริงได้ 43 = 42 ที่ render + log.md",
+        "(ง) การไม่ยกไฟล์ของ MiniLoan มาด้วย ถูกวัดว่าไม่กระทบด่าน ไม่ใช่เดาเอา — node scripts/verify-design.mjs --root . -> 0 error / 2 warn (D12b ×2 · warn ถาวรโดยประกาศ) เท่ากับก่อนแยกทุกตัว แปลว่าไม่มี check ข้อไหนเอื้อมไปหา docs/requirement/requirements.md",
+        "(จ) แก้ CLAUDE.md แล้ว bundle ไม่ stale — node scripts/wiki-authoring.mjs --root . -> already matches · ยืนยันสิ่งที่งานข้อ 12 proof (ซ) เขียนไว้ว่า hash ของหน้าคิดจากทะเบียน ไม่ใช่จากเนื้อของไฟล์ resource",
+        "(ฉ) ต้นทางไม่ถูกแตะเลยตามที่เจ้าของสั่ง (ห้ามลบไฟล์ใน project เดิม) — docs/requirement/requirements.md ยังอยู่ · docs/wiki/ ยังครบ 43 ไฟล์ · node scripts/verify-design.mjs --root D:/ProjectClaude/AEON-Work/miniLoan -> 0 error / 2 warn exit 0"
+      ],
+      "note": "เจ้าของสั่งเมื่อ 2026-08-14 · บันทึกการตัดสินใจอยู่ที่ CLAUDE.md §5 ประตู 6 · **สิ่งที่ตั้งใจไม่ยกมา:** docs/requirement/requirements.md (requirement ของ MiniLoan) · docs/wiki/** ของต้นทาง (render ใหม่แทน) · docs/wiki/log.md จึงถูก seed ใหม่ ประวัติการ render เดิมอยู่กับสำเนาเก่าเท่านั้น เพราะชั้น C ต่อท้ายอย่างเดียว ย้อนสร้างไม่ได้ · **ช่องว่างที่การแยกทำให้เห็นชัดขึ้นแต่ไม่ได้เกิดจากมัน:** /req:check ขั้น 2 อ้าง `-s schemas/spec.schema.json` เทียบจาก root ของโปรเจกต์ที่รัน ทั้งที่ schema ไม่ได้เดินทางไปกับ plugin — โปรเจกต์ทดสอบภายนอกต้อง copy ไฟล์นี้ไปเอง · ทางเลือกที่เสนอ (ย้ายไป plugins/req/schemas/ แล้วอ้าง ${CLAUDE_PLUGIN_ROOT}) ยังไม่เคาะ ต้องแก้ DOC-STANDARD §3.1/§3.2 ก่อนเพราะผังไฟล์เป็นของมาตรฐาน"
+    }
+  ]
+}

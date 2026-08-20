@@ -1,0 +1,30 @@
+{
+  "$comment": "TRUTH for this fixture's bundle — and the divisor that lets D4-equality and D7 fire. The bundle here is NEVER rendered from it on purpose: the pages are hand-planted so each violation stays where it was put. Do not run `wiki-authoring.mjs --write` against this fixture; it would repair the very things the numbers in EXPECTED.md are pinned to.",
+  "version": "0.1.0",
+  "owner": "พี่ปู",
+  "reviewed": "2026-08-13",
+  "nodes": [
+    {
+      "id": "PLG-demo",
+      "type": "Plugin",
+      "title": "demo",
+      "description": "หน้าที่ frontmatter ถูกทุกอย่าง แต่ hash ไม่ตรงกับที่คำนวณจากทะเบียน (ปลูก D4 สาขาเทียบค่า)",
+      "resource": "plugins/demo",
+      "tags": ["fixture"],
+      "lifecycle": "built",
+      "summary": "ค่า spec_hash บนหน้าเป็นเลขที่ถูกรูปแบบแต่ไม่ได้ hash อะไร — ด่านเก่าที่ตรวจแค่ 'มีและถูกรูป' ปล่อยผ่าน ด่านที่เทียบกับทะเบียนจับได้",
+      "links": []
+    },
+    {
+      "id": "CMD-demo-002",
+      "type": "Command",
+      "title": "/demo:unhashed",
+      "description": "หน้าที่ไม่มีลายนิ้วมือเลย (ปลูก D4 สาขาไม่มี marker)",
+      "resource": "plugins/demo/commands/ghost.md",
+      "tags": ["fixture"],
+      "lifecycle": "built",
+      "summary": "อยู่ในทะเบียนจึงไม่ใช่หน้ากำพร้า แต่ไม่มี spec_hash ให้เทียบ — คนละสาขากับ PLG-demo",
+      "links": []
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+# .gitignore — workshop root
+# ตัดเฉพาะ "ของเฉพาะเครื่อง" เท่านั้น (กติกาเดียวกับ aeon-marketplace/.gitignore)
+
+/.claude/settings.local.json
+node_modules/
+npm-debug.log*

@@ -1,0 +1,1447 @@
+{
+  "meta": {
+    "module": "loan",
+    "schema_version": "0.3.0",
+    "scale": "FULL",
+    "status": "draft",
+    "created_at": "2026-08-19T22:53+07:00",
+    "updated_at": "2026-08-20T08:56+07:00"
+  },
+  "sources": [
+    {
+      "id": "SRC-001",
+      "kind": "file",
+      "path": "docs/requirement/requirements.md",
+      "imported_from": null,
+      "hash_at_import": "sha256:4d619f788163f93480c6b6a059a13cbe9697242d1497b92210638f7e1d2e4b67",
+      "captured_at": "2026-08-19T22:53+07:00",
+      "captured_by": "/req:capture docs/requirement/requirements.md",
+      "extracted": {
+        "by": "markdown-text",
+        "text": "§5 กฎธุรกิจ (Business Rules) — ค่าสมมติทั้งหมด · BR-01 คุณสมบัติผู้สมัคร: อายุ 20–60 ปี / รายได้ต่อเดือน ≥ 15,000 บาท / อายุงานปัจจุบัน ≥ 4 เดือน · BR-02 ความสามารถในการชำระ (DTI): Debt-to-Income หลังรวมงวดใหม่ ต้อง ≤ 70% ของรายได้ต่อเดือน, DTI = (ภาระหนี้เดิมต่อเดือน + งวดใหม่โดยประมาณ) / รายได้ต่อเดือน · BR-03 วงเงินสูงสุด: วงเงินอนุมัติสูงสุด = 5 เท่าของรายได้ต่อเดือน และไม่เกิน 1,000,000 บาท · BR-04 เงื่อนไขสินเชื่อ: จำนวนเงินกู้ 10,000 – 1,000,000 บาท / จำนวนงวด 6 – 60 งวด (รายเดือน) / อัตราดอกเบี้ยแบบลดต้นลดดอก 25% ต่อปี · BR-05 การให้คะแนน (Credit Band): Band A ผ่านทุกเกณฑ์ + DTI ≤ 50% / Band B ผ่านเกณฑ์ + DTI 50–70% / Band C ผิดเกณฑ์ข้อใดข้อหนึ่ง → ปฏิเสธพร้อมเหตุผล · BR-06 การคำนวณงวดผ่อน (Amortization): EMI = P × r × (1+r)^n / ((1+r)^n − 1), แต่ละงวดแยกเป็นดอกเบี้ย (ยอดคงเหลือ × r) และเงินต้น (EMI − ดอกเบี้ย), งวดสุดท้ายปัดเศษให้ยอดคงเหลือเป็น 0 พอดี · BR-07 การปิดก่อนกำหนด: ยอดปิดบัญชี = เงินต้นคงเหลือ + ดอกเบี้ยค้างจ่ายถึงวันที่ปิด + ค่าธรรมเนียมปิดก่อนกำหนด (สมมติ 1% ของเงินต้นคงเหลือ), ดอกเบี้ยของงวดในอนาคตที่ยังไม่ถึงกำหนดไม่คิด — ส่วนที่เหลือของไฟล์ (§1–§4, §6–§10) อ่านจากไฟล์ต้นทางโดยตรง ไม่ทำสำเนา"
+      }
+    },
+    {
+      "id": "SRC-002",
+      "kind": "chat",
+      "captured_at": "2026-08-20T00:20+07:00",
+      "captured_by": "/req:ask permission",
+      "content": "/req:ask permission (2026-08-20) — คำตอบของพี่ปู 3 ข้อ · QB-perm-01: actor หน้างานทำบางขั้น ที่เหลือเป็นของเจ้าหน้าที่ — Applicant เดินสถานะได้ขั้นเดียวคือยื่นใบสมัคร ขั้นที่เหลือเป็นของ Loan Officer และ Operations · QB-perm-02: อนุมัติหรือปฏิเสธได้เฉพาะเจ้าหน้าที่ที่ถูก assign ใบสมัครนั้น หรือผู้สำรองของใบนั้น (พี่ปูเลือกออกจากค่าเริ่มต้นที่ว่าเฉพาะคนที่ assign) · ยืนยันร่างกฎที่ค้างจากชั้น 1 QB-actor-02: เก็บข้อห้ามของ Applicant เป็นกฎข้อเดียวที่ REQ-loan-001",
+      "hash_at_import": "sha256:1fafccaa51391d354d41116eb2612b53ca134ad18643ffdf1d5452fcc361a6fb"
+    },
+    {
+      "id": "SRC-003",
+      "kind": "chat",
+      "captured_at": "2026-08-20T08:56+07:00",
+      "captured_by": "/req:ask approval",
+      "content": "/req:ask approval (2026-08-20) — คำตอบของพี่ปู 3 ข้อ · QB-apr-01: ตั้ง role ผู้อนุมัติเองได้ ไม่ฝังตายในโค้ด · QB-apr-02: ใบสมัครที่เข้าสถานะ UnderReview แต่ยังไม่ถูกมอบหมายให้เจ้าหน้าที่คนใด มีค่าเริ่มต้นให้ แล้วมอบหมายทีหลังได้ · คำถามนอกคลัง (ใครเป็นคนมอบหมายและมอบหมายตอนไหน): Loan Officer หยิบใบจากคิวกลางมาเป็นของตัวเองได้เอง (self-assign)",
+      "hash_at_import": "sha256:d73bc280bf20f2ccff577d0cd053f1c7bd18a743d042dd5679297e5b2365cfca"
+    }
+  ],
+  "glossary": [
+    {
+      "id": "UL-loan-001",
+      "term_th": "ใบสมัครสินเชื่อ",
+      "term_en": "LoanApplication",
+      "definition": "ใบสมัครสินเชื่อ ตั้งแต่ร่างจนถึงเบิกจ่าย (Aggregate ฝั่ง Origination)",
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§4 ภาษากลางของโดเมน", "line": 72 },
+          "quote": "**LoanApplication** | ใบสมัครสินเชื่อ ตั้งแต่ร่างจนถึงเบิกจ่าย (Aggregate ฝั่ง Origination)",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-002",
+      "term_th": "ข้อมูลผู้สมัคร",
+      "term_en": "ApplicantProfile",
+      "definition": "ข้อมูลผู้สมัคร: อายุ รายได้ อายุงาน ภาระหนี้ปัจจุบัน",
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§4 ภาษากลางของโดเมน", "line": 73 },
+          "quote": "**Applicant Profile** | ข้อมูลผู้สมัคร: อายุ รายได้ อายุงาน ภาระหนี้ปัจจุบัน",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-003",
+      "term_th": "ผลการประเมินสินเชื่อ",
+      "term_en": "CreditAssessment",
+      "definition": "ผลการประเมินจาก rule engine (คะแนน + เหตุผล + วงเงินที่อนุมัติได้)",
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§4 ภาษากลางของโดเมน", "line": 74 },
+          "quote": "**CreditAssessment** | ผลการประเมินจาก rule engine (คะแนน + เหตุผล + วงเงินที่อนุมัติได้)",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-004",
+      "term_th": "บัญชีสินเชื่อ",
+      "term_en": "LoanAccount",
+      "definition": "บัญชีสินเชื่อหลังเบิกจ่าย (Aggregate ฝั่ง Servicing)",
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§4 ภาษากลางของโดเมน", "line": 75 },
+          "quote": "**LoanAccount** | บัญชีสินเชื่อหลังเบิกจ่าย (Aggregate ฝั่ง Servicing)",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-005",
+      "term_th": "ตารางผ่อน",
+      "term_en": "RepaymentSchedule",
+      "definition": "ตารางผ่อนรายงวด (ต้น/ดอก/ยอดคงเหลือ)",
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§4 ภาษากลางของโดเมน", "line": 76 },
+          "quote": "**RepaymentSchedule** | ตารางผ่อนรายงวด (ต้น/ดอก/ยอดคงเหลือ)",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-006",
+      "term_th": "งวดผ่อน",
+      "term_en": "Installment",
+      "definition": "งวดผ่อน 1 งวดในตาราง — หมายถึงตัวงวด (ช่วงเวลาหนึ่งงวด) ไม่ใช่จำนวนงวดและไม่ใช่จำนวนเงินที่ต้องจ่าย",
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§4 ภาษากลางของโดเมน", "line": 77 },
+          "quote": "**Installment** | งวดผ่อน 1 งวดในตาราง",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-007",
+      "term_th": "จำนวนงวด",
+      "term_en": "Term",
+      "definition": "จำนวนงวดผ่อนทั้งหมดของสัญญา (6–60 งวด รายเดือน) — เป็นตัวเลขนับ ไม่ใช่จำนวนเงิน · ระวัง US-10 บรรทัด 207 ใช้คำว่า \"จำนวนงวด\" แต่หมายถึงค่างวด (จำนวนเงิน)",
+      "not_to_confuse_with": ["UL-loan-008"],
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-04 เงื่อนไขสินเชื่อ", "line": 102 },
+          "quote": "จำนวนงวด: 6 – 60 งวด (รายเดือน)",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-008",
+      "term_th": "ค่างวด",
+      "term_en": "InstallmentAmount",
+      "definition": "จำนวนเงินที่ต้องชำระต่อหนึ่งงวด (EMI) — เอกสารต้นทางเรียกสิ่งเดียวกันนี้สามแบบ: \"งวดใหม่โดยประมาณ\" (BR-02 บรรทัด 95) · \"จำนวนงวด\" (US-10 บรรทัด 207) · \"ยอดงวด\" (US-10 บรรทัด 208) ทั้งสามที่หมายถึงจำนวนเงิน ไม่ใช่จำนวนนับ",
+      "not_to_confuse_with": ["UL-loan-007"],
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-06 การคำนวณงวดผ่อน", "line": 111 },
+          "quote": "งวดผ่อนเท่ากันทุกงวด (EMI): `EMI = P × r × (1+r)^n / ((1+r)^n − 1)`",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-009",
+      "term_th": "รายการชำระเงิน",
+      "term_en": "Payment",
+      "definition": "รายการชำระเงินที่บันทึกเข้าบัญชี",
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§4 ภาษากลางของโดเมน", "line": 78 },
+          "quote": "**Payment** | รายการชำระเงินที่บันทึกเข้าบัญชี",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-010",
+      "term_th": "การปิดบัญชีก่อนกำหนด",
+      "term_en": "EarlySettlement",
+      "definition": "การปิดบัญชีก่อนครบกำหนด",
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§4 ภาษากลางของโดเมน", "line": 79 },
+          "quote": "**Early Settlement** | การปิดบัญชีก่อนครบกำหนด",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-011",
+      "term_th": "จำนวนเงิน",
+      "term_en": "Money",
+      "definition": "จำนวนเงินพร้อมสกุล (Value Object — ไม่ใช้ทศนิยมลอย/floating point)",
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§4 ภาษากลางของโดเมน", "line": 80 },
+          "quote": "**Money** | จำนวนเงินพร้อมสกุล (Value Object — ไม่ใช้ทศนิยมลอย/floating point)",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-012",
+      "term_th": "วงเงินอนุมัติสูงสุด",
+      "term_en": "ApprovedCreditLimit",
+      "definition": "เพดานวงเงินที่ระบบคำนวณให้ผู้สมัครรายนั้น = 5 เท่าของรายได้ต่อเดือน และไม่เกิน 1,000,000 บาท — เป็นค่าที่ระบบคำนวณจากรายได้ ไม่ใช่ค่าที่ผู้สมัครกรอก",
+      "not_to_confuse_with": ["UL-loan-013"],
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-03 วงเงินสูงสุด", "line": 98 },
+          "quote": "วงเงินอนุมัติสูงสุด = 5 เท่าของรายได้ต่อเดือน และไม่เกิน 1,000,000 บาท",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-013",
+      "term_th": "จำนวนเงินกู้ที่ขอ",
+      "term_en": "RequestedLoanAmount",
+      "definition": "จำนวนเงินที่ผู้สมัครกรอกในใบสมัคร (10,000 – 1,000,000 บาท) — เอกสารเรียกอีกที่หนึ่งว่า \"วงเงินที่ขอ\" (US-05 บรรทัด 176) · เป็นค่าที่ผู้สมัครกรอก ไม่ใช่ค่าที่ระบบคำนวณ",
+      "not_to_confuse_with": ["UL-loan-012"],
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-04 เงื่อนไขสินเชื่อ", "line": 101 },
+          "quote": "จำนวนเงินกู้: 10,000 – 1,000,000 บาท",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-014",
+      "term_th": "อัตราส่วนภาระหนี้ต่อรายได้",
+      "term_en": "DebtToIncomeRatio",
+      "definition": "DTI = (ภาระหนี้เดิมต่อเดือน + ค่างวดใหม่) / รายได้ต่อเดือน",
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-02 ความสามารถในการชำระ", "line": 95 },
+          "quote": "สูตร: `DTI = (ภาระหนี้เดิมต่อเดือน + งวดใหม่โดยประมาณ) / รายได้ต่อเดือน`",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-015",
+      "term_th": "ระดับเครดิต",
+      "term_en": "CreditBand",
+      "definition": "ผลจัดชั้นของใบสมัครหลังประเมิน มีสามค่า A / B / C",
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-05 การให้คะแนน", "line": 105 },
+          "quote": "**BR-05 การให้คะแนน (Credit Band — สมมติ)**",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-016",
+      "term_th": "ยอดคงเหลือ",
+      "term_en": "OutstandingPrincipal",
+      "definition": "เงินต้นที่ยังไม่ได้ชำระ ณ เวลาหนึ่ง — เป็นฐานคิดดอกเบี้ยของงวดถัดไปในตารางผ่อน และเป็นฐานของยอดปิดบัญชีกับค่าธรรมเนียม 1% ตอนปิดก่อนกำหนด · ไม่รวมดอกเบี้ยของงวดในอนาคต",
+      "aka": ["เงินต้นคงเหลือ"],
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-06 การคำนวณงวดผ่อน", "line": 113 },
+          "quote": "แต่ละงวดแยกเป็นดอกเบี้ย (ยอดคงเหลือ × r) และเงินต้น (EMI − ดอกเบี้ย)",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-07 การปิดก่อนกำหนด", "line": 117 },
+          "quote": "ยอดปิดบัญชี = เงินต้นคงเหลือ + ดอกเบี้ยค้างจ่ายถึงวันที่ปิด + ค่าธรรมเนียมปิดก่อนกำหนด (สมมติ 1% ของเงินต้นคงเหลือ)",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-018",
+      "term_th": "ดอกเบี้ยค้างจ่าย",
+      "term_en": "AccruedInterest",
+      "definition": "ดอกเบี้ยที่เกิดขึ้นแล้วถึงวันที่ปิดบัญชี แต่ยังไม่ถึงกำหนดชำระตามตารางผ่อน · **เป็นส่วนหนึ่งของดอกเบี้ยรายงวด (UL-loan-020) ของงวดที่กำลังเดินอยู่ ไม่ใช่คนละตัว** — คือช่วงที่เดินไปแล้วของงวดปัจจุบัน ส่วนดอกเบี้ยของงวดในอนาคตไม่คิดเลย · ฐานการคิด (รายวันหรือรายงวด) ยังไม่ตกลง ต้องพินด้วย `/req:calc`",
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-07 การปิดก่อนกำหนด", "line": 118 },
+          "quote": "ดอกเบี้ยของงวดในอนาคตที่ยังไม่ถึงกำหนด **ไม่คิด**",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-020",
+      "term_th": "ดอกเบี้ยรายงวด",
+      "term_en": "InstallmentInterest",
+      "definition": "ส่วนที่เป็นดอกเบี้ยของค่างวดหนึ่งงวดในตารางผ่อน = ยอดคงเหลือ × อัตราดอกเบี้ยต่อเดือน · **ดอกเบี้ยค้างจ่าย (UL-loan-018) เป็นส่วนหนึ่งของตัวนี้** สำหรับงวดที่กำลังเดินอยู่ ณ วันปิดบัญชี",
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-06 การคำนวณงวดผ่อน", "line": 113 },
+          "quote": "แต่ละงวดแยกเป็นดอกเบี้ย (ยอดคงเหลือ × r) และเงินต้น (EMI − ดอกเบี้ย)",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-021",
+      "term_th": "การมอบหมายงาน",
+      "term_en": "Assignment",
+      "definition": "การผูกใบสมัครหนึ่งใบเข้ากับเจ้าหน้าที่ผู้รับผิดชอบหลักหนึ่งคน และผู้สำรองของใบนั้น · **แนวคิดนี้ไม่มีอยู่ในเอกสารต้นทางเลย** เกิดจากคำตอบ QB-perm-02 ใน `/req:ask permission` — ใครเป็นคนมอบหมาย มอบหมายเมื่อไร และถ้ายังไม่มอบหมายจะเกิดอะไร ยังไม่มีใครตอบ",
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-002",
+          "locator": { "section": "QB-perm-02", "line": 1 },
+          "quote": "อนุมัติหรือปฏิเสธได้เฉพาะเจ้าหน้าที่ที่ถูก assign ใบสมัครนั้น หรือผู้สำรองของใบนั้น",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-022",
+      "term_th": "ผู้สำรอง",
+      "term_en": "BackupOfficer",
+      "definition": "เจ้าหน้าที่คนที่สองของใบสมัครหนึ่งใบ ที่อนุมัติหรือปฏิเสธแทนผู้รับผิดชอบหลักได้ · เกิดจากคำตอบ QB-perm-02 — เอกสารต้นทางไม่มีแนวคิดนี้",
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-002",
+          "locator": { "section": "QB-perm-02", "line": 1 },
+          "quote": "อนุมัติหรือปฏิเสธได้เฉพาะเจ้าหน้าที่ที่ถูก assign ใบสมัครนั้น หรือผู้สำรองของใบนั้น",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-023",
+      "term_th": "นโยบายผู้อนุมัติ",
+      "term_en": "ApprovalPolicy",
+      "definition": "การตั้งค่าว่า role ใดมีสิทธิ์อนุมัติหรือปฏิเสธใบสมัคร โดยเปลี่ยนได้โดยไม่ต้องแก้โปรแกรม · เอกสารต้นทางไม่มีแนวคิดนี้ — เกิดจากคำตอบ QB-apr-01 · เก็บที่ไหนและตั้งค่าได้ระดับไหนยังไม่ตอบ (DQ-loan-001)",
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-003",
+          "locator": { "section": "QB-apr-01", "line": 1 },
+          "quote": "ตั้ง role ผู้อนุมัติเองได้ ไม่ฝังตายในโค้ด",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-024",
+      "term_th": "คิวใบสมัครรอพิจารณา",
+      "term_en": "PendingReviewQueue",
+      "definition": "ที่พักของใบสมัครที่อยู่ในสถานะ UnderReview แต่ยังไม่มีเจ้าหน้าที่คนใดรับผิดชอบ · Loan Officer หยิบใบจากที่นี่มาเป็นของตัวเองได้เอง · เอกสารต้นทางเรียกโดยอ้อมว่า \"จัดลำดับงาน\" ใน US-12 แต่ไม่เคยนิยามว่าเป็นคิว — เกิดจากคำตอบนอกคลังในรอบ `/req:ask approval`",
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-003",
+          "locator": { "section": "คำถามนอกคลัง — ใครมอบหมายและตอนไหน", "line": 1 },
+          "quote": "Loan Officer หยิบใบจากคิวกลางมาเป็นของตัวเองได้เอง (self-assign)",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    },
+    {
+      "id": "UL-loan-019",
+      "term_th": "ยอดปิดบัญชี",
+      "term_en": "PayoffAmount",
+      "definition": "จำนวนเงินทั้งหมดที่ต้องชำระเพื่อปิดบัญชีก่อนกำหนด",
+      "status": "draft",
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-11 Epic 7", "line": 215 },
+          "quote": "**Given** บัญชี `Active` **When** ขอยอดปิดบัญชี **Then** ระบบคำนวณตาม BR-07 (เงินต้นคงเหลือ + ดอกค้าง + ค่าธรรมเนียม)",
+          "confidence": 1
+        }
+      ],
+      "becomes_entity": null
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-loan-001",
+      "title": "ยื่นใบสมัครสินเชื่อ",
+      "actor": "Applicant",
+      "goal": "กรอกข้อมูล บันทึกร่าง และยื่นใบสมัครสินเชื่อส่วนบุคคลเข้าสู่การพิจารณา",
+      "business_value": "ผู้สมัครกรอกได้ไม่ครบในครั้งเดียวแล้วกลับมาแก้ต่อได้ และเมื่อยื่นแล้วข้อมูลถูกล็อกเพื่อให้การพิจารณาอยู่บนข้อมูลชุดเดียวกัน",
+      "narrative": "มาจาก Epic 1 (US-01, US-02) ของเอกสาร requirement\n\nขอบเขตของ REQ นี้จบที่การเปลี่ยนสถานะเป็น `Submitted` — การประเมินที่เกิดตามมาทันทีอยู่ที่ REQ-loan-002 เพราะ actor เปลี่ยนจาก Applicant เป็น System\n\n**กรอบผู้เกี่ยวข้อง — จาก `/req:ask` ชั้น 1 รอบ B (2026-08-19):**\n\n1. **มี actor แค่ 4 รายตามที่ §3 เอ่ยถึง** — Applicant · Loan Officer · Operations · System · ไม่มีงานอัตโนมัติตามเวลาที่ไม่มีคนกด และไม่มีผู้ตรวจสอบจากภายนอกที่เห็นข้อมูลบางส่วน (QB-actor-01)\n2. **Applicant ห้ามทำสิ่งที่ย้อนกลับไม่ได้** — อนุมัติ (REQ-loan-003) · เบิกจ่าย (REQ-loan-004) · บันทึกชำระ (REQ-loan-006) · ปิดบัญชี (REQ-loan-007) · สิ่งที่ Applicant ทำได้คือ กรอกร่าง ยื่นใบสมัคร ดูสถานะ ดูตารางผ่อนของบัญชีตัวเอง และขอยอดปิดบัญชี (QB-actor-02)\n\nข้อ 2 เป็นคำตอบรูปกฎ และชั้น 1 ไม่ร่างกฎ — ยกไปให้ `/req:ask permission` ชั้น 2 ร่างเป็น BR โดยอ้าง SRC-001 §3 บรรทัด 57-59 เป็นที่มาเดียวกัน · เอกสารต้นทางไม่เคยเขียนข้อห้ามของ actor ไหนไว้เลย นี่จึงเป็นข้อมูลใหม่ที่ได้จากรอบวางกรอบ ไม่ได้อยู่ในไฟล์มาก่อน",
+      "priority": "high",
+      "status": "draft",
+      "has_ui": true,
+      "domain_concepts": ["UL-loan-001", "UL-loan-002", "UL-loan-007", "UL-loan-013"],
+      "rules": ["BR-loan-001", "BR-loan-002", "BR-loan-003", "BR-loan-024"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 Epic 1 — ยื่นใบสมัคร (Loan Application)", "line": 145 },
+          "quote": "### Epic 1 — ยื่นใบสมัคร (Loan Application)",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "REQ-loan-002",
+      "title": "ประเมินสินเชื่ออัตโนมัติเมื่อยื่นใบสมัคร",
+      "actor": "System",
+      "goal": "ประเมินใบสมัครตามกฎที่กำหนด แล้วออกผลการประเมินที่มีคะแนน ระดับเครดิต วงเงินที่อนุมัติได้ และเหตุผลรายเกณฑ์",
+      "business_value": "เจ้าหน้าที่ตัดสินใจบนเกณฑ์ชุดเดียวกันทุกใบ และปฏิเสธใบที่ผิดเกณฑ์ได้โดยไม่ต้องคำนวณเอง",
+      "narrative": "มาจาก Epic 2 (US-03) ของเอกสาร requirement\n\n**คำตัดสินจากรอบยืนยัน `/req:capture` 2026-08-19 — เอกสารขัดกันเอง 3 จุด และเจ้าของเคาะแล้ว:**\n\n1. **DTI = 50% พอดี → Band A** · BR-05 เขียน Band A ว่า `DTI ≤ 50%` และ Band B ว่า `50–70%` ซึ่งทับกันที่ 50% เป๊ะ — ให้อ่านตามตัวหนังสือของ Band A ดังนั้น Band B คือช่วง (50%, 70%]\n2. **Band A กับ Band B ต่างกันแค่ป้าย** · ทั้งสอง Band ไปสถานะ `UnderReview` เหมือนกันและเจ้าหน้าที่เป็นคนกดอนุมัติทั้งคู่ — **คำว่า \"อนุมัติอัตโนมัติได้\" ในบรรทัด 106 ตกไป** ตรงกับ §2 ที่ระบุ workflow อนุมัติแบบ 1 ระดับ\n3. **ขอวงเงินเกินเพดาน BR-03 = ผิดเกณฑ์ → Band C ปฏิเสธ** · **AC ข้อที่สองของ US-05 บรรทัด 176 (\"ระบบเตือนและให้ปรับวงเงินก่อนอนุมัติ\") ตกไป** ไม่มีเส้นทางลดวงเงินแล้วอนุมัติ\n\n**กรอบขอบเขต — จาก `/req:ask` ชั้น 1 รอบ A (2026-08-19):**\n\n**\"คะแนน\" ใน CreditAssessment อยู่ในรอบนี้** (QB-bound-01) — เอกสารเอ่ยถึงสองที่ว่าผลการประเมินต้องมีคะแนน (§4 บรรทัด 74 และ US-03 บรรทัด 162) แต่ไม่มีที่ไหนบอกว่าคะแนนคำนวณจากอะไรหรือมีช่วงค่าเท่าไร · ชั้น 1 ไม่ร่างกฎ จึงยกไปให้ชั้น 2 หมวด `calculation` และ `/req:calc` — **กฎที่นิยามคะแนนยังไม่มีอยู่ในไฟล์** และ BR-loan-008@v1 พูดถึงคะแนนโดยยังไม่มีนิยามรองรับ",
+      "priority": "high",
+      "status": "draft",
+      "has_ui": false,
+      "domain_concepts": ["UL-loan-001", "UL-loan-002", "UL-loan-003", "UL-loan-008", "UL-loan-012", "UL-loan-013", "UL-loan-014", "UL-loan-015"],
+      "rules": ["BR-loan-004", "BR-loan-005", "BR-loan-006", "BR-loan-007", "BR-loan-008"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 Epic 2 — ประเมินสินเชื่อ (Credit Assessment)", "line": 158 },
+          "quote": "### Epic 2 — ประเมินสินเชื่อ (Credit Assessment)",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 กฎธุรกิจ", "line": 84 },
+          "quote": "## 5. กฎธุรกิจ (Business Rules) — ค่าสมมติทั้งหมด",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "REQ-loan-003",
+      "title": "อนุมัติและปฏิเสธใบสมัคร",
+      "actor": "Loan Officer",
+      "goal": "พิจารณาใบสมัครที่ประเมินแล้วบนเหตุผลรายเกณฑ์ที่ระบบให้ แล้วอนุมัติหรือปฏิเสธพร้อมบันทึกร่องรอย",
+      "business_value": "มีคนรับผิดชอบการตัดสินใจทุกใบ และใบที่ปฏิเสธแล้วย้อนกลับมาอนุมัติไม่ได้",
+      "narrative": "มาจาก Epic 3 (US-05, US-06) รวมกับ US-04 ของ Epic 2 — US-04 ย้ายมาที่นี่เพราะ actor เป็น Loan Officer ไม่ใช่ System\n\n**AC ข้อที่สองของ US-05 (บรรทัด 176) ถูกตัดออกตามคำตัดสินรอบยืนยัน** — ขอเกินเพดานเป็นเรื่องของ REQ-loan-002 ที่จัดเป็น Band C ไปแล้ว ไม่มีเส้นทาง \"เตือนแล้วให้ปรับวงเงิน\" ที่ชั้นอนุมัติ\n\n**กลไกการมอบหมายงาน — จาก `/req:ask permission` และ `/req:ask approval` (2026-08-20):**\n\nเอกสารต้นทางบอกแค่ว่า \"เจ้าหน้าที่พิจารณา 1 คน\" (§2 บรรทัด 40) และไม่เคยพูดถึงการมอบหมายงานเลย · สามรอบที่ผ่านมาสร้างกลไกนี้ขึ้นมาทั้งชุด: `BR-loan-025@v1` (ใครอนุมัติได้) · `BR-loan-026@v1` (role ตั้งค่าได้) · `BR-loan-027@v1` (ใบเข้าคิวกลางแล้วหยิบเอง) พร้อมคำศัพท์ใหม่ 4 คำ — **ทั้งหมดมีที่มาจากบทสนทนา ไม่ใช่จากเอกสาร**\n\n⚠️ **จุดที่ยังไม่ชัดและควรเคาะก่อนไปต่อ** — คำตอบ QB-apr-02 บอกว่า \"มีค่าเริ่มต้นให้\" ส่วนคำตอบนอกคลังบอกว่า \"หยิบจากคิวกลางเอง\" · ยังไม่ตกลงว่า **ค่าเริ่มต้นนั้นคือคนจริง (เช่น หัวหน้าทีม) หรือคือการอยู่ในคิวกลางโดยยังไม่มีเจ้าของ** · ถ้าเป็นอย่างหลัง ใบที่ยังไม่มีใครหยิบจะอนุมัติไม่ได้ตาม `BR-loan-025@v1` ซึ่งใกล้เคียงกับตัวเลือก c ของ QB-apr-02 มากกว่าตัวเลือก a ที่เลือกไว้ · `BR-loan-027@v1` จึงเขียนเฉพาะส่วนที่แน่นอนจากทั้งสองคำตอบ และเว้นข้อนี้ไว้\n\n⚠️ **ขอบเขตของการตั้งค่า role** — `BR-loan-026@v1` บอกว่าตั้ง role ผู้อนุมัติได้ แต่ยังไม่ตกลงว่ากว้างแค่ไหน · ข้อความของกฎอ้าง `BR-loan-024@v1` ไว้เป็นขอบ เพราะกฎนั้นห้าม Applicant ทำการกระทำเหล่านี้อยู่แล้ว — เป็นผลที่ตามมาจากกฎที่เคาะแล้ว ไม่ใช่เงื่อนไขใหม่",
+      "priority": "high",
+      "status": "draft",
+      "has_ui": true,
+      "domain_concepts": ["UL-loan-001", "UL-loan-003", "UL-loan-012", "UL-loan-015", "UL-loan-021", "UL-loan-022", "UL-loan-023", "UL-loan-024"],
+      "rules": ["BR-loan-009", "BR-loan-010", "BR-loan-011", "BR-loan-025", "BR-loan-026", "BR-loan-027"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 Epic 3 — อนุมัติ (Approval Workflow)", "line": 171 },
+          "quote": "### Epic 3 — อนุมัติ (Approval Workflow)",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "REQ-loan-004",
+      "title": "เบิกจ่ายและเปิดบัญชีสินเชื่อ",
+      "actor": "Loan Officer",
+      "goal": "สั่งเบิกจ่ายใบสมัครที่อนุมัติแล้ว เพื่อเริ่มสัญญาและเปิดบัญชีสินเชื่อพร้อมตารางผ่อน",
+      "business_value": "จุดเดียวที่ใบสมัครกลายเป็นหนี้จริง จึงต้องบังคับให้เกิดได้เฉพาะจากสถานะที่อนุมัติแล้วเท่านั้น",
+      "narrative": "มาจาก Epic 4 (US-07) ของเอกสาร requirement\n\nนี่คือรอยต่อระหว่างสอง Aggregate — `LoanApplication` จบบทบาทที่ `Disbursed` และ `LoanAccount` เริ่มที่ `Active` กฎในหมวดนี้จึงคร่อมทั้งสองฝั่ง",
+      "priority": "high",
+      "status": "draft",
+      "has_ui": true,
+      "domain_concepts": ["UL-loan-001", "UL-loan-004", "UL-loan-005"],
+      "rules": ["BR-loan-012", "BR-loan-013", "BR-loan-014"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 Epic 4 — เบิกจ่ายและเปิดบัญชี (Disbursement)", "line": 183 },
+          "quote": "### Epic 4 — เบิกจ่ายและเปิดบัญชี (Disbursement)",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "REQ-loan-005",
+      "title": "ตารางผ่อนแบบลดต้นลดดอก",
+      "actor": "System",
+      "goal": "สร้างตารางผ่อนที่ค่างวดเท่ากันทุกงวด แยกเงินต้นกับดอกเบี้ยรายงวด และปิดยอดคงเหลือที่ 0 พอดี",
+      "business_value": "ตัวเลขที่ผู้กู้เห็นและตัวเลขที่ระบบใช้ตัดหนี้เป็นชุดเดียวกัน ผิดหนึ่งสตางค์คือผิดทั้งสัญญา",
+      "narrative": "มาจาก Epic 5 (US-08, US-09) รวมกับอัตราดอกเบี้ยใน §5 BR-04 และวันครบกำหนดใน §9\n\n**อัตราดอกเบี้ย 25% ต่อปี (BR-loan-015@v1) เป็นกฎข้ามหมวด** — ถูกใช้ทั้งที่นี่ (สร้างตาราง) ที่ REQ-loan-002 (ประมาณค่างวดเพื่อคิด DTI) และที่ REQ-loan-007 (ดอกเบี้ยค้างจ่ายถึงวันปิด) วางไว้ที่นี่เพราะเป็นที่ที่กลไกลดต้นลดดอกอยู่จริง\n\n**ยังไม่มีสัญญาการคำนวณ (CALC)** — §8 เขียนเพียง \"ปัดเศษสม่ำเสมอทั้งระบบ\" ซึ่งยังไม่ได้บอกว่าปัดกี่ตำแหน่ง ปัดแบบไหน และปัดตรงจุดไหน จึงต้องเดินต่อด้วย `/req:calc`",
+      "priority": "high",
+      "status": "draft",
+      "has_ui": false,
+      "domain_concepts": ["UL-loan-004", "UL-loan-005", "UL-loan-006", "UL-loan-007", "UL-loan-008", "UL-loan-011", "UL-loan-016", "UL-loan-020"],
+      "rules": ["BR-loan-015", "BR-loan-016", "BR-loan-017", "BR-loan-018"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 Epic 5 — ตารางผ่อน (Repayment Schedule)", "line": 191 },
+          "quote": "### Epic 5 — ตารางผ่อน (Repayment Schedule)",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-06 การคำนวณงวดผ่อน (Amortization)", "line": 110 },
+          "quote": "**BR-06 การคำนวณงวดผ่อน (Amortization)**",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "REQ-loan-006",
+      "title": "รับชำระรายงวด",
+      "actor": "Operations",
+      "goal": "บันทึกการชำระเข้าบัญชีสินเชื่อทีละงวด และปิดบัญชีเมื่อชำระครบทุกงวด",
+      "business_value": "ยอดคงเหลือที่ลูกค้าถามได้ตลอดเวลาต้องตรงกับเงินที่รับเข้ามาจริง — โดยยอมรับว่าเงินจริงเคลื่อนนอกระบบและ Operations เป็นผู้บันทึกผล ซึ่งเป็นเคสยกเว้นที่ตกลงกันแล้ว ไม่ใช่ความไม่สมบูรณ์ของโมดูล",
+      "narrative": "มาจาก Epic 6 (US-10) ของเอกสาร requirement\n\nเอกสารกำหนดชัดว่า **ไม่รับชำระบางส่วน** ซึ่งเป็นข้อสมมติเพื่อการเรียน ไม่ใช่พฤติกรรมของสินเชื่อจริง\n\n**กรอบเป้าหมายและขอบเขต — จาก `/req:ask` ชั้น 1 รอบ A (2026-08-19):**\n\n1. **โมดูลนี้ถือว่าสำเร็จได้ทั้งที่ยังเหลืองานทำมือ ตราบใดที่งานทำมือเป็นเคสยกเว้น** (QB-goal-01) — งานทำมือที่ตกลงยอมรับคือการรับเงินจริง ซึ่ง §2 บรรทัด 41 ประกาศไว้เองว่าเป็น mock payment ไม่เชื่อม payment gateway จริง\n2. **ตัดการติดตามหนี้ (collection) และการปรับโครงสร้างหนี้ออกจากรอบนี้แล้ว ยังบรรลุเป้าหมายปลายทาง** — ของที่ตัดออกเป็นส่วนขยาย ไม่ใช่ของที่ขาดหาย (QB-bound-02)\n\n**ผลที่ตามมาจากข้อ 2:** LoanAccount ไม่มีสถานะค้างชำระ (Overdue) ในรอบนี้ วงจรสถานะจึงมีแค่ `Active → Closed` ตาม §6 และไม่มีกฎข้อไหนตอบว่าเกิดอะไรขึ้นเมื่อเลยวันครบกำหนดแล้วยังไม่ชำระ — เป็นช่องว่างที่ตั้งใจเว้น ไม่ใช่ที่ลืม\n\n**รายการนอกขอบเขตที่ยืนยันแล้วในรอบวางกรอบ:** การติดตามหนี้ · การปรับโครงสร้างหนี้ (§2 บรรทัด 47)",
+      "priority": "high",
+      "status": "draft",
+      "has_ui": true,
+      "domain_concepts": ["UL-loan-004", "UL-loan-005", "UL-loan-006", "UL-loan-008", "UL-loan-009", "UL-loan-016"],
+      "rules": ["BR-loan-019", "BR-loan-020"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 Epic 6 — รับชำระ (Payment)", "line": 203 },
+          "quote": "### Epic 6 — รับชำระ (Payment)",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "REQ-loan-007",
+      "title": "ปิดบัญชีก่อนกำหนด",
+      "actor": "Operations",
+      "goal": "ขอยอดปิดบัญชีก่อนครบกำหนด และปิดบัญชีเมื่อชำระยอดนั้นครบ",
+      "business_value": "ผู้กู้จ่ายดอกเบี้ยเฉพาะที่เกิดขึ้นจริงถึงวันปิด ไม่ถูกคิดดอกของงวดที่ยังไม่ถึงกำหนด",
+      "narrative": "มาจาก Epic 7 (US-11) รวมกับ §5 BR-07\n\n**ยังไม่มีสัญญาการคำนวณ (CALC)** — เอกสารบอกองค์ประกอบของยอดปิดบัญชีครบทั้งสามส่วน แต่ไม่ได้บอกว่า \"ดอกเบี้ยค้างจ่ายถึงวันที่ปิด\" คิดฐานอะไร (รายวันจากยอดคงเหลือ หรือเฉลี่ยจากงวดที่กำลังเดินอยู่) ทั้งที่ §9 ระบุว่าวันครบกำหนดเป็นรายเดือน จึงต้องเดินต่อด้วย `/req:calc`\n\n**เปลี่ยน actor จาก Applicant เป็น Operations — จาก `/req:ask` ชั้น 1 รอบ B (2026-08-19):**\n\nคำตอบ QB-actor-02 ระบุว่า **Applicant ห้ามทำสิ่งที่ย้อนกลับไม่ได้ ซึ่งรวมถึงการปิดบัญชี** ตรงกับ §3 บรรทัด 59 ที่ให้ Operations เป็นผู้ \"ดำเนินการปิดบัญชี\" · US-11 จึงแยกเป็นสองครึ่ง — **Applicant ขอยอดปิดบัญชีได้** (บรรทัด 215 เป็นการอ่าน ไม่เปลี่ยนสถานะ) แต่ **Operations เป็นผู้บันทึกการชำระและปิดบัญชี** (บรรทัด 216)\n\n`actor` เก็บได้ค่าเดียว จึงตั้งเป็นเจ้าของการเปลี่ยนสถานะ คือ Operations · ถ้าต้องการให้ครึ่ง \"ขอยอดปิดบัญชี\" ของ Applicant แยกเป็น REQ ของตัวเอง นั่นเป็นการตัดสินใจเรื่องการแบ่ง requirement ต้องสั่งเป็นรอบใหม่ ไม่ใช่ผลข้างเคียงของรอบวางกรอบ",
+      "priority": "medium",
+      "status": "draft",
+      "has_ui": true,
+      "domain_concepts": ["UL-loan-004", "UL-loan-009", "UL-loan-010", "UL-loan-016", "UL-loan-018", "UL-loan-019", "UL-loan-020"],
+      "rules": ["BR-loan-021", "BR-loan-022"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 Epic 7 — ปิดก่อนกำหนด (Early Settlement)", "line": 211 },
+          "quote": "### Epic 7 — ปิดก่อนกำหนด (Early Settlement)",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-07 การปิดก่อนกำหนด (Early Settlement)", "line": 116 },
+          "quote": "**BR-07 การปิดก่อนกำหนด (Early Settlement)**",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "REQ-loan-008",
+      "title": "แดชบอร์ดภาพรวมสถานะ",
+      "actor": "Loan Officer",
+      "goal": "เห็นจำนวนใบสมัครและบัญชีแยกตามสถานะ เพื่อจัดลำดับงานที่ต้องทำ",
+      "business_value": "รู้ว่ามีงานค้างกี่ใบและค้างอยู่ขั้นไหน โดยไม่ต้องไล่เปิดทีละใบ",
+      "narrative": "มาจาก Epic 8 (US-12) ของเอกสาร requirement — เป็นข้อ `[C] Could` ลำดับความสำคัญจึงต่ำที่สุดในชุดนี้\n\nข้อสังเกตที่ยังไม่ได้ตัดสิน: รายการสถานะที่เอกสารระบุ (Submitted/UnderReview/Approved/Active/Closed) ปนสถานะของสอง Aggregate เข้าด้วยกัน — สามตัวแรกเป็นของใบสมัคร สองตัวหลังเป็นของบัญชีสินเชื่อ",
+      "priority": "low",
+      "status": "draft",
+      "has_ui": true,
+      "domain_concepts": ["UL-loan-001", "UL-loan-004"],
+      "rules": ["BR-loan-023"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 Epic 8 — แดชบอร์ด (Dashboard)", "line": 218 },
+          "quote": "### Epic 8 — แดชบอร์ด (Dashboard)",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "REQ-loan-009",
+      "title": "แยก Web กับ API และข้อกำหนดที่ไม่ใช่ฟังก์ชัน",
+      "actor": "ทีมพัฒนา (Web เป็น client ที่เรียกใช้ API)",
+      "goal": "ให้ business logic ทั้งหมดอยู่หลัง API และ Web เป็นเพียง client ที่เรียกใช้ โดยทั้งสองส่วน deploy และทดสอบแยกกันได้",
+      "business_value": "เปลี่ยนหรือทดสอบแต่ละส่วนได้อิสระ และกฎธุรกิจถูกบังคับที่จุดเดียวเสมอแม้มี client อื่นเข้ามาทีหลัง",
+      "narrative": "มาจาก Epic 9 (US-13 ถึง US-16) รวมกับ §8 Non-Functional Requirements\n\n**REQ นี้ไม่มีกฎธุรกิจ (BR) โดยเจตนา** — เป็นคำตัดสินจากรอบยืนยัน `/req:capture` 2026-08-19 ข้อกำหนดทั้งหมดในหมวดนี้เป็นเรื่องสถาปัตยกรรมและคุณภาพ ซึ่งเดินคนละสายกับกฎธุรกิจและไม่เข้า Gherkin จึงเก็บเป็น `NFR-loan-001` ถึง `NFR-loan-010` ทั้งหมด\n\nschema ไม่มีที่เก็บ NFR ระดับบนสุด — `nfr[]` อยู่ใต้ requirement เท่านั้น REQ ที่มี `rules` ว่างจึงถูกต้องตาม schema และเป็นที่อยู่ของ NFR ทั้งชุด",
+      "priority": "high",
+      "status": "draft",
+      "has_ui": false,
+      "domain_concepts": ["UL-loan-011"],
+      "rules": [],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 Epic 9 — แยก Web + API (ข้อกำหนดเชิงสถาปัตยกรรม)", "line": 224 },
+          "quote": "### Epic 9 — แยก Web + API (ข้อกำหนดเชิงสถาปัตยกรรม)",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§8 Non-Functional Requirements (ย่อ)", "line": 249 },
+          "quote": "## 8. Non-Functional Requirements (ย่อ)",
+          "confidence": 1
+        }
+      ],
+      "nfr": [
+        {
+          "id": "NFR-loan-001",
+          "kind": "other",
+          "statement": "ทุกความสามารถใน Epic 1–8 ต้องมี API endpoint รองรับ และ business rule ถูกบังคับที่ฝั่ง API เสมอ",
+          "verified_by": "api_contract_test"
+        },
+        {
+          "id": "NFR-loan-002",
+          "kind": "security",
+          "statement": "เรียก API ด้วยข้อมูลที่ผิด business rule ต้องถูกปฏิเสธพร้อมรหัส/ข้อความ error ที่ชัดเจน ไม่พึ่งการ validate ของ Web เพียงอย่างเดียว",
+          "verified_by": "api_negative_test"
+        },
+        {
+          "id": "NFR-loan-003",
+          "kind": "other",
+          "statement": "Web ไม่ถือกฎธุรกิจ — เมื่อต้องตัดสินใจเชิงธุรกิจ (อนุมัติได้ไหม วงเงินเท่าไร) Web ต้องเรียก API เท่านั้น ไม่คำนวณเอง",
+          "verified_by": "code_review"
+        },
+        {
+          "id": "NFR-loan-004",
+          "kind": "availability",
+          "statement": "เมื่อ API ปิดให้บริการ Web ต้องแสดงสถานะข้อผิดพลาดอย่างเหมาะสมและไม่ crash",
+          "verified_by": "fault_injection_test"
+        },
+        {
+          "id": "NFR-loan-005",
+          "kind": "other",
+          "statement": "มีสัญญา API (เช่น OpenAPI) ที่อธิบาย endpoint และ request/response schema และ request/response จริงต้องตรงตาม schema ที่ประกาศไว้",
+          "verified_by": "schema_validation"
+        },
+        {
+          "id": "NFR-loan-006",
+          "kind": "security",
+          "statement": "Web แนบ token จำลองทุก request และ API ตรวจสอบก่อนให้บริการ (auth จริงอยู่นอกขอบเขต)",
+          "verified_by": "api_auth_test"
+        },
+        {
+          "id": "NFR-loan-007",
+          "kind": "compliance",
+          "statement": "จำนวนเงินใช้ชนิดข้อมูลที่แม่นยำ ไม่ใช้ floating point และปัดเศษสม่ำเสมอทั้งระบบ",
+          "verified_by": "calculation_contract"
+        },
+        {
+          "id": "NFR-loan-008",
+          "kind": "compliance",
+          "statement": "ทุกการเปลี่ยนสถานะบันทึกผู้กระทำและเวลา",
+          "verified_by": "audit_log_test"
+        },
+        {
+          "id": "NFR-loan-009",
+          "kind": "security",
+          "statement": "ตรวจสอบ input ทั้งฝั่ง Web และฝั่ง API โดย API เป็นด่านสุดท้ายเสมอ และไม่เก็บข้อมูลอ่อนไหวจริง",
+          "verified_by": "api_negative_test"
+        },
+        {
+          "id": "NFR-loan-010",
+          "kind": "other",
+          "statement": "API เป็นแบบ stateless สื่อสารด้วยรูปแบบมาตรฐาน (เช่น REST/JSON) · Web กับ API deploy และทดสอบแยกกันได้อิสระ · ตั้งค่า CORS/Origin ให้ Web เรียก API ได้อย่างถูกต้อง",
+          "verified_by": "deployment_test"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "id": "BR-loan-001@v1",
+      "base_id": "BR-loan-001",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-001",
+      "statement": "บันทึกร่างใบสมัครได้แม้ข้อมูลยังกรอกไม่ครบ โดยยังไม่ตรวจ business rule เต็มชุด และใบสมัครอยู่ในสถานะ Draft",
+      "kind": "policy",
+      "examples": [],
+      "questions": [],
+      "test_design": ["EP"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-01", "line": 150 },
+          "quote": "**Given** ยังกรอกไม่ครบ **When** บันทึกร่าง **Then** อนุญาตให้บันทึกได้ (ยังไม่ตรวจ business rule เต็ม)",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-002@v1",
+      "base_id": "BR-loan-002",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-001",
+      "statement": "ยื่นใบสมัครได้เมื่อกรอกครบทั้ง 6 ช่อง (ชื่อ อายุ รายได้ อายุงาน จำนวนเงินกู้ จำนวนงวด) แล้วสถานะเปลี่ยนเป็น Submitted และล็อกการแก้ไข · ถ้าข้อมูลไม่ครบ ระบบปฏิเสธพร้อมระบุ field ที่ขาดและคงสถานะ Draft",
+      "kind": "invariant",
+      "examples": [],
+      "questions": [],
+      "test_design": ["decision_table", "state_transition"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-02", "line": 154 },
+          "quote": "**Given** ใบสมัครกรอกครบ (ชื่อ อายุ รายได้ อายุงาน จำนวนเงินกู้ จำนวนงวด) **When** กดยื่น **Then** สถานะเปลี่ยนเป็น `Submitted` และล็อกการแก้ไข",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-02", "line": 155 },
+          "quote": "**Given** ข้อมูลไม่ครบ **When** กดยื่น **Then** ระบบปฏิเสธพร้อมระบุ field ที่ขาด และคงสถานะ `Draft`",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-003@v1",
+      "base_id": "BR-loan-003",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-001",
+      "statement": "จำนวนเงินกู้ต้องอยู่ในช่วง 10,000 – 1,000,000 บาท และจำนวนงวดต้องอยู่ในช่วง 6 – 60 งวด (รายเดือน) · อยู่นอกช่วงเมื่อกดยื่น ระบบแจ้ง error และไม่เปลี่ยนสถานะ",
+      "kind": "constraint",
+      "examples": [],
+      "questions": [],
+      "test_design": ["BVA", "EP"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-04 เงื่อนไขสินเชื่อ", "line": 101 },
+          "quote": "จำนวนเงินกู้: 10,000 – 1,000,000 บาท",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-04 เงื่อนไขสินเชื่อ", "line": 102 },
+          "quote": "จำนวนงวด: 6 – 60 งวด (รายเดือน)",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-02", "line": 156 },
+          "quote": "**Given** จำนวนเงินกู้/งวด อยู่นอกช่วง BR-04 **When** กดยื่น **Then** ระบบแจ้ง error และไม่เปลี่ยนสถานะ",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-004@v1",
+      "base_id": "BR-loan-004",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-002",
+      "statement": "ผู้สมัครต้องผ่านคุณสมบัติครบทั้งสามข้อ: อายุ 20–60 ปี · รายได้ต่อเดือน ≥ 15,000 บาท · อายุงานปัจจุบัน ≥ 4 เดือน · ผิดข้อใดข้อหนึ่งได้ Band C พร้อมเหตุผล",
+      "kind": "constraint",
+      "examples": [],
+      "questions": [],
+      "test_design": ["BVA", "EP"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-01 คุณสมบัติผู้สมัคร", "line": 89 },
+          "quote": "อายุ 20–60 ปี",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-01 คุณสมบัติผู้สมัคร", "line": 90 },
+          "quote": "รายได้ต่อเดือน ≥ 15,000 บาท",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-01 คุณสมบัติผู้สมัคร", "line": 91 },
+          "quote": "อายุงานปัจจุบัน ≥ 4 เดือน",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-03", "line": 163 },
+          "quote": "**Given** ผิด BR-01 (คุณสมบัติ) **When** ประเมิน **Then** ได้ Band C พร้อมเหตุผล และสถานะใบสมัครพร้อมถูกปฏิเสธ",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-005@v1",
+      "base_id": "BR-loan-005",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-002",
+      "statement": "อัตราส่วนภาระหนี้ต่อรายได้หลังรวมค่างวดใหม่ต้อง ≤ 70% ของรายได้ต่อเดือน โดย DTI = (ภาระหนี้เดิมต่อเดือน + ค่างวดใหม่) / รายได้ต่อเดือน · DTI > 70% ได้ Band C",
+      "kind": "constraint",
+      "examples": [],
+      "questions": [],
+      "test_design": ["BVA"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-02 ความสามารถในการชำระ (DTI)", "line": 94 },
+          "quote": "Debt-to-Income หลังรวมงวดใหม่ ต้อง ≤ 70% ของรายได้ต่อเดือน",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-02 ความสามารถในการชำระ (DTI)", "line": 95 },
+          "quote": "สูตร: `DTI = (ภาระหนี้เดิมต่อเดือน + งวดใหม่โดยประมาณ) / รายได้ต่อเดือน`",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-03", "line": 164 },
+          "quote": "**Given** DTI > 70% (BR-02) **When** ประเมิน **Then** ได้ Band C",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-006@v1",
+      "base_id": "BR-loan-006",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-002",
+      "statement": "วงเงินอนุมัติสูงสุดของผู้สมัคร = ค่าที่น้อยกว่าระหว่าง 5 เท่าของรายได้ต่อเดือน กับ 1,000,000 บาท · จำนวนเงินกู้ที่ขอเกินวงเงินนี้ถือว่าผิดเกณฑ์ และได้ Band C",
+      "kind": "calculation",
+      "examples": [],
+      "questions": [],
+      "test_design": ["BVA"],
+      "constrained_by": null,
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-03 วงเงินสูงสุด", "line": 98 },
+          "quote": "วงเงินอนุมัติสูงสุด = 5 เท่าของรายได้ต่อเดือน และไม่เกิน 1,000,000 บาท",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-007@v1",
+      "base_id": "BR-loan-007",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-002",
+      "statement": "จัดระดับเครดิตจากผลการประเมิน: Band A = ผ่านทุกเกณฑ์และ DTI ≤ 50% · Band B = ผ่านทุกเกณฑ์และ DTI มากกว่า 50% ถึง ≤ 70% · Band C = ผิดเกณฑ์ข้อใดข้อหนึ่ง (คุณสมบัติ BR-loan-004@v1 หรือ DTI BR-loan-005@v1 หรือขอเกินวงเงิน BR-loan-006@v1) ให้ปฏิเสธพร้อมเหตุผล · ที่ DTI = 50% พอดี ได้ Band A",
+      "kind": "policy",
+      "examples": [],
+      "questions": [],
+      "test_design": ["decision_table", "BVA"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-05 การให้คะแนน", "line": 106 },
+          "quote": "Band A: ผ่านทุกเกณฑ์ + DTI ≤ 50% → **อนุมัติอัตโนมัติได้** (ยังต้องให้เจ้าหน้าที่ยืนยัน)",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-05 การให้คะแนน", "line": 107 },
+          "quote": "Band B: ผ่านเกณฑ์ + DTI 50–70% → **ส่งเจ้าหน้าที่พิจารณา**",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-05 การให้คะแนน", "line": 108 },
+          "quote": "Band C: ผิดเกณฑ์ข้อใดข้อหนึ่ง → **ปฏิเสธ** พร้อมเหตุผล",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-008@v1",
+      "base_id": "BR-loan-008",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-002",
+      "statement": "เมื่อใบสมัครถูกยื่น ระบบสร้าง CreditAssessment ที่มีคะแนน ระดับเครดิต (A/B/C) วงเงินที่อนุมัติได้ และเหตุผลรายเกณฑ์ · ใบที่ได้ Band A หรือ Band B เปลี่ยนสถานะเป็น UnderReview เหมือนกันทั้งคู่ และให้เจ้าหน้าที่เป็นผู้อนุมัติเสมอ (ไม่มีการอนุมัติอัตโนมัติ)",
+      "kind": "policy",
+      "examples": [],
+      "questions": [],
+      "test_design": ["state_transition", "decision_table"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-03", "line": 162 },
+          "quote": "**Given** ใบสมัครถูกยื่น **When** ระบบประเมิน **Then** สร้าง CreditAssessment ที่มีคะแนน, Band (A/B/C), วงเงินที่อนุมัติได้ และเหตุผล",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-03", "line": 165 },
+          "quote": "**Given** ผ่านทุกเกณฑ์และ DTI ≤ 50% **When** ประเมิน **Then** ได้ Band A และสถานะเป็น `UnderReview`",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§2 ขอบเขต", "line": 40 },
+          "quote": "Workflow อนุมัติแบบ 1 ระดับ (เจ้าหน้าที่พิจารณา 1 คน)",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-009@v1",
+      "base_id": "BR-loan-009",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-003",
+      "statement": "อนุมัติได้เฉพาะใบสมัครที่อยู่ในสถานะ UnderReview เท่านั้น เมื่ออนุมัติแล้วสถานะเปลี่ยนเป็น Approved พร้อมบันทึกผู้อนุมัติและเวลา",
+      "kind": "invariant",
+      "examples": [],
+      "questions": [],
+      "test_design": ["state_transition"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-05", "line": 175 },
+          "quote": "**Given** ใบสมัครสถานะ `UnderReview` **When** เจ้าหน้าที่กดอนุมัติ **Then** สถานะเปลี่ยนเป็น `Approved` พร้อมบันทึกผู้อนุมัติและเวลา",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-010@v1",
+      "base_id": "BR-loan-010",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-003",
+      "statement": "ปฏิเสธใบสมัครที่อยู่ในสถานะ UnderReview หรือได้ Band C ได้โดยต้องระบุเหตุผล แล้วสถานะเปลี่ยนเป็น Rejected ซึ่งเป็นสถานะสุดท้าย · ใบที่ Rejected แล้ว ถ้าพยายามอนุมัติ ระบบต้องปฏิเสธการกระทำ (invalid transition)",
+      "kind": "invariant",
+      "examples": [],
+      "questions": [],
+      "test_design": ["state_transition"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-06", "line": 180 },
+          "quote": "**Given** ใบสมัครสถานะ `UnderReview` หรือ Band C **When** กดปฏิเสธพร้อมระบุเหตุผล **Then** สถานะเปลี่ยนเป็น `Rejected` (final)",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-06", "line": 181 },
+          "quote": "**Given** ใบสมัคร `Rejected` แล้ว **When** พยายามอนุมัติ **Then** ระบบปฏิเสธการกระทำ (invalid transition)",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-011@v1",
+      "base_id": "BR-loan-011",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-003",
+      "statement": "เมื่อเจ้าหน้าที่เปิดดูใบสมัครที่มี CreditAssessment ต้องเห็นรายการเกณฑ์ที่ผ่านและไม่ผ่านเป็นรายข้อ พร้อมวงเงินสูงสุดตาม BR-loan-006@v1",
+      "kind": "policy",
+      "examples": [],
+      "questions": [],
+      "test_design": ["EP"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-04", "line": 169 },
+          "quote": "**Given** มี CreditAssessment **When** เปิดดูใบสมัคร **Then** เห็นรายการเกณฑ์ที่ผ่าน/ไม่ผ่าน และวงเงินสูงสุดตาม BR-03",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-012@v1",
+      "base_id": "BR-loan-012",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-004",
+      "statement": "สั่งเบิกจ่ายได้เฉพาะใบสมัครที่อยู่ในสถานะ Approved เท่านั้น แล้วสถานะเปลี่ยนเป็น Disbursed · ใบสมัครที่ยังไม่ Approved ระบบต้องปฏิเสธการเบิกจ่าย",
+      "kind": "invariant",
+      "examples": [],
+      "questions": [],
+      "test_design": ["state_transition"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-07", "line": 187 },
+          "quote": "**Given** ใบสมัครสถานะ `Approved` **When** สั่งเบิกจ่าย **Then** สถานะเปลี่ยนเป็น `Disbursed` และสร้าง LoanAccount สถานะ `Active`",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-07", "line": 189 },
+          "quote": "**Given** ใบสมัครยังไม่ `Approved` **When** สั่งเบิกจ่าย **Then** ระบบปฏิเสธ",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-013@v1",
+      "base_id": "BR-loan-013",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-004",
+      "statement": "เมื่อเบิกจ่ายสำเร็จ ระบบสร้าง LoanAccount สถานะ Active และสร้าง RepaymentSchedule ตาม BR-loan-016@v1 ทันทีในการกระทำเดียวกัน",
+      "kind": "invariant",
+      "examples": [],
+      "questions": [],
+      "test_design": ["state_transition"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-07", "line": 188 },
+          "quote": "**Given** สร้าง LoanAccount **When** เบิกจ่ายสำเร็จ **Then** ระบบสร้าง RepaymentSchedule ตาม BR-06 ทันที",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§6 วงจรสถานะ", "line": 130 },
+          "quote": "`Disburse()` สร้าง **LoanAccount** ใหม่",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-014@v1",
+      "base_id": "BR-loan-014",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-004",
+      "statement": "ผู้สมัครหนึ่งคนมีใบสมัครได้หลายใบ แต่ใบสมัครหนึ่งใบที่ Disbursed สร้างบัญชีสินเชื่อได้ 1 บัญชีเท่านั้น",
+      "kind": "invariant",
+      "examples": [],
+      "questions": [],
+      "test_design": ["EP"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§9 สมมติฐานและข้อจำกัด", "line": 267 },
+          "quote": "1 ผู้สมัครมีได้หลายใบสมัคร แต่ 1 ใบสมัครที่ `Disbursed` สร้าง 1 บัญชี",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-015@v1",
+      "base_id": "BR-loan-015",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-005",
+      "statement": "อัตราดอกเบี้ยเป็นแบบลดต้นลดดอก 25% ต่อปี และอัตราต่อเดือน r = อัตราต่อปี ÷ 12",
+      "kind": "policy",
+      "examples": [],
+      "questions": [],
+      "test_design": ["EP"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-04 เงื่อนไขสินเชื่อ", "line": 103 },
+          "quote": "อัตราดอกเบี้ย: แบบลดต้นลดดอก 25% ต่อปี (สมมติ ภายใต้เพดานที่กฎหมายกำหนด)",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-06 การคำนวณงวดผ่อน", "line": 112 },
+          "quote": "`P` = เงินต้น, `r` = อัตราดอกเบี้ยต่อเดือน (= อัตราต่อปี / 12), `n` = จำนวนงวด",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-016@v1",
+      "base_id": "BR-loan-016",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-005",
+      "statement": "ค่างวดเท่ากันทุกงวดตามสูตร EMI = P × r × (1+r)^n / ((1+r)^n − 1) โดย P คือเงินต้น r คืออัตราดอกเบี้ยต่อเดือน และ n คือจำนวนงวด · ตารางที่สร้างต้องมีครบ n งวด",
+      "kind": "calculation",
+      "examples": [],
+      "questions": [],
+      "test_design": ["BVA", "decision_table"],
+      "constrained_by": null,
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-06 การคำนวณงวดผ่อน", "line": 111 },
+          "quote": "งวดผ่อนเท่ากันทุกงวด (EMI): `EMI = P × r × (1+r)^n / ((1+r)^n − 1)`",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-08", "line": 195 },
+          "quote": "**Given** เงินต้น P, อัตรา, จำนวนงวด n **When** สร้างตาราง **Then** ได้ n งวด แต่ละงวดมี ยอดต้น/ดอกเบี้ย/ยอดคงเหลือ",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-017@v1",
+      "base_id": "BR-loan-017",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-005",
+      "statement": "แต่ละงวดแยกเป็นดอกเบี้ย (ยอดคงเหลือ × r) และเงินต้น (EMI − ดอกเบี้ย) · ผลรวมเงินต้นทุกงวดต้องเท่ากับเงินต้นตั้งต้นพอดี โดยงวดสุดท้ายเป็นตัวรับเศษ · ยอดคงเหลือหลังงวดสุดท้ายต้องเท่ากับ 0",
+      "kind": "calculation",
+      "examples": [],
+      "questions": [],
+      "test_design": ["BVA"],
+      "constrained_by": null,
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-06 การคำนวณงวดผ่อน", "line": 113 },
+          "quote": "แต่ละงวดแยกเป็นดอกเบี้ย (ยอดคงเหลือ × r) และเงินต้น (EMI − ดอกเบี้ย)",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-06 การคำนวณงวดผ่อน", "line": 114 },
+          "quote": "งวดสุดท้ายปัดเศษให้ยอดคงเหลือเป็น 0 พอดี",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-08", "line": 196 },
+          "quote": "**Given** ตารางถูกสร้าง **When** รวมเงินต้นทุกงวด **Then** เท่ากับเงินต้นตั้งต้นพอดี (งวดสุดท้ายปัดเศษ)",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-018@v1",
+      "base_id": "BR-loan-018",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-005",
+      "statement": "วันครบกำหนดชำระของแต่ละงวดเป็นรายเดือนนับจากวันเบิกจ่าย",
+      "kind": "policy",
+      "examples": [],
+      "questions": [],
+      "test_design": ["BVA"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§9 สมมติฐานและข้อจำกัด", "line": 269 },
+          "quote": "เวลา/วันครบกำหนดใช้แบบรายเดือนตามวันเบิกจ่าย",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-019@v1",
+      "base_id": "BR-loan-019",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-006",
+      "statement": "รับชำระเฉพาะยอดที่ตรงกับค่างวดเต็มจำนวนเท่านั้น งวดนั้นจึงเปลี่ยนเป็น Paid และยอดคงเหลือลดลง · ชำระน้อยกว่ายอดงวด ระบบแจ้งว่าไม่ครบงวดและไม่ปิดงวด (ไม่รับชำระบางส่วน)",
+      "kind": "policy",
+      "examples": [],
+      "questions": [],
+      "test_design": ["BVA", "decision_table"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-10", "line": 207 },
+          "quote": "**Given** บัญชี `Active` มีงวดค้าง **When** บันทึก Payment ตรงจำนวนงวด **Then** งวดนั้นสถานะ `Paid` และยอดคงเหลือลดลง",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-10", "line": 208 },
+          "quote": "**Given** ชำระน้อยกว่ายอดงวด **When** บันทึก **Then** ระบบแจ้งว่าไม่ครบงวด และไม่ปิดงวด (สมมติ: ไม่รับชำระบางส่วน)",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-020@v1",
+      "base_id": "BR-loan-020",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-006",
+      "statement": "เมื่อบันทึกการชำระงวดสุดท้ายจนครบทุกงวด บัญชีสินเชื่อเปลี่ยนสถานะจาก Active เป็น Closed",
+      "kind": "invariant",
+      "examples": [],
+      "questions": [],
+      "test_design": ["state_transition"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-10", "line": 209 },
+          "quote": "**Given** ชำระครบทุกงวด **When** บันทึกงวดสุดท้าย **Then** บัญชีเปลี่ยนเป็น `Closed`",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§6 วงจรสถานะ LoanAccount", "line": 136 },
+          "quote": "ปิดได้เมื่อชำระครบทุกงวด หรือปิดก่อนกำหนดสำเร็จ",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-021@v1",
+      "base_id": "BR-loan-021",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-007",
+      "statement": "ยอดปิดบัญชีก่อนกำหนด = เงินต้นคงเหลือ + ดอกเบี้ยค้างจ่ายถึงวันที่ปิด + ค่าธรรมเนียมปิดก่อนกำหนด 1% ของเงินต้นคงเหลือ · ไม่คิดดอกเบี้ยของงวดในอนาคตที่ยังไม่ถึงกำหนด",
+      "kind": "calculation",
+      "examples": [],
+      "questions": [],
+      "test_design": ["BVA"],
+      "constrained_by": null,
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-07 การปิดก่อนกำหนด", "line": 117 },
+          "quote": "ยอดปิดบัญชี = เงินต้นคงเหลือ + ดอกเบี้ยค้างจ่ายถึงวันที่ปิด + ค่าธรรมเนียมปิดก่อนกำหนด (สมมติ 1% ของเงินต้นคงเหลือ)",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§5 BR-07 การปิดก่อนกำหนด", "line": 118 },
+          "quote": "ดอกเบี้ยของงวดในอนาคตที่ยังไม่ถึงกำหนด **ไม่คิด**",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-022@v1",
+      "base_id": "BR-loan-022",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-007",
+      "statement": "เมื่อชำระยอดปิดบัญชีครบ บัญชีเปลี่ยนสถานะเป็น Closed และงวดที่เหลือในตารางผ่อนถูกยกเลิก",
+      "kind": "invariant",
+      "examples": [],
+      "questions": [],
+      "test_design": ["state_transition"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-11", "line": 216 },
+          "quote": "**Given** ชำระยอดปิดบัญชีครบ **When** บันทึก **Then** บัญชีเปลี่ยนเป็น `Closed` และงวดที่เหลือถูกยกเลิก",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-023@v1",
+      "base_id": "BR-loan-023",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-008",
+      "statement": "แดชบอร์ดแสดงจำนวนแยกตามสถานะ Submitted / UnderReview / Approved (ของใบสมัคร) และ Active / Closed (ของบัญชีสินเชื่อ)",
+      "kind": "policy",
+      "examples": [],
+      "questions": [],
+      "test_design": ["EP"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§7 US-12", "line": 222 },
+          "quote": "**Given** มีใบสมัครหลายสถานะ **When** เปิดแดชบอร์ด **Then** เห็นจำนวนแยกตามสถานะ (Submitted/UnderReview/Approved/Active/Closed)",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-024@v1",
+      "base_id": "BR-loan-024",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-001",
+      "statement": "Applicant เรียกใช้การกระทำที่เปลี่ยนสถานะแบบย้อนกลับไม่ได้ — อนุมัติ ปฏิเสธ เบิกจ่าย บันทึกชำระ และปิดบัญชี — ไม่ได้ ทั้งห้าอย่างเป็นสิทธิ์ของเจ้าหน้าที่เท่านั้น (Loan Officer หรือ Operations ตามที่ REQ นั้นกำหนด) · API ต้องปฏิเสธคำขอจาก Applicant ทุกกรณี ไม่พึ่งการซ่อนปุ่มที่ Web · สิ่งที่ Applicant ทำได้คือ กรอกร่าง ยื่นใบสมัคร ดูสถานะ ดูตารางผ่อนของบัญชีตัวเอง และขอยอดปิดบัญชี",
+      "kind": "invariant",
+      "examples": [],
+      "questions": [],
+      "test_design": ["decision_table"],
+      "provenance": [
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§3 ผู้ใช้งาน (Actors)", "line": 57 },
+          "quote": "**Applicant** | ผู้สมัครสินเชื่อ กรอกและยื่นใบสมัคร ดูสถานะ",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-001",
+          "locator": { "section": "§3 ผู้ใช้งาน (Actors)", "line": 59 },
+          "quote": "**Operations** | บันทึกการชำระเงิน และดำเนินการปิดบัญชี",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-002",
+          "locator": { "section": "QB-actor-02 + QB-perm-01", "line": 1 },
+          "quote": "Applicant เดินสถานะได้ขั้นเดียวคือยื่นใบสมัคร ขั้นที่เหลือเป็นของ Loan Officer และ Operations",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-025@v1",
+      "base_id": "BR-loan-025",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-003",
+      "statement": "ใบสมัครแต่ละใบมีเจ้าหน้าที่ผู้รับผิดชอบที่ถูกมอบหมาย (assign) และมีผู้สำรอง · อนุมัติหรือปฏิเสธใบสมัครได้เฉพาะเจ้าหน้าที่ที่ถูกมอบหมายใบนั้น หรือผู้สำรองของใบนั้นเท่านั้น · เจ้าหน้าที่คนอื่นแม้จะเป็น Loan Officer ก็ทำไม่ได้",
+      "kind": "invariant",
+      "examples": [],
+      "questions": [],
+      "test_design": ["decision_table"],
+      "provenance": [
+        {
+          "source": "SRC-002",
+          "locator": { "section": "QB-perm-02", "line": 1 },
+          "quote": "อนุมัติหรือปฏิเสธได้เฉพาะเจ้าหน้าที่ที่ถูก assign ใบสมัครนั้น หรือผู้สำรองของใบนั้น (พี่ปูเลือกออกจากค่าเริ่มต้นที่ว่าเฉพาะคนที่ assign)",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-026@v1",
+      "base_id": "BR-loan-026",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-003",
+      "statement": "role ที่มีสิทธิ์อนุมัติหรือปฏิเสธใบสมัครเป็นค่าที่ตั้งได้ ไม่ฝังตายในโค้ด — เปลี่ยน role ผู้อนุมัติได้โดยไม่ต้องแก้โปรแกรม · การตั้งค่านี้ต้องไม่ทำให้ Applicant ได้สิทธิ์ที่ BR-loan-024@v1 ห้ามไว้",
+      "kind": "policy",
+      "examples": [],
+      "questions": [],
+      "test_design": ["decision_table"],
+      "provenance": [
+        {
+          "source": "SRC-003",
+          "locator": { "section": "QB-apr-01", "line": 1 },
+          "quote": "ตั้ง role ผู้อนุมัติเองได้ ไม่ฝังตายในโค้ด",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "id": "BR-loan-027@v1",
+      "base_id": "BR-loan-027",
+      "version": 1,
+      "is_current": true,
+      "status": "draft",
+      "belongs_to": "REQ-loan-003",
+      "statement": "ใบสมัครที่เข้าสถานะ UnderReview เข้าคิวใบสมัครรอพิจารณาเป็นค่าเริ่มต้น โดยยังไม่ผูกกับเจ้าหน้าที่คนใด · Loan Officer หยิบใบจากคิวมาเป็นผู้รับผิดชอบของตัวเองได้เอง (self-assign) และเปลี่ยนมือมอบหมายใหม่ทีหลังได้ · การเข้าสถานะ UnderReview ต้องไม่ถูกบล็อกเพราะยังไม่มีผู้รับผิดชอบ",
+      "kind": "policy",
+      "examples": [],
+      "questions": [],
+      "test_design": ["state_transition", "decision_table"],
+      "provenance": [
+        {
+          "source": "SRC-003",
+          "locator": { "section": "QB-apr-02", "line": 1 },
+          "quote": "ใบสมัครที่เข้าสถานะ UnderReview แต่ยังไม่ถูกมอบหมายให้เจ้าหน้าที่คนใด มีค่าเริ่มต้นให้ แล้วมอบหมายทีหลังได้",
+          "confidence": 1
+        },
+        {
+          "source": "SRC-003",
+          "locator": { "section": "คำถามนอกคลัง — ใครมอบหมายและตอนไหน", "line": 1 },
+          "quote": "Loan Officer หยิบใบจากคิวกลางมาเป็นของตัวเองได้เอง (self-assign)",
+          "confidence": 1
+        }
+      ]
+    }
+  ],
+  "examples": [],
+  "calculations": [],
+  "golden_datasets": [],
+  "changes": [],
+  "questions": [],
+  "deferred_questions": [
+    {
+      "id": "DQ-loan-001",
+      "question": "นโยบายผู้อนุมัติเก็บที่ไหนและมีโครงสร้างอย่างไร — เก็บเป็นชื่อ role ตรงๆ หรือเป็นตารางสิทธิ์ · ตั้งค่าได้ที่ระดับไหน (ทั้งระบบ หรือแยกต่อผลิตภัณฑ์สินเชื่อ) · เปลี่ยนค่าแล้วมีผลกับใบสมัครที่ค้างอยู่ด้วยไหม",
+      "raised_by": "BR-loan-026@v1",
+      "category": "approval",
+      "blocked_until": "entity:ApprovalPolicy",
+      "answer_phase": "domain",
+      "state": "open"
+    }
+  ],
+  "rollup": {
+    "rules_total": 27,
+    "rules_with_example": 0,
+    "rules_with_green_test": 0,
+    "open_questions": 0,
+    "open_deferred": 1,
+    "rule_coverage": 0,
+    "ready_for_next_step": false
+  }
+}

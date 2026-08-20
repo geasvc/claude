@@ -1,0 +1,14 @@
+# .gitattributes — workshop root
+#
+# `* -text` = git ห้ามแปลงตัวขึ้นบรรทัดใหม่ (newline) ทั้งตอน commit และตอน checkout
+# ไฟล์ใน repo นี้เป็น LF ทั้งหมด และต้องอยู่เป็น LF บนทุกเครื่อง
+#
+# aeon-marketplace/.gitattributes คุมเฉพาะ subtree ของตัวเอง
+# ไฟล์ที่ root กับทั้ง aeon-miniloan/ ไม่มีอะไรคุ้มกัน — บรรทัดนี้คือของอันนั้น
+# เหตุผลเดียวกับที่เขียนไว้ใน aeon-marketplace/.gitattributes:
+#   doc-hash.mjs คิด sha256 จากเนื้อไฟล์ดิบ ไม่มีขั้นตอน normalize
+#   ค่าเริ่มต้นของ Git for Windows คือ core.autocrlf=true (เครื่องนี้ตั้งไว้จริง)
+#   ปล่อยไว้ = คนที่ clone ไปได้ไฟล์ CRLF → hash เปลี่ยนทุกไฟล์
+#   และมองไม่เห็นจากเครื่องที่ commit — เครื่องนี้ยังขึ้นปกติทุกอย่าง
+
+* -text

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "project": "fixture-function-ok",
+  "phase": "design",
+  "steps": [
+    {
+      "id": "init",
+      "command": "/design:init",
+      "status": "done",
+      "requires": [],
+      "artifacts": [
+        "design.state.json"
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "overview",
+      "command": "/design:overview",
+      "status": "done",
+      "requires": [
+        "init"
+      ],
+      "artifacts": [
+        "context.json"
+      ],
+      "attempts": 1
+    }
+  ],
+  "openQuestions": [
+    {
+      "id": "Q-STAKEHOLDERS",
+      "text": "req records no stakeholders",
+      "blocks": [
+        "rbac"
+      ],
+      "raisedBy": "/design:init"
+    }
+  ]
+}

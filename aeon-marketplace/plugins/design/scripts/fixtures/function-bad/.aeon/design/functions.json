@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "module": "fixture-function-bad",
+  "notFunctional": [],
+  "functions": [
+    {
+      "id": "FN-fx-001",
+      "title": "หน้าที่ที่สาวกลับไม่ถูก",
+      "traces": [
+        "REQ-ไม่มีจริง"
+      ],
+      "governedBy": [
+        "BR-fx-002@v1"
+      ],
+      "operatesOn": [
+        "Application"
+      ],
+      "useCases": [
+        {
+          "id": "UC-fx-001",
+          "title": "ขาดทางยกเว้น",
+          "actor": "ผู้สมัคร",
+          "preconditions": [
+            "เข้าสู่ระบบแล้ว"
+          ],
+          "mainFlow": [
+            "ทำอะไรสักอย่าง"
+          ],
+          "alternateFlows": [
+            {
+              "id": "A1",
+              "when": "กรณีอื่น",
+              "steps": [
+                "ทำอย่างอื่น"
+              ]
+            }
+          ],
+          "exceptionFlows": []
+        }
+      ]
+    },
+    {
+      "id": "FN-fx-001",
+      "title": "id ซ้ำ และไม่มี use case",
+      "traces": [
+        "REQ-fx-001"
+      ],
+      "useCases": []
+    }
+  ],
+  "extensions": {}
+}

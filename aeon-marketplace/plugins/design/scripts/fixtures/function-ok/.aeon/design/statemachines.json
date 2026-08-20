@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0",
+  "module": "fixture-function-ok",
+  "machines": [
+    {
+      "id": "STM-fx-001",
+      "entity": "Application",
+      "initial": "ร่าง",
+      "traces": [
+        "REQ-fx-001"
+      ],
+      "states": [
+        {
+          "id": "ร่าง",
+          "label": "ร่าง",
+          "final": false
+        },
+        {
+          "id": "ยื่นแล้ว",
+          "label": "ยื่นแล้ว",
+          "final": false
+        },
+        {
+          "id": "ปิดแล้ว",
+          "label": "ปิดแล้ว",
+          "final": true
+        }
+      ],
+      "transitions": [
+        {
+          "from": "ร่าง",
+          "to": "ยื่นแล้ว",
+          "on": "ยื่น",
+          "governedBy": [
+            "BR-fx-001@v1"
+          ]
+        },
+        {
+          "from": "ยื่นแล้ว",
+          "to": "ปิดแล้ว",
+          "on": "ปิดงาน"
+        }
+      ]
+    }
+  ],
+  "extensions": {}
+}

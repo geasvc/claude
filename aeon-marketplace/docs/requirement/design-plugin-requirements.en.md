@@ -236,13 +236,17 @@ updated: 2026-08-18
 | `INT-###` | External integration | design |
 | `RPT-###` | Report / printable document | design |
 | `SCN-###` | Test scenario | design |
-| `RULE-###` | Business rule | design |
+| ~~`RULE-###`~~ | Business rule | **RETIRED 2026-08-20 — reference req `BR-xxx@vN` instead** |
 | `ADR-###` | Architecture decision record | design |
 | `MCK-###` | Mockup / wireframe | mockup |
 | `SRC-###` | Source file / class / module | dev |
 | `TC-###` | Executable test case | qa |
 
 The last three MUST be defined now even though their plugins do not yet exist. If the graph terminates at `SCN`, change propagation stops at design and never reaches code or tests.
+
+> **`RULE-###` retired 2026-08-20 (owner decision).** On a real project the identifier has nothing to name: `req` already carries business rules as `BR-xxx@vN`, with statement, examples, test_design and provenance, and `REQ.rules[]` already points at them. Minting a design-owned id beside them creates two competing sources of truth for one rule — exactly what §5.4 W3 forbids — and the two drift the moment `/req:change` moves a rule to `@v2`, because only `req` has a versioning path.
+>
+> `FN --governedBy--> RULE` in §6.2 therefore points at `BR-xxx@vN` directly, and `/design:function` rejects a reference to a rule that is not `is_current`. A rule design discovers that `req` never captured is NOT minted here either: §1.2 forbids this plugin from eliciting requirements, so it goes back through the §19.3 back-channel.
 
 ### 6.2 Relationship Graph
 

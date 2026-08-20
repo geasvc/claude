@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "module": "fixture-function-bad",
+  "machines": [
+    {
+      "id": "STM-fx-001",
+      "entity": "Application",
+      "initial": "ไม่มีสถานะนี้",
+      "states": [
+        {
+          "id": "Draft",
+          "label": "ร่าง",
+          "final": false
+        },
+        {
+          "id": "Stuck",
+          "label": "ตัน",
+          "final": false
+        },
+        {
+          "id": "Closed",
+          "label": "ปิดแล้ว",
+          "final": true
+        }
+      ],
+      "transitions": [
+        {
+          "from": "Draft",
+          "to": "Stuck",
+          "on": "ไปต่อ"
+        }
+      ]
+    }
+  ],
+  "extensions": {}
+}

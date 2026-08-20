@@ -122,7 +122,16 @@ export function validateContext(ctx, reqIds) {
   return f;
 }
 
+/** Mermaid label: only the quote character needs neutralising inside a "..." node label. */
 const esc = (s) => String(s ?? "").split('"').join("&quot;");
+
+/**
+ * Markdown TABLE CELL. A pipe inside a cell silently splits the row into phantom columns, and the
+ * client document then shows garbage in a section §11 makes mandatory — with every OV check green,
+ * because the JSON was perfectly valid. Glossary definitions and constraint text are free-form Thai
+ * written by a person, so a pipe is ordinary, not exotic. Newlines break the row outright.
+ */
+const cell = (s) => String(s ?? "").split("\n").join(" ").split("|").join("\\|");
 
 export function renderDiagram(ctx) {
   const d = ctx.diagram ?? {};
@@ -172,7 +181,7 @@ export function renderIntroduction(ctx, glossary, today) {
   const refs = ctx.references ?? [];
   if (refs.length) {
     out.push("| อ้างอิง | ที่มา |", "|---|---|");
-    for (const r of refs) out.push("| " + (r.title ?? r.id) + " | " + (r.where ?? "—") + " |");
+    for (const r of refs) out.push("| " + cell(r.title ?? r.id) + " | " + cell(r.where ?? "—") + " |");
   } else {
     out.push("_ไม่มี_");
   }
@@ -182,7 +191,7 @@ export function renderIntroduction(ctx, glossary, today) {
   if (glossary.length) {
     out.push("| คำ | ความหมาย |", "|---|---|");
     for (const g of glossary) {
-      out.push("| " + (g.term ?? g.id) + " | " + String(g.definition ?? "").split("\n").join(" ") + " |");
+      out.push("| " + cell(g.term ?? g.id) + " | " + cell(g.definition) + " |");
     }
   }
   return out.join("\n") + "\n";
@@ -196,7 +205,7 @@ export function renderOverview(ctx, today) {
   const users = ctx.users ?? [];
   if (users.length) {
     out.push("| ผู้ใช้ | หน้าที่ |", "|---|---|");
-    for (const u of users) out.push("| " + (u.label ?? u.id) + " | " + (u.role ?? "—") + " |");
+    for (const u of users) out.push("| " + cell(u.label ?? u.id) + " | " + cell(u.role ?? "—") + " |");
   } else {
     out.push("> 🛑 **ยังไม่มีข้อมูลผู้ใช้** เพราะ `req` ไม่ได้บันทึก stakeholder ไว้ (`Q-STAKEHOLDERS`)", ">",
       "> ผังผู้เกี่ยวข้อง (stakeholder map) ที่ §11 หัวข้อ 2 ต้องมี จึงยังสร้างไม่ได้",
@@ -205,11 +214,11 @@ export function renderOverview(ctx, today) {
 
   out.push("", "## 2.3 ข้อจำกัด", "", "| รหัส | ข้อจำกัด | มาจาก |", "|---|---|---|");
   for (const c of ctx.constraints ?? []) {
-    out.push("| " + c.id + " | " + c.text + " | " + (c.traces ?? []).join(", ") + " |");
+    out.push("| " + cell(c.id) + " | " + cell(c.text) + " | " + cell((c.traces ?? []).join(", ")) + " |");
   }
   out.push("", "## 2.4 ข้อสมมติ", "", "| รหัส | ข้อสมมติ | มาจาก |", "|---|---|---|");
   for (const a of ctx.assumptions ?? []) {
-    out.push("| " + a.id + " | " + a.text + " | " + (a.traces ?? []).join(", ") + " |");
+    out.push("| " + cell(a.id) + " | " + cell(a.text) + " | " + cell((a.traces ?? []).join(", ")) + " |");
   }
 
   out.push("", "## 2.5 แผนภาพบริบท (DFD 0)", "", "```mermaid", renderDiagram(ctx), "```", "",

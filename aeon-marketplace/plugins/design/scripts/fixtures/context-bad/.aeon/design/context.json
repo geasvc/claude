@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "module": "fixture-context-bad",
+  "purpose": "",
+  "scope": {
+    "in": [],
+    "out": []
+  },
+  "references": [],
+  "productView": "",
+  "users": [],
+  "constraints": [
+    {
+      "id": "CON-001",
+      "text": "ไม่มี traces",
+      "traces": []
+    },
+    {
+      "id": "CON-002",
+      "text": "traces ไปหา REQ ที่ไม่มีอยู่",
+      "traces": [
+        "REQ-ไม่มีจริง"
+      ]
+    }
+  ],
+  "assumptions": [],
+  "diagram": {
+    "system": {
+      "id": "SYS",
+      "label": "ระบบ"
+    },
+    "externals": [
+      {
+        "id": "EXT001",
+        "label": "พนักงาน",
+        "kind": "actor"
+      }
+    ],
+    "flows": [
+      {
+        "from": "EXT001",
+        "to": "SYS",
+        "label": "ส่งคำขอ"
+      },
+      {
+        "from": "EXT999",
+        "to": "SYS",
+        "label": "ปลายทางลอย"
+      }
+    ]
+  },
+  "extensions": {}
+}

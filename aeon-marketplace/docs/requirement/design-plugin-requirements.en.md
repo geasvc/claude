@@ -163,6 +163,12 @@ The plugin MUST bind to a versioned, schema-bearing contract, never to another p
 └── export/
 ```
 
+> **Corrected 2026-08-20.** This tree puts `docs/` and `wiki/` INSIDE the state directory. That is not what the marketplace does. `req` writes `docs/wiki` at the **project root** (`plugins/req/scripts/wiki.mjs`: `WIKI_DIR = "docs/wiki"`), and `.aeon/` holds state only — on a real project it contains `spec.json` and nothing else.
+>
+> Following the tree literally would put design documents where no other plugin looks, and split one project wiki into two unrelated trees. Same precedent as §3.1: when the specification and the working system disagree, follow the system and correct the specification.
+>
+> **Actual layout:** `<state-dir>/design/*.json` for state and machine artifacts · `<root>/docs/design/*.md` for this phase documents · `<root>/docs/wiki/` for the one project wiki, shared with `req` and owned per file. Defined once, in `plugins/design/scripts/state-dir.mjs`. §5.2's principle is unchanged and is the part that matters.
+
 ### 5.2 `wiki/` versus `docs/`
 
 P1 splits JSON from Markdown. Markdown must be split once more.
@@ -471,10 +477,16 @@ Consumed by `/design:check`. Output MUST be per-rule with offending artifact IDs
 | Use case diagram | functions.json | Auto-generate |
 | Sitemap tree | sitemap.json | Auto-generate |
 | Sequence / integration | interfaces.json | Auto-generate |
-| Context diagram (DFD 0) | context.json | Generate, then allow human refinement |
-| As-Is / To-Be process flow | Hand-authored | Human-authored, stored in wiki |
+| Context diagram (DFD 0) | context.json | Auto-generate (Mermaid `flowchart`). **Refine by editing `context.json`, never the rendered file** — see below |
+| As-Is / To-Be process flow | Hand-authored | Mermaid swimlane (`flowchart` + `subgraph`), stored in `wiki/` — **D6, decided 2026-08-20** |
 
-Mermaid does not support BPMN natively. Either use swimlane flowcharts or attach externally produced BPMN files (see D6).
+> **Corrected 2026-08-20 (owner decision).** This row previously read "generate, then allow human refinement", which **contradicts CLAUDE.md §7 rule 1** — generated documents must not be hand-edited, and must not carry "edit inside this marker" blocks. The reason that rule exists is specific: someone eventually edits *outside* the marker, the next regeneration eats it silently, and after that nobody on the team trusts regeneration again. One such loss is enough.
+>
+> Both rules hold at once if refinement happens **upstream**: edit `context.json`, then re-render. That also preserves P2 — JSON is the source of truth and the document is a rendering. Every file `scripts/context.mjs` writes carries a header saying exactly this.
+
+**D6 is decided: Mermaid swimlane, stored in `wiki/`.** Mermaid does not support BPMN natively, so a `flowchart` with one `subgraph` per lane stands in for a pool-and-lane diagram. The trade is accepted knowingly: the notation is not standards-complete BPMN (no standard gateway or event shapes), but the diagram lives in git, diffs like text, and needs no external tool to open. Externally produced `.bpmn` files were rejected for the opposite reasons — they cannot be diffed, they require the authoring tool to read, and a binary that drifts from the spec does so with no gate able to catch it.
+
+It is stored in `wiki/` rather than `docs/design/` because a process flow is still true after this phase closes (§5.2).
 
 ### 11.2 Document–Spec Relationship
 
@@ -639,7 +651,7 @@ Rationale: project-specific knowledge leaking into the global tier causes the ne
 | D3 | **Master data / code tables (dropdowns)** | A leading cause of rework during dev | Add a datamodel section |
 | D4 | **Error catalogue / error codes** | Shared by API, UI copy, and tests | Add `errors.json` |
 | D5 | **Notifications (email / LINE / push)** | Clients assume these exist but never write them down | Add a category under `interfaces.json` |
-| D6 | **How to store BPMN As-Is / To-Be** | Mermaid lacks BPMN support | Choose swimlane flowcharts or externally attached files |
+| D6 | **How to store BPMN As-Is / To-Be** | ~~Undecided~~ | **Decided 2026-08-20** → §11.1: Mermaid swimlane (`flowchart` + `subgraph`), stored in `wiki/`. External `.bpmn` files rejected — they cannot be diffed, need their authoring tool to open, and drift with no gate able to catch it |
 | D7 | **Surfaces — web / mobile / api** | The source brief covers web sitemaps only | Add a `surface` field to screens rather than splitting files |
 | D8 | **Where client approval is recorded** | A phase gate and delivery evidence | Add `approvals.json` — who approved, which version, when |
 | D9 | **Data migration from legacy systems** | Surfaces late, near delivery | Add a data requirements section |

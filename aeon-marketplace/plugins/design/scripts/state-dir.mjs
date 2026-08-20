@@ -49,6 +49,27 @@ export const DESIGN_SUBDIR = "design";
 /** The state file this plugin owns. No other plugin may write it (spec §5.4 W1). */
 export const STATE_FILE = "design.state.json";
 
+/**
+ * WHERE HUMAN-READABLE OUTPUT GOES — and why it is not what spec §5.1 draws.
+ *
+ * §5.1 draws `docs/` and `wiki/` INSIDE the state directory (`.aeon/docs`, `.aeon/wiki`).
+ * That is not what this marketplace actually does. `req` writes `docs/wiki` at the PROJECT ROOT
+ * (plugins/req/scripts/wiki.mjs: `WIKI_DIR = "docs/wiki"`), and `.aeon/` holds state only — on a
+ * real project it contains spec.json and nothing else.
+ *
+ * Following §5.1 literally would put this phase documents somewhere no other plugin looks, and
+ * split the wiki into two unrelated trees. The owner set the precedent on 2026-08-20 for §3.1:
+ * when the specification and the working system disagree, follow the system and correct the
+ * specification. The same rule is applied here.
+ *
+ * §5.2 principle is untouched and is the part that matters: `docs/<plugin>/` is organised by phase
+ * and closes with the phase; `wiki/` is organised by topic and outlives every phase.
+ */
+export const DOCS_DIR = "docs";
+export const DOCS_DESIGN_SUBDIR = "design";
+/** Must equal req WIKI_DIR. One wiki per project, not one per plugin. */
+export const WIKI_DIR = "docs/wiki";
+
 /** Flags that consume the next token as their value. */
 const VALUE_FLAGS = new Set(["--root", "--state-dir", "--spec"]);
 
@@ -100,6 +121,16 @@ export function specPath({ root = ".", values = {}, env = process.env } = {}) {
 /** Absolute path of this plugin's own state subdirectory. */
 export function designDirPath({ root = ".", values = {}, env = process.env } = {}) {
   return join(stateDirPath({ root, values, env }), DESIGN_SUBDIR);
+}
+
+/** Absolute path of this phase human-readable documents: <root>/docs/design. */
+export function docsDesignDir({ root = "." } = {}) {
+  return resolve(root, DOCS_DIR, DOCS_DESIGN_SUBDIR);
+}
+
+/** Absolute path of the project wiki — shared with req, owned per file, never per folder. */
+export function wikiDirPath({ root = "." } = {}) {
+  return resolve(root, WIKI_DIR);
 }
 
 /** Absolute path of design.state.json. */

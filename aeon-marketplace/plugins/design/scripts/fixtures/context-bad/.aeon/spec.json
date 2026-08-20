@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "module": "fixture-context-bad",
+    "schema_version": "0.3.0",
+    "scale": "SMALL",
+    "status": "draft"
+  },
+  "sources": [],
+  "glossary": [
+    {
+      "id": "UL-fx-001",
+      "term": "วงเงิน",
+      "definition": "จำนวนเงินสูงสุดที่อนุมัติให้ลูกค้ารายหนึ่ง"
+    },
+    {
+      "id": "UL-fx-002",
+      "term": "ผู้อนุมัติ",
+      "definition": "พนักงานที่มีสิทธิ์ตัดสินคำขอสินเชื่อ"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-fx-001",
+      "title": "ตรวจวงเงินก่อนอนุมัติ",
+      "is_current": true
+    },
+    {
+      "id": "REQ-fx-002",
+      "title": "บันทึกผลการอนุมัติ",
+      "is_current": true
+    }
+  ],
+  "rules": [],
+  "examples": [],
+  "changes": []
+}

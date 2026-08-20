@@ -331,7 +331,7 @@
       "status": "in_progress",
       "blocked_by": [],
       "proof": [],
-      "note": "หนึ่ง step ต่อหนึ่ง session ตาม rules[3] · ลำดับมาจาก §17 Build Order ของสเปก · ข้อบังคับที่สเปกไม่ได้เขียนแต่ marketplace บังคับ: help.md ต้องอัปเดตใน commit เดียวกับทุก step ที่เพิ่มคำสั่ง ไม่งั้น D11 แดง (ขาดคำสั่งเดียวก็แดง) · §16 เคาะแล้วแค่ D1 กับ D17 ที่เหลือยังเป็นข้อเสนอ step ที่ต้องใช้ต้องหยุดถามเจ้าของ ห้ามเลือกเอง ตาม §3.1 กับ CLAUDE.md §6 · **S1 เจอว่า §3.1 ของสเปกไม่ตรงกับของจริง**: §3.1 ระบุไฟล์สัญญา 5 ไฟล์ แต่ req v0.3.0 ผลิต spec.json ไฟล์เดียว ถ้ายึดตามตัวอักษร init จะ halt ทุกโปรเจกต์จริง 100% · เจ้าของเคาะ 2026-08-20 ให้อ่าน spec.json ผ่าน adapter (plugins/design/scripts/req-contract.mjs เป็นรอยต่อเดียวที่รู้จักรูปร่าง) แล้วแก้ §3.1 ทั้งฉบับ en และ th ให้ตรงความจริง · stakeholders กับ okr ไม่มีคนผลิตเลย เจ้าของเคาะให้เลื่อนไปตัดสินตอน S12 โดย init บันทึก Q-STAKEHOLDERS ที่ blocks:[rbac] ไว้ให้เห็นก่อน",
+      "note": "หนึ่ง step ต่อหนึ่ง session ตาม rules[3] · ลำดับมาจาก §17 Build Order ของสเปก · ข้อบังคับที่สเปกไม่ได้เขียนแต่ marketplace บังคับ: help.md ต้องอัปเดตใน commit เดียวกับทุก step ที่เพิ่มคำสั่ง ไม่งั้น D11 แดง (ขาดคำสั่งเดียวก็แดง) · §16 เคาะแล้วแค่ D1 กับ D17 ที่เหลือยังเป็นข้อเสนอ step ที่ต้องใช้ต้องหยุดถามเจ้าของ ห้ามเลือกเอง ตาม §3.1 กับ CLAUDE.md §6 · **S1 เจอว่า §3.1 ของสเปกไม่ตรงกับของจริง**: §3.1 ระบุไฟล์สัญญา 5 ไฟล์ แต่ req v0.3.0 ผลิต spec.json ไฟล์เดียว ถ้ายึดตามตัวอักษร init จะ halt ทุกโปรเจกต์จริง 100% · เจ้าของเคาะ 2026-08-20 ให้อ่าน spec.json ผ่าน adapter (plugins/design/scripts/req-contract.mjs เป็นรอยต่อเดียวที่รู้จักรูปร่าง) แล้วแก้ §3.1 ทั้งฉบับ en และ th ให้ตรงความจริง · stakeholders กับ okr ไม่มีคนผลิตเลย เจ้าของเคาะให้เลื่อนไปตัดสินตอน S12 โดย init บันทึก Q-STAKEHOLDERS ที่ blocks:[rbac] ไว้ให้เห็นก่อน · **S2 เจอ mismatch เพิ่มอีก 2 จุด** (รวมเป็น 3): §5.1 วาดว่า docs/ กับ wiki/ อยู่ใน .aeon/ แต่ req เขียน docs/wiki ที่ root ของโปรเจกต์และ .aeon/ มีแค่ spec.json — ใช้บรรทัดฐานเดียวกับ §3.1 คือตามของจริงแล้วแก้สเปก ประกาศพาธไว้ที่เดียวใน state-dir.mjs · และ §11.1 บอกว่า context diagram ให้ generate แล้วคนแก้ต่อได้ ซึ่ง**ขัดกับ CLAUDE.md §7 กติกา 1 ตรง ๆ** เจ้าของเคาะให้แก้ที่ context.json เท่านั้น ได้ทั้งสองกติกาพร้อมกันและรักษา P2 ไว้ · D6 เคาะแล้วเป็น Mermaid swimlane เก็บใน wiki/ (ไม่เอาไฟล์ .bpmn ภายนอกเพราะ diff ไม่ได้และไม่มีด่านไหนจับ drift ได้)",
       "steps": [
         {
           "step": "S0",
@@ -360,10 +360,18 @@
         },
         {
           "step": "S2",
-          "status": "pending",
-          "title": "/design:overview",
-          "blocked_by": [
-            "D6 — BPMN As-Is/To-Be เก็บยังไง"
+          "status": "done",
+          "title": "/design:overview — context.json + ด่าน OV1-OV8 + เรนเดอร์เอกสารหัวข้อ 1-2 พร้อม DFD 0",
+          "closed_at": "2026-08-20",
+          "proof": [
+            "(ก) ชุดทดสอบ context.mjs ผลจริง 2026-08-20 — fixtures/context-ok exit 0 (0 error / 1 warn คือ OV8) · fixtures/context-bad exit 1 (6 error / 1 warn = OV1 OV2 OV4 OV6 OV7x2 + OV8) · fixtures/clean exit 2 (ยังไม่ได้รัน init จึงไม่มี design.state.json) · สัญญาแต่ละชุดอยู่ที่ plugins/design/scripts/fixtures/EXPECTED.md",
+            "(ข) context-bad ถูกออกแบบให้ทุก check ที่บล็อกมีสาเหตุเดียวชัดเจน และจงใจให้ constraints ไม่ว่างเพื่อให้ OV3 เขียว = พิสูจน์ว่า check แยกกันจริง ไม่ใช่พังยกชุด",
+            "(ค) idempotent พิสูจน์ด้วย hash ไม่ใช่การอ่านโค้ด — render ลง temp สองรอบ sha256 ของเอกสารทั้งสองไฟล์ตรงกัน (40b7c2fe49c98ffb) · และ fixture ไม่ถูกแตะจากการทดสอบ (ไม่มี docs/ งอกใน context-ok)",
+            "(ง) รันตามบรรทัดที่ overview.md เขียนไว้จริง โดยตั้ง CLAUDE_PLUGIN_ROOT แล้วรันทั้งบล็อกตรวจตัวสคริปต์เอง ได้ 0/1/2 ตามสัญญา",
+            "(จ) ไม่กระทบของเดิม — verify-design.mjs --root . ยัง 0 error / 16 warning เท่า baseline · init.mjs ทั้ง 3 fixture ยัง 0/2/2 · req fixtures ยัง clean 0 / dirty 1"
+          ],
+          "not_verified": [
+            "ยังไม่ได้พิสูจน์ว่า /design:overview ทำงานในฐานะ slash command จริง — design@aeon ยังไม่ถูกเปิดใช้ใน settings.json ที่ไหนเลย · ช่องว่างเดียวกับ help (S0) และ init (S1)"
           ]
         },
         {

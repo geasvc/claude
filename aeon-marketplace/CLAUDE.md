@@ -38,9 +38,9 @@ session ใหม่ (คนหรือ agent) อ่านไฟล์นี�
 | `docs/requirement/req-skill-design.md` | ✅ **มีจริง แต่เป็นแค่แบบ** — ออกแบบ `req` v0.3 ครบ 8 รอบ · **สร้างจริงแล้วรอบ 0–4** ที่เหลือ (5–7) ยังเป็นกระดาษ | B |
 | `docs/requirement/req-skill-create.md` | ✅ **มีจริง** — โจทย์ตั้งต้นของ `req` v0.3 | B |
 | `docs/req-pipeline-slides.md` | ✅ **มีจริง** — 11 ขั้นของการเก็บ requirement (วัตถุดิบสไลด์) | B |
-| `.claude-plugin/marketplace.json` | ✅ **มีจริง** — marketplace `aeon` v0.1.0 · **2 plugin: `req` v0.3.0 กับ `design` v0.2.0 (ยังสร้างไม่ครบ)** | — |
+| `.claude-plugin/marketplace.json` | ✅ **มีจริง** — marketplace `aeon` v0.1.0 · **2 plugin: `req` v0.3.0 กับ `design` v0.3.0 (ยังสร้างไม่ครบ)** | — |
 | `plugins/req/**` | ✅ **มีจริง** — `req` v0.3.0 · **8 คำสั่งครบตามแบบ** (`capture` `ask` `calc` `example` `golden` `change` `check` `help`) | — |
-| `plugins/design/**` | ⚠️ **ยังสร้างไม่ครบ 2026-08-20 (S0–S1)** — `design` v0.2.0 · **ใช้ได้จริง 2 คำสั่ง: `help` · `init`** · อีก 13 ตัวตามสเปก §7.1 ยังไม่ได้สร้าง ติดป้ายไว้ใน `help.md` ครบทุกตัวตาม DOC-STANDARD §3.5 · `scripts/` มี `state-dir.mjs` (สำเนาของตัวเอง จงใจ — plugin ติดตั้งแยกกัน เข้าถึงสคริปต์ของ `req` ไม่ได้ · ของที่ใช้ร่วมกันคือ**โปรโตคอล** `$AEON_STATE_DIR` ไม่ใช่โค้ด) · `req-contract.mjs` (รอยต่อเดียวที่รู้จักรูปร่าง `spec.json`) · `init.mjs` + fixture `clean`/`dirty`/`empty` = exit 0/2/2 · คืบหน้าอ่านที่ `docs/progress.json` task 15 | — |
+| `plugins/design/**` | ⚠️ **ยังสร้างไม่ครบ 2026-08-20 (S0–S2)** — `design` v0.3.0 · **ใช้ได้จริง 3 คำสั่ง: `help` · `init` · `overview`** · อีก 12 ตัวตามสเปก §7.1 ยังไม่ได้สร้าง ติดป้ายไว้ใน `help.md` ครบทุกตัวตาม DOC-STANDARD §3.5 · `scripts/` มี `state-dir.mjs` (สำเนาของตัวเอง จงใจ — plugin ติดตั้งแยกกัน เข้าถึงสคริปต์ของ `req` ไม่ได้ · ของที่ใช้ร่วมกันคือ**โปรโตคอล** `$AEON_STATE_DIR` ไม่ใช่โค้ด) · `req-contract.mjs` (รอยต่อเดียวที่รู้จักรูปร่าง `spec.json`) · `init.mjs` · `context.mjs` (ด่าน OV1–OV8 + เรนเดอร์เอกสารหัวข้อ 1–2 + DFD 0) · fixture 5 ชุด `clean`/`dirty`/`empty`/`context-ok`/`context-bad` · **สเปกถูกแก้ให้ตรงของจริง 3 จุดระหว่างทาง (§3.1 · §5.1 · §11.1) ทุกจุดเจ้าของเคาะ** · คืบหน้าอ่านที่ `docs/progress.json` task 15 | — |
 | `plugins/req/assets/question-bank.json` | ✅ **มีจริง** — v0.3.0 · **2 ชั้น** ชั้น 1 กรอบ (4 หมวด 6 คำถาม · **`provisional` ยังไม่ผ่านสนาม**) · ชั้น 2 กฎ (10 หมวด 15 คำถาม · official) | — |
 | `scripts/verify-design.mjs` + fixture | ✅ **มีจริง 2026-08-13** — ด่าน authoring **13 ข้อ ครบ D1–D12b** · import severity จาก `doc-frontmatter.mjs` และ hash จาก `registry.mjs` · fixture `clean/` 0/0 · `dirty/` 12/7 · **D4 เทียบ hash จริง + D7 ทำงานแล้ว** เมื่อมีทะเบียน · ไม่มีทะเบียน = พิมพ์ LIMIT ไม่ใช่ผ่านเงียบ | — |
 | `scripts/registry.mjs` | ✅ **มีจริง 2026-08-13** — นิยามเดียวของทะเบียน (โหลด · ตรวจ · ที่อยู่หน้า · ขอบเขต hash) ที่ตัวเรนเดอร์กับด่าน **import ร่วมกัน** ห้ามคำนวณเอง | — |
@@ -210,10 +210,12 @@ node -e "const t=JSON.parse(require('fs').readFileSync('docs/progress.json','utf
   **จงใจไม่มี auto-detect** ("ไล่หาโฟลเดอร์ที่มี spec.json") เพราะถ้าเปลี่ยนชื่อแล้วมีของเก่าค้าง มันจะอ่านไฟล์ผิดแบบเงียบ ๆ · หาไม่เจอ = exit 2 พร้อมบอก path
 - **ผลพลอยได้:** `verify-design.mjs` กับ `verify-rules.mjs` อยู่ repo เดียวกัน → DOC-STANDARD §9 (D1–D5 import โมดูลร่วม `doc-frontmatter.mjs`) ทำได้จริง ไม่ต้องแยก package
 
-**ประตู 3 · workspace อยู่ใต้ git ไหม — ยังไม่ปิด** ⬜
-สำเนานี้**ยังไม่ใช่ git repo** (พิสูจน์: `git rev-parse --is-inside-work-tree` ตีกลับ `fatal: not a git repository`)
-เอกสารรุ่นก่อนเคยเขียนว่า "เสร็จแล้ว เห็น 3 commit" ซึ่ง**ไม่ตรงกับสำเนานี้** — แก้ให้ตรงความจริงเมื่อ 2026-08-13
-**ห้าม `git init` เอง** รอเจ้าของสั่ง (ดู §4 ข้อ 3)
+**ประตู 3 · workspace อยู่ใต้ git แล้ว** ✅ **ปิดเมื่อ 2026-08-20 (เจ้าของสั่ง)**
+เจ้าของสั่ง `git init and commit` แล้วสั่ง push ต่อ · หลักฐานเต็มอยู่ที่ `docs/progress.json` งานข้อ 3 `proof[]`
+**repo root คือชั้นเหนือ repo นี้หนึ่งชั้น** (`D:/claude/workshop/miniLoan`) — `aeon-marketplace/` จึงเป็น subdirectory ร่วมกับ `aeon-miniloan/`
+ซึ่ง**ไม่ตรงกับที่ `.gitignore` ของ repo นี้เขียนไว้ว่า "repo นี้"** · pattern แบบ `/.claude/...` ยังทำงานถูก (pattern ใน `.gitignore` ย่อยอิงโฟลเดอร์ที่มันอยู่)
+แต่ด่านที่หวังให้ `git status` ฟ้องเมื่อมี `/.aeon/` โผล่ที่ root ของ marketplace **หายไป** — เจ้าของรับทราบทางเลือกแยก repo แล้วและยังไม่สั่ง
+**ตัวกั้นเดิมที่เคยเขียนว่าเครื่องไม่มี git ไม่เป็นจริงแล้ว** — git อยู่ที่ `D:/Program/PortableGit`
 
 **ประตู 4 · ชุดคำสั่งหยุดที่ 8 ตัว — ไม่ยุบเพิ่ม ไม่เพิ่มใหม่** ✅ **เคาะ 2026-08-13**
 

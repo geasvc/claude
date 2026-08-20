@@ -1,12 +1,11 @@
 {
   "schemaVersion": "1.0",
-  "project": "fixture-status-blocked",
+  "project": "fixture-status-legacy",
   "phase": "design",
   "steps": [
     {
       "id": "init",
       "command": "/design:init",
-      "kind": "milestone",
       "status": "done",
       "requires": [],
       "artifacts": [],
@@ -15,88 +14,80 @@
     {
       "id": "overview",
       "command": "/design:overview",
-      "kind": "milestone",
-      "status": "in_progress",
+      "status": "done",
       "requires": [
         "init"
       ],
       "artifacts": [],
-      "attempts": 4
+      "attempts": 1
     },
     {
       "id": "function",
       "command": "/design:function",
-      "kind": "milestone",
-      "status": "pending",
+      "status": "done",
       "requires": [
         "overview"
       ],
       "artifacts": [],
-      "attempts": 0
+      "attempts": 1
     },
     {
       "id": "nfr",
       "command": "/design:nfr",
-      "kind": "milestone",
-      "status": "pending",
+      "status": "done",
       "requires": [
         "function"
       ],
       "artifacts": [],
-      "attempts": 0
+      "attempts": 1
     },
     {
       "id": "datamodel",
       "command": "/design:datamodel",
-      "kind": "milestone",
-      "status": "pending",
+      "status": "done",
       "requires": [
         "function"
       ],
       "artifacts": [],
-      "attempts": 0
+      "attempts": 1
     },
     {
       "id": "interface",
       "command": "/design:interface",
-      "kind": "milestone",
-      "status": "pending",
+      "status": "done",
       "requires": [
         "function",
         "datamodel"
       ],
       "artifacts": [],
-      "attempts": 0
+      "attempts": 1
     },
     {
       "id": "rbac",
       "command": "/design:rbac",
-      "kind": "milestone",
-      "status": "pending",
+      "status": "done",
       "requires": [
         "function",
         "datamodel"
       ],
       "artifacts": [],
-      "attempts": 0
+      "attempts": 1
     },
     {
       "id": "sitemap",
       "command": "/design:sitemap",
-      "kind": "milestone",
-      "status": "pending",
+      "status": "done",
       "requires": [
         "function",
         "rbac"
       ],
       "artifacts": [],
-      "attempts": 0
+      "attempts": 1
     },
     {
       "id": "scenario",
       "command": "/design:scenario",
-      "kind": "milestone",
-      "status": "pending",
+      "status": "done",
       "requires": [
         "function",
         "nfr",
@@ -104,13 +95,12 @@
         "sitemap"
       ],
       "artifacts": [],
-      "attempts": 0
+      "attempts": 1
     },
     {
       "id": "export",
       "command": "/design:export",
-      "kind": "milestone",
-      "status": "pending",
+      "status": "done",
       "requires": [
         "scenario",
         "sitemap",
@@ -119,12 +109,11 @@
         "rbac"
       ],
       "artifacts": [],
-      "attempts": 0
+      "attempts": 1
     },
     {
       "id": "status",
       "command": "/design:status",
-      "kind": "diagnostic",
       "status": "pending",
       "requires": [
         "init"
@@ -135,7 +124,6 @@
     {
       "id": "check",
       "command": "/design:check",
-      "kind": "diagnostic",
       "status": "pending",
       "requires": [
         "init"
@@ -146,7 +134,6 @@
     {
       "id": "trace",
       "command": "/design:trace",
-      "kind": "diagnostic",
       "status": "pending",
       "requires": [
         "scenario"
@@ -157,7 +144,6 @@
     {
       "id": "change",
       "command": "/design:change",
-      "kind": "on-demand",
       "status": "pending",
       "requires": [
         "init"
@@ -168,12 +154,10 @@
   ],
   "openQuestions": [
     {
-      "id": "Q-STAKEHOLDERS",
-      "text": "req records no stakeholders, but §13.3 A4 and V23 require every RBAC role to originate from one.",
-      "blocks": [
-        "rbac"
-      ],
-      "raisedBy": "/design:init"
+      "id": "Q-COLOURS",
+      "text": "คำถามที่ไม่บล็อกอะไร ใช้พิสูจน์ว่า blocks ว่างไม่กันไม่ให้จบ",
+      "blocks": [],
+      "raisedBy": "/design:overview"
     }
   ]
 }

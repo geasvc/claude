@@ -20,6 +20,7 @@ hopes — CLAUDE.md §3.
 | `status-done/` | `.aeon` | `status.mjs --root .../status-done` | exit **0** — all **10 milestone** steps `done`; the 4 diagnostics stay `pending`. The only state that may return 0 |
 | `status-stale/` | `.aeon` | `status.mjs --root .../status-stale` | exit **1** — every milestone says `done` except one marked `stale` |
 | `status-question/` | `.aeon` | `status.mjs --root .../status-question` | exit **2** — every milestone says `done`, but a question with a non-empty `blocks[]` is open |
+| `status-legacy/` | `.aeon` | `status.mjs --root .../status-legacy` | exit **0** · **10/10 milestone** — a state file from before `kind` existed: **not one step carries one** |
 
 The last two exist to defend the two rules that make exit 0 harder than counting steps:
 §9.2 rule 6 (no 0 while an artifact is stale) and §19.3 (no 0 while a blocking question is open).
@@ -36,6 +37,12 @@ fourteen `done`, including `status` itself — a state the real system cannot re
 fact that exit 0 was unreachable and that the next-command line pointed at `/design:change` on a
 project with nothing to change. A fixture that asserts an impossible state proves nothing except
 that the fixture was written to match the code.
+
+`status-legacy/` is the same state with every `kind` field deleted, which is what `/design:init`
+wrote before this split existed. It must still read 10/10 and exit 0, because `kindOf()` falls back to
+the catalogue by step id rather than defaulting to `milestone` — defaulting would put `status`,
+`check`, `trace` and `change` back in the completion count for every project initialised earlier, i.e.
+resurrect the unreachable-exit-0 bug for exactly the projects that cannot see it coming.
 
 `status-blocked/` is the fixture that asserts exit **2** for the reason **nothing is runnable**;
 `status-question/` also exits 2, but on the §19.3 rule instead. Note that `status-work/` ALSO carries

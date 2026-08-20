@@ -81,6 +81,7 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/status.mjs" --root "${CLAUDE_PLUGIN_ROOT}/sc
 node "${CLAUDE_PLUGIN_ROOT}/scripts/status.mjs" --root "${CLAUDE_PLUGIN_ROOT}/scripts/fixtures/status-done"      # exit 0 · ครบจริง
 node "${CLAUDE_PLUGIN_ROOT}/scripts/status.mjs" --root "${CLAUDE_PLUGIN_ROOT}/scripts/fixtures/status-stale"     # exit 1 · milestone done ครบ แต่มี stale
 node "${CLAUDE_PLUGIN_ROOT}/scripts/status.mjs" --root "${CLAUDE_PLUGIN_ROOT}/scripts/fixtures/status-question"  # exit 2 · milestone done ครบ แต่คำถามยังค้าง
+node "${CLAUDE_PLUGIN_ROOT}/scripts/status.mjs" --root "${CLAUDE_PLUGIN_ROOT}/scripts/fixtures/status-legacy"    # exit 0 · ไฟล์สถานะรุ่นเก่าที่ยังไม่มี kind สักตัว
 ```
 
 สอง fixture ท้ายมีไว้พิสูจน์ว่า **"งานเสร็จครบ" ไม่พอที่จะได้ `0`** — ถ้าวันหนึ่งมีคนแก้สคริปต์ให้นับแค่ step สองอันนี้จะแดงทันที

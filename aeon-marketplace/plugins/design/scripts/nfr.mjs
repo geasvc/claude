@@ -54,8 +54,11 @@ export const CHECKS = {
   NF4: "the number is interpretable: known operator, non-empty unit and name, and a range with a real upper bound",
   NF5: "verification method is declared and does not contradict req's verified_by",
   NF6: "kind does not contradict the kind req recorded",
+  NF0: "req captured at least one NFR — an empty section 4 is an acceptable answer only when it is a stated one",
 };
-const WARN_ONLY = new Set();
+// NF0 warns rather than fails: a project genuinely without non-functional requirements is possible,
+// and a red that can never be cleared teaches everyone to stop reading warnings (CLAUDE.md §7, third rule).
+const WARN_ONLY = new Set(["NF0"]);
 
 /** req's own enum (schemas/spec.schema.json). Reused verbatim rather than re-invented here. */
 export const KINDS = ["performance", "security", "availability", "usability", "compliance", "other"];
@@ -84,6 +87,15 @@ export function validate(doc, reqNfrs) {
 
   const nfrs = Array.isArray(doc.nfrs) ? doc.nfrs : [];
   const notApplicable = Array.isArray(doc.notApplicable) ? doc.notApplicable : [];
+
+  // ── NF0 · an empty section 4 must be visibly empty, never quietly empty ──
+  // Without this, a project where req captured no NFR at all renders a section 4 holding a title and
+  // the sentence "everything here carries a number" over nothing, at exit 0. §11 makes the section
+  // mandatory, so that page reaches the client either way, and the reader cannot tell "nothing was
+  // required" from "somebody forgot".
+  if (reqNfrs.size === 0) {
+    add("NF0", "(req)", "req captured no NFR at all, so section 4 will contain no targets. If that is wrong, the gap is upstream in req — §1.2 forbids filling it here.");
+  }
 
   // ── NF2 · identity first: every later finding reports by id, so ids must be trustworthy ──
   const seen = new Set();
@@ -192,14 +204,28 @@ export function renderDocument(doc, reqNfrs, today) {
   const out = ["---", "id: DOC-DESIGN-04", "type: phase.document", "owner: design", "contributors: []",
     'readers: ["*"]', "scope: project", "traces: [" + traces.join(", ") + "]", "status: draft",
     "version: 1", "updated: " + today, "---", "",
-    "# 4. ความต้องการที่ไม่ใช่หน้าที่", "", GENERATED_HEADER, "",
-    "_ทุกข้อในหัวข้อนี้มีตัวเลขที่วัดได้ — ถ้าวัดไม่ได้ ด่าน NF3 (V9) จะไม่ปล่อยให้เอกสารนี้ถูกสร้างขึ้นมา_", ""];
+    "# 4. ความต้องการที่ไม่ใช่หน้าที่", "", GENERATED_HEADER, ""];
+
+  if (nfrs.length) {
+    out.push("_ทุกข้อในหัวข้อนี้มีตัวเลขที่วัดได้ — ถ้าวัดไม่ได้ ด่าน NF3 (V9) จะไม่ปล่อยให้เอกสารนี้ถูกสร้างขึ้นมา_", "");
+  } else {
+    // Say it out loud, in the document. A blank section 4 that looks like an oversight is worse than
+    // none at all, because §11 makes the section mandatory and the reader cannot tell the two apart.
+    out.push("**หัวข้อนี้ไม่มีรายการ** — " + (reqNfrs.size === 0
+      ? "`req` ยังไม่ได้เก็บข้อกำหนดที่ไม่ใช่หน้าที่ไว้เลยแม้แต่ข้อเดียว"
+      : "ข้อกำหนดที่ `req` เก็บไว้ ถูกประกาศว่าไม่กำหนดเป้าหมายทั้งหมด (ดูหัวข้อ 4.7)"), "",
+      "_ช่องว่างนี้ถูกเขียนออกมาตรง ๆ ไม่ใช่หน้าว่างที่ดูเหมือนมีคนลืม · ถ้าไม่ถูกต้อง ต้องแก้ที่ `req` เพราะ §1.2 ห้าม `design` เก็บ requirement เอง_", "");
+  }
 
   // Grouped by req's own kind, in req's enum order, so the table of contents does not reshuffle
   // between runs (P5) and does not depend on the order somebody typed the entries.
   for (const kind of KINDS) {
     const rows = nfrs.filter((n) => (reqNfrs.get(n.id)?.kind ?? n.kind) === kind);
     if (!rows.length) continue;
+    // Numbered by the kind's position in req's enum, NOT sequentially: a project carrying only
+    // `security` and `compliance` renders 4.2 then 4.5, on purpose. The same category keeps the same
+    // number on every project and across every rerun, so a cross-reference written today still
+    // resolves after a category is added or emptied.
     out.push("## 4." + (KINDS.indexOf(kind) + 1) + " " + (KIND_TH[kind] ?? kind), "");
     out.push("| NFR | ข้อกำหนด | สิ่งที่วัด | เป้าหมาย | วิธีพิสูจน์ | มาจาก |", "|---|---|---|---|---|---|");
     for (const n of rows) {

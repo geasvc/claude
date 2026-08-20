@@ -17,6 +17,7 @@ hopes — CLAUDE.md §3.
 | `context-ok/` | `.aeon` | `functions.mjs --root .../context-ok` | exit **2** — `overview` is not `done` in `design.state.json` |
 | `nfr-ok/` | `.aeon` | `nfr.mjs --root .../nfr-ok` | exit **0** · **0 error, 0 warning** · targets 3 · notApplicable 1 · **6 trace edges** |
 | `nfr-bad/` | `.aeon` | `nfr.mjs --root .../nfr-bad` | exit **1** · **6 error, 0 warning** — NF1 through NF6, each firing exactly once |
+| `nfr-empty/` | `.aeon` | `nfr.mjs --root .../nfr-empty` | exit **0** · **0 error, 1 warning** (NF0) · 0 trace edges — req captured no NFR at all |
 | `function-ok/` | `.aeon` | `nfr.mjs --root .../function-ok` | exit **2** — `function` is not `done` in `design.state.json` |
 | `status-work/` | `.aeon` | `status.mjs --root .../status-work` | exit **1** — work remains and `function` is runnable |
 | `status-blocked/` | `.aeon` | `status.mjs --root .../status-blocked` | exit **2** — `overview` has `attempts: 4`, tripping the §8.2 loop guard, and every other step waits on it |
@@ -69,6 +70,18 @@ this row goes red.
   rather than nfr edges alone. Its **6 edges** are 3 from functions and 3 from nfr, and running
   `functions.mjs --write` and `nfr.mjs --write` in EITHER order produces the same file byte for byte.
   Before `trace-design.mjs` existed, whichever ran second deleted the other one's edges.
+
+`nfr-empty/` is `nfr-ok/` with every `nfr[]` removed from req's requirements, and it exists because
+the empty path is the one that fails quietly. With nothing to check, NF1 has nothing to loop over and
+an empty `nfrs[]` produces no findings at all — so the command exits 0 and renders a section 4 holding
+a title and the sentence "everything here carries a number" over nothing. §11 makes that section
+mandatory in the client document, so the blank page ships either way, and the reader cannot tell
+"nothing was required" from "somebody forgot". NF0 warns instead of failing, because a project with no
+non-functional requirements is possible and a red nobody can clear teaches people to ignore every
+warning (CLAUDE.md §7, third rule); the document says the same thing in its own words.
+
+Its generator refuses to write a spec that still carries an NFR, so the trap cannot be defused by
+editing the fixture into agreement with the code.
 
 `nfr-bad/` keeps one distinct cause per check, so the count of 6 is a contract rather than a
 coincidence: NFR-fx-005 captured by req and mentioned nowhere (NF1), `NFR-fx-999` which req does not

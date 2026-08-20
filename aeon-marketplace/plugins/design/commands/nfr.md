@@ -74,6 +74,7 @@ argument-hint: "[--state-dir <ชื่อ>]"
 
    | ด่าน | ตรวจอะไร |
    |---|---|
+   | NF0 ⚠️ | `req` มี NFR อย่างน้อยหนึ่งข้อ — **เตือน ไม่ใช่แดง** เพราะโปรเจกต์ที่ไม่มีข้อกำหนดแบบนี้จริง ๆ ก็มีได้ |
    | NF1 | ทุก NFR ที่ `req` เก็บไว้ ถูกกำหนดเป้าหมาย หรือประกาศ `notApplicable` พร้อมเหตุผล |
    | NF2 | ทุก id มีอยู่จริงใน `req` — **design ไม่มินต์ id เอง** |
    | NF3 | **ทุกข้อมีตัวเลขที่วัดได้** (V9) |
@@ -102,13 +103,18 @@ argument-hint: "[--state-dir <ชื่อ>]"
 ## เอกสารที่ออกมา ห้ามแก้ด้วยมือ
 
 แก้ที่ `nfr.json` แล้ว render ใหม่ · ไฟล์มีหัวเตือนติดอยู่ในตัว
-หัวข้อย่อยเรียงตาม enum ของ `req` ไม่ใช่ตามลำดับที่พิมพ์เข้ามา — รันซ้ำแล้วสารบัญจึงไม่สลับที่
+
+**เลขหัวข้อย่อยผูกกับหมวด ไม่ได้ไล่ตามลำดับ** — โปรเจกต์ที่มีแค่ security กับ compliance จะได้ `4.2` แล้วข้ามไป `4.5` ซึ่ง**ตั้งใจ**
+หมวดเดิมได้เลขเดิมทุกโปรเจกต์และทุกครั้งที่ render ใหม่ · การอ้างอิงข้ามเอกสารที่เขียนวันนี้จึงยังชี้ถูกหลังมีหมวดเพิ่มหรือหายไป
+
+**หัวข้อ 4 ที่ว่าง จะบอกออกมาตรง ๆ ว่าว่างเพราะอะไร** ไม่ปล่อยหน้าเปล่าที่ดูเหมือนมีคนลืม — §11 บังคับให้หัวข้อนี้ต้องมีอยู่ หน้าเปล่าจึงหลุดถึงลูกค้าได้จริง
 
 ## ตรวจตัวสคริปต์เอง
 
 ```
 node "${CLAUDE_PLUGIN_ROOT}/scripts/nfr.mjs" --root "${CLAUDE_PLUGIN_ROOT}/scripts/fixtures/nfr-ok"        # ต้อง exit 0 · 0 error · 6 trace edges
 node "${CLAUDE_PLUGIN_ROOT}/scripts/nfr.mjs" --root "${CLAUDE_PLUGIN_ROOT}/scripts/fixtures/nfr-bad"       # ต้อง exit 1 · 6 error (NF1-NF6 ข้อละครั้ง)
+node "${CLAUDE_PLUGIN_ROOT}/scripts/nfr.mjs" --root "${CLAUDE_PLUGIN_ROOT}/scripts/fixtures/nfr-empty"     # ต้อง exit 0 · 1 warn (NF0) · req ไม่มี NFR เลยสักข้อ
 node "${CLAUDE_PLUGIN_ROOT}/scripts/nfr.mjs" --root "${CLAUDE_PLUGIN_ROOT}/scripts/fixtures/function-ok"   # ต้อง exit 2 (function ยังไม่เสร็จ)
 ```
 

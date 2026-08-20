@@ -1,0 +1,45 @@
+{
+  "meta": {
+    "module": "fixture-nfr-empty",
+    "schema_version": "0.3.0",
+    "scale": "SMALL",
+    "status": "draft"
+  },
+  "sources": [],
+  "glossary": [
+    {
+      "id": "UL-fx-001",
+      "term": "ใบสมัคร",
+      "definition": "คำขอสินเชื่อที่ผู้สมัครยื่นเข้ามา"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-fx-001",
+      "title": "ยื่นใบสมัคร",
+      "actor": "ผู้สมัคร",
+      "has_ui": true,
+      "rules": [
+        "BR-fx-001@v1"
+      ]
+    },
+    {
+      "id": "REQ-fx-002",
+      "title": "เก็บบันทึกการตรวจสอบย้อนหลัง",
+      "actor": "ระบบ",
+      "has_ui": false,
+      "rules": []
+    }
+  ],
+  "rules": [
+    {
+      "id": "BR-fx-001@v1",
+      "base_id": "BR-fx-001",
+      "version": 1,
+      "is_current": true,
+      "statement": "ใบสมัครที่ยื่นแล้วห้ามแก้ไข"
+    }
+  ],
+  "examples": [],
+  "changes": []
+}

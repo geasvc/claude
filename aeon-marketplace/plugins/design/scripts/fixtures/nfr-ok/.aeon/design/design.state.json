@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0",
+  "project": "fixture-nfr-ok",
+  "phase": "design",
+  "steps": [
+    { "id": "init", "command": "/design:init", "kind": "milestone", "status": "done", "requires": [], "artifacts": [], "attempts": 1 },
+    { "id": "overview", "command": "/design:overview", "kind": "milestone", "status": "done", "requires": ["init"], "artifacts": ["context.json"], "attempts": 1 },
+    { "id": "function", "command": "/design:function", "kind": "milestone", "status": "done", "requires": ["overview"], "artifacts": ["functions.json", "statemachines.json"], "attempts": 1 },
+    { "id": "nfr", "command": "/design:nfr", "kind": "milestone", "status": "in_progress", "requires": ["function"], "artifacts": [], "attempts": 1 }
+  ],
+  "openQuestions": []
+}

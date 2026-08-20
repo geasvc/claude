@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0",
+  "module": "fixture-nfr-ok",
+  "notFunctional": [
+    { "req": "REQ-fx-002", "reason": "เป็นข้อกำหนดเชิงคุณภาพล้วน ตัวเลขอยู่ในหัวข้อ 4" }
+  ],
+  "functions": [
+    {
+      "id": "FN-fx-001",
+      "title": "ยื่นใบสมัคร",
+      "traces": ["REQ-fx-001"],
+      "governedBy": ["BR-fx-001@v1"],
+      "useCases": [
+        {
+          "id": "UC-fx-001",
+          "title": "ผู้สมัครยื่นใบสมัคร",
+          "actor": "ผู้สมัคร",
+          "preconditions": ["เข้าสู่ระบบแล้ว"],
+          "mainFlow": ["กรอกข้อมูล", "กดยื่น"],
+          "alternateFlows": [{ "id": "A1", "when": "บันทึกร่างไว้ก่อน", "steps": ["เก็บร่าง"] }],
+          "exceptionFlows": [{ "id": "E1", "when": "ข้อมูลไม่ครบ", "steps": ["แจ้งช่องที่ขาด"] }]
+        }
+      ]
+    }
+  ],
+  "extensions": {}
+}

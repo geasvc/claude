@@ -2,17 +2,17 @@
 
 **เจ้าของเอกสาร:** Mounchon — **ยังไม่ได้ทบทวน**
 **ร่างเมื่อ:** 2026-08-20 โดยขั้น S0 · รอเจ้าของอ่านแล้วยืนยัน จึงจะเติมวันทบทวนได้
-**สถานะ:** v0.5.0 — **Milestone 1 เสร็จ** (init → overview → function → status) · อีก 10 คำสั่งยังไม่ได้สร้าง
+**สถานะ:** v0.6.0 — **Milestone 1 เสร็จ** (init → overview → function → status) + `nfr` · อีก 9 คำสั่งยังไม่ได้สร้าง
 
 ---
 
 ## 1. ตอนนี้ใช้อะไรได้บ้าง
 
-**ใช้ได้ 5 ตัว:** `/design:help` · `/design:init` · `/design:overview` · `/design:function` · `/design:status`
+**ใช้ได้ 6 ตัว:** `/design:help` · `/design:init` · `/design:overview` · `/design:function` · `/design:nfr` · `/design:status`
 
 เปิด session ใหม่ให้สั่ง **`/design:status`** ก่อนเสมอ — มันบอกว่าค้างตรงไหนและคำสั่งถัดไปคืออะไร โดยคำตอบมาจาก exit code ของสคริปต์ ไม่ใช่จากที่โมเดลคิดเอง
 
-อีก **10 คำสั่ง** ออกแบบไว้ครบแล้วใน `docs/requirement/design-plugin-requirements.en.md` แต่ **ยังไม่ได้สร้าง** — `help` ลงชื่อไว้ทุกตัวว่าตัวไหนยังไม่มี
+อีก **9 คำสั่ง** ออกแบบไว้ครบแล้วใน `docs/requirement/design-plugin-requirements.en.md` แต่ **ยังไม่ได้สร้าง** — `help` ลงชื่อไว้ทุกตัวว่าตัวไหนยังไม่มี
 
 ทำไมถึงลงทะเบียนตั้งแต่ยังสร้างไม่ครบ แทนที่จะรอให้ครบก่อน — เพราะกติกา `docs/progress.json` → `rules[3]` บอกว่า *หนึ่ง task ต่อหนึ่ง session* การมีโครงกับ `help` ที่บอกตรง ๆ ว่าอะไรยังไม่มี ปลอดภัยกว่าการมี plugin ที่ดูเหมือนใช้ได้แต่ครึ่งเดียว
 

@@ -228,7 +228,7 @@ updated: 2026-08-18
 | `REQ-###` | Requirement | req |
 | `FN-###` | Functional requirement | design |
 | `UC-###` | Use case | design |
-| `NFR-###` | Non-functional requirement | design |
+| `NFR-###` | Non-functional requirement | **req** — see the note below (corrected 2026-08-20) |
 | `ENT-###` | Entity / Aggregate | design |
 | `STM-###` | State machine | design |
 | `SCR-###` | Screen | design |
@@ -247,6 +247,12 @@ The last three MUST be defined now even though their plugins do not yet exist. I
 > **`RULE-###` retired 2026-08-20 (owner decision).** On a real project the identifier has nothing to name: `req` already carries business rules as `BR-xxx@vN`, with statement, examples, test_design and provenance, and `REQ.rules[]` already points at them. Minting a design-owned id beside them creates two competing sources of truth for one rule — exactly what §5.4 W3 forbids — and the two drift the moment `/req:change` moves a rule to `@v2`, because only `req` has a versioning path.
 >
 > `FN --governedBy--> RULE` in §6.2 therefore points at `BR-xxx@vN` directly, and `/design:function` rejects a reference to a rule that is not `is_current`. A rule design discovers that `req` never captured is NOT minted here either: §1.2 forbids this plugin from eliciting requirements, so it goes back through the §19.3 back-channel.
+
+> **`NFR-###` belongs to `req`, corrected 2026-08-20 (owner decision).** This row previously assigned the id to design. It is already taken: req's published schema (`schemas/spec.schema.json`) defines `requirements[].nfr[]` with `"pattern": "^NFR-[a-z0-9-]+-[0-9]{3}$"` and a closed `kind` enum, and a real project carries them — aeon-miniloan has ten. This is the same collision as `RULE-###` / `BR-xxx@vN` above, and it is settled the same way: `/design:nfr` REFERENCES req's ids and never mints one; check NF2 rejects an id req does not have.
+>
+> **What design owns is the number, not the id.** req carries `statement` + `kind` + `verified_by` and no measurable value, while §7.1's DoD and V9 both demand one. The owner decided on 2026-08-20 that **design drafts the target with the owner**, the same authoring flow `/design:function` uses for FN and UC: §1.2 forbids design from eliciting new REQUIREMENTS, and putting a number on a statement req already captured is not a new requirement. There is deliberately no "not measured yet" state — an NFR without a number is an error, because "the system must be fast" reaching the client document is precisely what V9 exists to prevent.
+>
+> Design does not restate what req already holds either: the owning REQ, the `kind`, and the default verification method are read from req's output. Restating them would create a second place to be wrong with only one of the two under check (NF5 and NF6 reject a contradiction rather than silently overriding).
 
 ### 6.2 Relationship Graph
 

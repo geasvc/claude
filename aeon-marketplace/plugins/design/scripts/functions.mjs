@@ -22,11 +22,13 @@
  *
  * §7.2 rule 5 requires trace to be updated whenever an artifact is created. Asking a model to keep
  * an edge list in step with two JSON files by hand is asking for the edge list to be wrong. Every
- * edge here is DERIVED from functions.json and statemachines.json, so the graph cannot disagree
- * with the artifacts it describes. Written to `trace.design.json`, not `trace.json`: §6.2 splits the
- * graph by author so `qa` and `dev` can append their own edges without any regeneration eating them
- * (§19.2 leak L1). §5.1 still draws a single `trace.json`; §6.2 is the later decision and carries
- * the reasoning, so it wins.
+ * edge is DERIVED from the artifacts, so the graph cannot disagree with what it describes. Written to
+ * `trace.design.json`, not `trace.json`: §6.2 splits the graph by author so `qa` and `dev` can append
+ * their own edges without any regeneration eating them (§19.2 leak L1). §5.1 still draws a single
+ * `trace.json`; §6.2 is the later decision and carries the reasoning, so it wins.
+ *
+ * The file is built by trace-design.mjs from EVERY design artifact present, not from the two this
+ * command owns — otherwise /design:nfr and this command would take turns deleting each other edges.
  *
  * Exit codes:
  *   0  functions.json and statemachines.json satisfy the DoD (and were rendered, with --write)
@@ -37,10 +39,10 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { parseArgs, designDirPath, statePath, docsDesignDir } from "./state-dir.mjs";
 import { readReqContract } from "./req-contract.mjs";
+import { buildDesignTrace, nfrOwnerMap, TRACE_FILE } from "./trace-design.mjs";
 
 export const FUNCTIONS_FILE = "functions.json";
 export const STATEMACHINES_FILE = "statemachines.json";
-export const TRACE_FILE = "trace.design.json";
 
 export const CHECKS = {
   FU1: "every REQ maps to a FN, or is explicitly declared not-functional with a reason",
@@ -155,26 +157,6 @@ export function validate(fns, stms, req) {
     }
   }
   return f;
-}
-
-/** Derived, never authored. §7.2 rule 5 without asking anyone to remember. */
-export function buildTrace(fns, stms) {
-  const edges = [];
-  for (const fn of fns.functions ?? []) {
-    for (const r of fn.traces ?? []) edges.push({ from: r, rel: "satisfiedBy", to: fn.id });
-    for (const uc of fn.useCases ?? []) edges.push({ from: fn.id, rel: "realizedBy", to: uc.id });
-    for (const br of fn.governedBy ?? []) edges.push({ from: fn.id, rel: "governedBy", to: br });
-    for (const e of fn.operatesOn ?? []) edges.push({ from: fn.id, rel: "operatesOn", to: e });
-  }
-  for (const m of stms.machines ?? []) {
-    if (m.entity) edges.push({ from: m.entity, rel: "hasState", to: m.id });
-    for (const t of m.transitions ?? []) {
-      for (const br of t.governedBy ?? []) edges.push({ from: m.id, rel: "governedBy", to: br });
-    }
-  }
-  // Stable order so a rerun produces a byte-identical file (P5).
-  edges.sort((a, b) => (a.from + a.rel + a.to).localeCompare(b.from + b.rel + b.to));
-  return { schemaVersion: "1.0", owner: "design", edges };
 }
 
 const cell = (s) => String(s ?? "").split("\n").join(" ").split("|").join("\\|");
@@ -382,7 +364,10 @@ function main() {
     process.exit(1);
   }
 
-  const trace = buildTrace(fns, stms);
+  // Built from EVERY design artifact on disk, not just the two this command owns: otherwise the
+  // command that runs last deletes the other one's edges. See trace-design.mjs.
+  const { graph: trace, skipped } = buildDesignTrace(dir, { nfrOwner: nfrOwnerMap(spec) });
+  for (const s of skipped) console.log("WARN  trace  " + s.file + " could not be parsed, its edges are missing: " + s.detail);
   const doc = renderDocument(fns, stms, ruleById, today);
   console.log("\ntrace edges    : " + trace.edges.length + " (derived, never hand-written)");
   if (!write) {

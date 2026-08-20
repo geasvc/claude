@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "module": "fixture-nfr-bad",
+  "nfrs": [
+    {
+      "id": "NFR-fx-001",
+      "metric": { "name": "เวลาตอบสนอง (p95)", "operator": "เร็ว", "value": 2, "unit": "วินาที" },
+      "verification": { "method": "load_test" }
+    },
+    {
+      "id": "NFR-fx-002",
+      "verification": { "method": "api_auth_test" }
+    },
+    {
+      "id": "NFR-fx-003",
+      "metric": { "name": "สัดส่วนเวลาที่ให้บริการได้", "operator": ">=", "value": 99.5, "unit": "%" },
+      "verification": { "method": "manual_review" }
+    },
+    {
+      "id": "NFR-fx-004",
+      "kind": "security",
+      "metric": { "name": "สัดส่วนการเปลี่ยนสถานะที่มีบันทึก", "operator": "==", "value": 100, "unit": "%" },
+      "verification": { "method": "audit_log_test" }
+    },
+    {
+      "id": "NFR-fx-999",
+      "kind": "performance",
+      "metric": { "name": "เวลาสร้างรายงานประจำเดือน", "operator": "<=", "value": 30, "unit": "วินาที" },
+      "verification": { "method": "batch_test" }
+    }
+  ],
+  "notApplicable": [],
+  "extensions": {}
+}

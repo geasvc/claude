@@ -1,0 +1,73 @@
+{
+  "meta": {
+    "module": "fixture-nfr-ok",
+    "schema_version": "0.3.0",
+    "scale": "SMALL",
+    "status": "draft"
+  },
+  "sources": [],
+  "glossary": [
+    {
+      "id": "UL-fx-001",
+      "term": "ใบสมัคร",
+      "definition": "คำขอสินเชื่อที่ผู้สมัครยื่นเข้ามา"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-fx-001",
+      "title": "ยื่นใบสมัคร",
+      "actor": "ผู้สมัคร",
+      "has_ui": true,
+      "rules": [
+        "BR-fx-001@v1"
+      ],
+      "nfr": [
+        {
+          "id": "NFR-fx-001",
+          "kind": "performance",
+          "statement": "หน้ายื่นใบสมัครต้องตอบสนองเร็วพอที่ผู้สมัครไม่ทิ้งกลางคัน",
+          "verified_by": "load_test"
+        },
+        {
+          "id": "NFR-fx-002",
+          "kind": "security",
+          "statement": "ต้องตรวจสิทธิ์ทั้งฝั่ง Web และฝั่ง API | ฝั่ง API เป็นด่านสุดท้ายเสมอ",
+          "verified_by": "api_auth_test"
+        },
+        {
+          "id": "NFR-fx-003",
+          "kind": "availability",
+          "statement": "ข้อมูลใบสมัครที่ยื่นแล้วต้องไม่สูญหายเมื่อระบบล่ม",
+          "verified_by": "fault_injection_test"
+        }
+      ]
+    },
+    {
+      "id": "REQ-fx-002",
+      "title": "เก็บบันทึกการตรวจสอบย้อนหลัง",
+      "actor": "ระบบ",
+      "has_ui": false,
+      "rules": [],
+      "nfr": [
+        {
+          "id": "NFR-fx-004",
+          "kind": "usability",
+          "statement": "หน้าจอผู้ดูแลควรใช้ได้บนจอเล็ก",
+          "verified_by": "manual_review"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "id": "BR-fx-001@v1",
+      "base_id": "BR-fx-001",
+      "version": 1,
+      "is_current": true,
+      "statement": "ใบสมัครที่ยื่นแล้วห้ามแก้ไข"
+    }
+  ],
+  "examples": [],
+  "changes": []
+}

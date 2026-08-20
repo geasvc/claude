@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "module": "fixture-nfr-ok",
+  "nfrs": [
+    {
+      "id": "NFR-fx-001",
+      "metric": {
+        "name": "เวลาตอบสนองของหน้ายื่นใบสมัคร (p95)",
+        "operator": "<=",
+        "value": 2,
+        "unit": "วินาที",
+        "condition": "ผู้ใช้พร้อมกัน 50 คน บนเครือข่าย 4G"
+      },
+      "verification": {
+        "method": "load_test",
+        "evidence": "รายงาน k6 แนบใน wiki/evidence/"
+      }
+    },
+    {
+      "id": "NFR-fx-002",
+      "metric": {
+        "name": "สัดส่วน endpoint ที่ตรวจสิทธิ์ฝั่ง API",
+        "operator": "==",
+        "value": 100,
+        "unit": "%"
+      },
+      "verification": {
+        "method": "api_auth_test"
+      }
+    },
+    {
+      "id": "NFR-fx-003",
+      "metric": {
+        "name": "จำนวนใบสมัครที่ยื่นแล้วและสูญหายหลังจำลองระบบล่ม",
+        "operator": "==",
+        "value": 0,
+        "unit": "ใบ",
+        "condition": "ดับ API กลางคันระหว่างยื่น 100 ครั้ง"
+      },
+      "verification": {
+        "method": "fault_injection_test",
+        "evidence": "สคริปต์จำลองความล้มเหลวใน qa"
+      },
+      "notes": "ตัวเลขศูนย์คือเป้าหมายจริง ไม่ใช่ช่องว่างที่ยังไม่ได้กรอก"
+    }
+  ],
+  "notApplicable": [
+    {
+      "nfr": "NFR-fx-004",
+      "reason": "หน้าจอผู้ดูแลไม่อยู่ในขอบเขตเฟสนี้ตาม context.json scope.out — เจ้าของเคาะ 2026-08-20"
+    }
+  ],
+  "extensions": {}
+}

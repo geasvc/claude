@@ -15,6 +15,9 @@ hopes — CLAUDE.md §3.
 | `function-ok/` | `.aeon` | `functions.mjs --root .../function-ok` | exit **0** · **0 error, 0 warning** · FN 1 · UC 2 · STM 1 · notFunctional 1 · **8 trace edges** |
 | `function-bad/` | `.aeon` | `functions.mjs --root .../function-bad` | exit **1** · **8 error, 0 warning** — FU1 through FU8, each firing exactly once |
 | `context-ok/` | `.aeon` | `functions.mjs --root .../context-ok` | exit **2** — `overview` is not `done` in `design.state.json` |
+| `nfr-ok/` | `.aeon` | `nfr.mjs --root .../nfr-ok` | exit **0** · **0 error, 0 warning** · targets 3 · notApplicable 1 · **6 trace edges** |
+| `nfr-bad/` | `.aeon` | `nfr.mjs --root .../nfr-bad` | exit **1** · **6 error, 0 warning** — NF1 through NF6, each firing exactly once |
+| `function-ok/` | `.aeon` | `nfr.mjs --root .../function-ok` | exit **2** — `function` is not `done` in `design.state.json` |
 | `status-work/` | `.aeon` | `status.mjs --root .../status-work` | exit **1** — work remains and `function` is runnable |
 | `status-blocked/` | `.aeon` | `status.mjs --root .../status-blocked` | exit **2** — `overview` has `attempts: 4`, tripping the §8.2 loop guard, and every other step waits on it |
 | `status-done/` | `.aeon` | `status.mjs --root .../status-done` | exit **0** — all **10 milestone** steps `done`; the 4 diagnostics stay `pending`. The only state that may return 0 |
@@ -53,6 +56,25 @@ somewhere is blocked".
 `status-work/` also pins the progress line: **2/10 milestone steps done**, one READY, six WAITING,
 one BLOCKED. If a later change starts counting diagnostics again, that denominator moves to 14 and
 this row goes red.
+
+`nfr-ok/` carries three traps of its own:
+
+- **`"value": 0`** on NFR-fx-003 ("applications lost after a simulated crash: 0"). A check written as
+  `if (!metric.value)` treats the most demanding target in the file as a missing one. Zero is the
+  normal shape of a reliability target, not an edge case.
+- **a pipe inside a req statement** (NFR-fx-002), which splits a table column in the client document
+  while every check stays green — the same trap `context-ok/` plants, kept here because this renderer
+  builds its own tables and would not inherit the earlier fix.
+- **`functions.json` present alongside `nfr.json`**, so the fixture exercises the shared trace builder
+  rather than nfr edges alone. Its **6 edges** are 3 from functions and 3 from nfr, and running
+  `functions.mjs --write` and `nfr.mjs --write` in EITHER order produces the same file byte for byte.
+  Before `trace-design.mjs` existed, whichever ran second deleted the other one's edges.
+
+`nfr-bad/` keeps one distinct cause per check, so the count of 6 is a contract rather than a
+coincidence: NFR-fx-005 captured by req and mentioned nowhere (NF1), `NFR-fx-999` which req does not
+have — otherwise complete, so that only NF2 fires — (NF2), NFR-fx-002 with no `metric{}` at all (NF3),
+an operator of `"เร็ว"` (NF4), a `verification.method` contradicting req's `verified_by` (NF5), and a
+`kind` of `security` where req said `compliance` (NF6).
 
 `function-ok/` carries two deliberate traps that a naive implementation passes and a correct one
 survives:

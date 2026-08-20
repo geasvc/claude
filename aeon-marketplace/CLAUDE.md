@@ -38,8 +38,9 @@ session ใหม่ (คนหรือ agent) อ่านไฟล์นี�
 | `docs/requirement/req-skill-design.md` | ✅ **มีจริง แต่เป็นแค่แบบ** — ออกแบบ `req` v0.3 ครบ 8 รอบ · **สร้างจริงแล้วรอบ 0–4** ที่เหลือ (5–7) ยังเป็นกระดาษ | B |
 | `docs/requirement/req-skill-create.md` | ✅ **มีจริง** — โจทย์ตั้งต้นของ `req` v0.3 | B |
 | `docs/req-pipeline-slides.md` | ✅ **มีจริง** — 11 ขั้นของการเก็บ requirement (วัตถุดิบสไลด์) | B |
-| `.claude-plugin/marketplace.json` | ✅ **มีจริง** — marketplace `aeon` v0.1.0 · plugin เดียวคือ `req` | — |
+| `.claude-plugin/marketplace.json` | ✅ **มีจริง** — marketplace `aeon` v0.1.0 · **2 plugin: `req` v0.3.0 กับ `design` v0.1.0 (โครงเปล่า)** | — |
 | `plugins/req/**` | ✅ **มีจริง** — `req` v0.3.0 · **8 คำสั่งครบตามแบบ** (`capture` `ask` `calc` `example` `golden` `change` `check` `help`) | — |
+| `plugins/design/**` | ⚠️ **โครงเปล่า 2026-08-20 (S0)** — `design` v0.1.0 · **คำสั่งที่ใช้ได้จริงมีตัวเดียวคือ `help`** · อีก 14 ตัวตามสเปก §7.1 ยังไม่ได้สร้าง และติดป้ายไว้ใน `help.md` ครบทุกตัวตาม DOC-STANDARD §3.5 · คืบหน้าอ่านที่ `docs/progress.json` task 15 | — |
 | `plugins/req/assets/question-bank.json` | ✅ **มีจริง** — v0.3.0 · **2 ชั้น** ชั้น 1 กรอบ (4 หมวด 6 คำถาม · **`provisional` ยังไม่ผ่านสนาม**) · ชั้น 2 กฎ (10 หมวด 15 คำถาม · official) | — |
 | `scripts/verify-design.mjs` + fixture | ✅ **มีจริง 2026-08-13** — ด่าน authoring **13 ข้อ ครบ D1–D12b** · import severity จาก `doc-frontmatter.mjs` และ hash จาก `registry.mjs` · fixture `clean/` 0/0 · `dirty/` 12/7 · **D4 เทียบ hash จริง + D7 ทำงานแล้ว** เมื่อมีทะเบียน · ไม่มีทะเบียน = พิมพ์ LIMIT ไม่ใช่ผ่านเงียบ | — |
 | `scripts/registry.mjs` | ✅ **มีจริง 2026-08-13** — นิยามเดียวของทะเบียน (โหลด · ตรวจ · ที่อยู่หน้า · ขอบเขต hash) ที่ตัวเรนเดอร์กับด่าน **import ร่วมกัน** ห้ามคำนวณเอง | — |

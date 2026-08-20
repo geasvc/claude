@@ -38,12 +38,18 @@
     {
       "id": "3",
       "title": "ทำให้ workspace เป็น git repo",
-      "status": "blocked",
-      "blocked_by": [
-        "git ไม่ได้ติดตั้งบนเครื่องนี้ — เจ้าของต้องติดตั้งเอง: winget install --id Git.Git -e --source winget"
+      "status": "done",
+      "blocked_by": [],
+      "proof": [
+        "(ก) repo เกิดจริงและมีคอมมิตแรกแล้ว — `git init -b main` ที่ D:/claude/workshop/miniLoan (ชั้นเหนือ repo นี้หนึ่งชั้น ดู note) · `git log -1 --format=%H` -> d3c2bc38e2ff2c35dae9c3376b318b0904f85d0b · `git ls-files | wc -l` -> 320 ไฟล์",
+        "(ข) ตัวกั้นเดิมในช่องนี้ (เครื่องไม่มี git) ไม่เป็นจริงแล้ว — git อยู่ที่ D:/Program/PortableGit · `git config --show-origin --get core.autocrlf` -> file:D:/Program/PortableGit/etc/gitconfig true แปลว่า autocrlf=true อยู่ชั้น system จริงตามที่ .gitattributes เตือนไว้",
+        "(ค) กันแล้วว่า clone ไปจะไม่ได้ CRLF ซึ่งจะทำให้ hash ของ D4 เพี้ยนทั้ง repo — เพิ่ม .gitattributes ที่ root ของ workspace (`* -text`) เพราะ aeon-marketplace/.gitattributes คุมเฉพาะ subtree ตัวเอง ส่วน aeon-miniloan/ กับไฟล์ที่ root ไม่มีอะไรคุ้มกัน · พิสูจน์: `git ls-files --eol | grep -v attr/-text` -> ว่าง (0 บรรทัด) = ทุกไฟล์ที่ track อยู่ใต้ -text ครบ",
+        "(ง) พิสูจน์ด้วยการ clone ใหม่จริง ไม่ใช่ดูจากเครื่องที่ commit (เครื่องที่ commit มองไม่เห็นปัญหานี้ตามที่ .gitattributes เขียนไว้) — clone ลง temp แล้วนับไฟล์ที่มีอักขระ CR ได้ 0 ไฟล์ · จำนวนไฟล์ 320 เท่ากันทั้งสองฝั่ง · HEAD ตรงกันเป๊ะ",
+        "(จ) push ขึ้น remote แล้ว — `git ls-remote --heads origin` -> d3c2bc38e2ff2c35dae9c3376b318b0904f85d0b refs/heads/main ที่ https://github.com/geasvc/claude (private)",
+        "(ฉ) ไม่กระทบด่าน — `node scripts/verify-design.mjs --root .` -> 0 error / 16 warning เท่ากับก่อนทำ git init ทุกตัว"
       ],
-      "proof": [],
-      "note": "2026-08-20 เจ้าของสั่ง \"git init and commit\" แล้ว — ตัวกั้นเดิม (รอเจ้าของสั่ง) ปลดแล้ว ตัวกั้นใหม่คือเครื่องไม่มี git · พิสูจน์: `git --version` -> CommandNotFoundException และไม่พบ git.exe ใน Program Files, LOCALAPPDATA\\Programs, scoop\\shims, chocolatey\\bin · เตรียมของไว้ให้แล้วในวันเดียวกัน: .gitignore + .gitattributes (`* -text` กัน CRLF ทำ hash ของ D4 เพี้ยนตอน clone) · ดู CLAUDE.md §5 ประตู 3"
+      "note": "2026-08-20 ปิดแล้ว — เจ้าของสั่ง git init and commit แล้วสั่ง push ต่อ · **repo root คือ D:/claude/workshop/miniLoan ไม่ใช่ aeon-marketplace** แปลว่า repo นี้เป็น subdirectory ของ workspace repo ร่วมกับ aeon-miniloan/ ซึ่งขัดกับที่ .gitignore ของ repo นี้เขียนไว้ว่า \"repo นี้\" (ใช้ pattern แบบ /.claude/... กับ /.aeon/ ที่อิง root ของตัวเอง — ยังทำงานถูกเพราะ pattern ในไฟล์ .gitignore ย่อยอิงโฟลเดอร์ที่มันอยู่ แต่ด่านที่หวังให้ git status ฟ้องเมื่อมี /.aeon/ โผล่ที่ root ของ marketplace หายไป) · เจ้าของรับทราบทางเลือกแยก repo แล้วและยังไม่สั่ง · ตัวกั้นเดิมที่เขียนว่าเครื่องไม่มี git ไม่เป็นจริงแล้ว",
+      "closed_at": "2026-08-20"
     },
     {
       "id": "4",
@@ -318,6 +324,118 @@
         "(ฉ) ต้นทางไม่ถูกแตะเลยตามที่เจ้าของสั่ง (ห้ามลบไฟล์ใน project เดิม) — docs/requirement/requirements.md ยังอยู่ · docs/wiki/ ยังครบ 43 ไฟล์ · node scripts/verify-design.mjs --root D:/ProjectClaude/AEON-Work/miniLoan -> 0 error / 2 warn exit 0"
       ],
       "note": "เจ้าของสั่งเมื่อ 2026-08-14 · บันทึกการตัดสินใจอยู่ที่ CLAUDE.md §5 ประตู 6 · **สิ่งที่ตั้งใจไม่ยกมา:** docs/requirement/requirements.md (requirement ของ MiniLoan) · docs/wiki/** ของต้นทาง (render ใหม่แทน) · docs/wiki/log.md จึงถูก seed ใหม่ ประวัติการ render เดิมอยู่กับสำเนาเก่าเท่านั้น เพราะชั้น C ต่อท้ายอย่างเดียว ย้อนสร้างไม่ได้ · **ช่องว่างที่การแยกทำให้เห็นชัดขึ้นแต่ไม่ได้เกิดจากมัน:** /req:check ขั้น 2 อ้าง `-s schemas/spec.schema.json` เทียบจาก root ของโปรเจกต์ที่รัน ทั้งที่ schema ไม่ได้เดินทางไปกับ plugin — โปรเจกต์ทดสอบภายนอกต้อง copy ไฟล์นี้ไปเอง · ทางเลือกที่เสนอ (ย้ายไป plugins/req/schemas/ แล้วอ้าง ${CLAUDE_PLUGIN_ROOT}) ยังไม่เคาะ ต้องแก้ DOC-STANDARD §3.1/§3.2 ก่อนเพราะผังไฟล์เป็นของมาตรฐาน"
+    },
+    {
+      "id": "15",
+      "title": "สร้าง design plugin โดยอ่านข้อมูลจาก docs/requirement/design-plugin-requirements.en.md — แยกทำทีละ command หรือ step เพื่อให้สั่งจาก new session ได้",
+      "status": "in_progress",
+      "blocked_by": [],
+      "proof": [],
+      "note": "หนึ่ง step ต่อหนึ่ง session ตาม rules[3] · ลำดับมาจาก §17 Build Order ของสเปก · ข้อบังคับที่สเปกไม่ได้เขียนแต่ marketplace บังคับ: help.md ต้องอัปเดตใน commit เดียวกับทุก step ที่เพิ่มคำสั่ง ไม่งั้น D11 แดง (ขาดคำสั่งเดียวก็แดง) · §16 เคาะแล้วแค่ D1 กับ D17 ที่เหลือยังเป็นข้อเสนอ step ที่ต้องใช้ต้องหยุดถามเจ้าของ ห้ามเลือกเอง ตาม §3.1 กับ CLAUDE.md §6",
+      "steps": [
+        {
+          "step": "S0",
+          "status": "done",
+          "title": "โครง plugin + ลงทะเบียน marketplace + help + USER-GUIDE",
+          "closed_at": "2026-08-20"
+        },
+        {
+          "step": "S1",
+          "status": "pending",
+          "title": "/design:init"
+        },
+        {
+          "step": "S2",
+          "status": "pending",
+          "title": "/design:overview",
+          "blocked_by": [
+            "D6 — BPMN As-Is/To-Be เก็บยังไง"
+          ]
+        },
+        {
+          "step": "S3",
+          "status": "pending",
+          "title": "/design:function"
+        },
+        {
+          "step": "S4",
+          "status": "pending",
+          "title": "/design:status — ปิด Milestone 1",
+          "blocked_by": [
+            "D16 — ช่องทางส่งคำถามกลับไป req"
+          ]
+        },
+        {
+          "step": "S5",
+          "status": "pending",
+          "title": "/design:datamodel",
+          "blocked_by": [
+            "D3 ตารางรหัส",
+            "D9 ย้ายข้อมูลระบบเดิม",
+            "D11 ชั้นความลับ+อายุการเก็บ (V15 ต้องใช้)",
+            "D12 invariant ของ aggregate"
+          ]
+        },
+        {
+          "step": "S6",
+          "status": "pending",
+          "title": "/design:scenario",
+          "blocked_by": [
+            "D15 — ใครออกข้อมูลทดสอบ design หรือ qa"
+          ]
+        },
+        {
+          "step": "S7",
+          "status": "pending",
+          "title": "/design:check (V1-V27) — ปิด Milestone 2"
+        },
+        {
+          "step": "S8",
+          "status": "pending",
+          "title": "/design:sitemap — ต้องหยุดเมื่อไม่มี rbac.json ตาม §13.4",
+          "blocked_by": [
+            "D7 — surface web/mobile/api"
+          ]
+        },
+        {
+          "step": "S9",
+          "status": "pending",
+          "title": "/design:interface",
+          "blocked_by": [
+            "D2 RPT รายงาน",
+            "D4 errors.json",
+            "D5 การแจ้งเตือน"
+          ]
+        },
+        {
+          "step": "S10",
+          "status": "pending",
+          "title": "/design:nfr"
+        },
+        {
+          "step": "S11",
+          "status": "pending",
+          "title": "/design:export — ปิด Milestone 3",
+          "blocked_by": [
+            "D8 — บันทึกการอนุมัติของลูกค้า"
+          ]
+        },
+        {
+          "step": "S12",
+          "status": "pending",
+          "title": "/design:rbac (4 มิติ ตาม §13 ที่เคาะแล้ว)"
+        },
+        {
+          "step": "S13",
+          "status": "pending",
+          "title": "/design:change"
+        },
+        {
+          "step": "S14",
+          "status": "pending",
+          "title": "/design:trace — ปิด Milestone 4"
+        }
+      ]
     }
   ]
 }
